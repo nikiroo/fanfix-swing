@@ -148,11 +148,11 @@ public class Actions {
 		Process proc = null;
 		if (program == null) {
 			boolean ok = false;
-			for (String starter : new String[] { "xdg-open", "open", "see",
-					"start", "run" }) {
+			for (String starter : new String[] { "xdg-open", "see",
+					"start", "run", "open" }) {
 				try {
 					Instance.getInstance().getTraceHandler()
-							.trace("starting external program");
+							.trace("starting external program: " + starter);
 					proc = Runtime.getRuntime().exec(
 							new String[] { starter, target.getAbsolutePath() });
 					ok = true;
@@ -166,7 +166,7 @@ public class Actions {
 			}
 		} else {
 			Instance.getInstance().getTraceHandler()
-					.trace("starting external program");
+					.trace("starting external program: " + program);
 			proc = Runtime.getRuntime()
 					.exec(new String[] { program, target.getAbsolutePath() });
 		}

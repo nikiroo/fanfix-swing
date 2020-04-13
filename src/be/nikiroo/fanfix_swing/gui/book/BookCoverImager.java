@@ -16,7 +16,6 @@ import javax.imageio.ImageIO;
 
 import be.nikiroo.fanfix.Instance;
 import be.nikiroo.fanfix.library.BasicLibrary;
-import be.nikiroo.fanfix.reader.ui.GuiReaderBookInfo;
 import be.nikiroo.utils.Image;
 import be.nikiroo.utils.ui.ImageUtilsAwt;
 import be.nikiroo.utils.ui.UIUtils;
