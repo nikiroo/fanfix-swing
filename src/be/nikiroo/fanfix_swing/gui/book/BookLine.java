@@ -10,6 +10,7 @@ import javax.swing.SwingConstants;
 
 import be.nikiroo.fanfix.data.Story;
 import be.nikiroo.fanfix_swing.gui.BooksPanel;
+import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
 
 /**
  * A book item presented in a {@link BooksPanel}.
@@ -204,7 +205,7 @@ public class BookLine extends JPanel {
 		title.setText(main);
 		secondary.setText(optSecondary + " ");
 
-		setBackground(BookCoverImager.getBackground(isEnabled(), isSelected(),
+		setBackground(CoverImager.getBackground(isEnabled(), isSelected(),
 				isHovered()));
 
 		remove(iconCached);

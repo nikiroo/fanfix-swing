@@ -30,6 +30,8 @@ import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix.library.BasicLibrary.Status;
 import be.nikiroo.fanfix.output.BasicOutput.OutputType;
 import be.nikiroo.fanfix_swing.Actions;
+import be.nikiroo.fanfix_swing.gui.PropertiesFrame;
+import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
 import be.nikiroo.utils.Progress;
 import be.nikiroo.utils.ui.ConfigEditor;
@@ -268,7 +270,7 @@ public class BookPopup extends JPopupMenu {
 						protected Void doInBackground() throws Exception {
 							for (BookInfo book : selected) {
 								lib.clearFromCache(book.getMeta().getLuid());
-								BookCoverImager.clearIcon(book);
+								CoverImager.clearIcon(book);
 							}
 							return null;
 						}
@@ -685,18 +687,11 @@ public class BookPopup extends JPopupMenu {
 		delete.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// final GuiReaderBook selectedBook =
-				// mainPanel.getSelectedBook();
-				// if (selectedBook != null) {
-				// mainPanel.outOfUi(null, false, new Runnable() {
-				// @Override
-				// public void run() {
-				// new GuiReaderPropertiesFrame(lib,
-				// selectedBook.getInfo().getMeta())
-				// .setVisible(true);
-				// }
-				// });
-				// }
+				BookInfo selected = informer.getUniqueSelected();
+				if (selected != null) {
+					new PropertiesFrame(lib, selected.getMeta())
+							.setVisible(true);
+				}
 			}
 		});
 

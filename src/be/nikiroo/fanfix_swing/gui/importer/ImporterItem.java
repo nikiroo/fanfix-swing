@@ -9,6 +9,7 @@ import java.awt.Rectangle;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
+import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
 import be.nikiroo.fanfix_swing.gui.utils.ListenerPanel;
 import be.nikiroo.utils.Progress;
 import be.nikiroo.utils.Progress.ProgressListener;
@@ -44,21 +45,6 @@ public class ImporterItem extends ListenerPanel {
 		init(pg);
 	}
 
-	static public Color getBackground(boolean enabled, boolean selected,
-			boolean hovered) {
-		Color color = new Color(255, 255, 255, 0);
-		if (!enabled) {
-		} else if (selected && !hovered) {
-			color = new Color(80, 80, 100, 40);
-		} else if (!selected && hovered) {
-			color = new Color(230, 230, 255, 100);
-		} else if (selected && hovered) {
-			color = new Color(200, 200, 255, 100);
-		}
-
-		return color;
-	}
-
 	public String getStoryName() {
 		return basename + ": " + storyName;
 	}
@@ -79,7 +65,8 @@ public class ImporterItem extends ListenerPanel {
 	public void setSelected(boolean selected) {
 		if (this.selected != selected) {
 			this.selected = selected;
-			setBackground(getBackground(isEnabled(), selected, hovered));
+			setBackground(
+					CoverImager.getBackground(isEnabled(), selected, hovered));
 		}
 	}
 
@@ -90,7 +77,8 @@ public class ImporterItem extends ListenerPanel {
 	public void setHovered(boolean hovered) {
 		if (this.hovered != hovered) {
 			this.hovered = hovered;
-			setBackground(getBackground(isEnabled(), selected, hovered));
+			setBackground(
+					CoverImager.getBackground(isEnabled(), selected, hovered));
 		}
 	}
 
@@ -98,7 +86,8 @@ public class ImporterItem extends ListenerPanel {
 	public void setEnabled(boolean enabled) {
 		if (isEnabled() != enabled) {
 			super.setEnabled(enabled);
-			setBackground(getBackground(isEnabled(), selected, hovered));
+			setBackground(
+					CoverImager.getBackground(isEnabled(), selected, hovered));
 		}
 	}
 

@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import be.nikiroo.fanfix.data.Story;
 import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix_swing.gui.BooksPanel;
+import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
 
 /**
  * A book item presented in a {@link BooksPanel}.
@@ -21,7 +22,7 @@ import be.nikiroo.fanfix_swing.gui.BooksPanel;
  */
 public class BookBlock extends BookLine {
 	static private final long serialVersionUID = 1L;
-	static private Image empty = BookCoverImager.generateCoverImage(null,
+	static private Image empty = CoverImager.generateCoverImage(null,
 			(BookInfo) null);
 
 	private JLabel title;
@@ -46,8 +47,8 @@ public class BookBlock extends BookLine {
 		updateMeta();
 
 		JPanel filler = new JPanel();
-		filler.setPreferredSize(new Dimension(BookCoverImager.getCoverWidth(),
-				BookCoverImager.getCoverHeight()));
+		filler.setPreferredSize(new Dimension(CoverImager.getCoverWidth(),
+				CoverImager.getCoverHeight()));
 		filler.setOpaque(false);
 
 		setLayout(new BorderLayout(10, 10));
@@ -88,7 +89,7 @@ public class BookBlock extends BookLine {
 				+ "</body>" + "</html>", BookCoverImager.TEXT_WIDTH,
 				BookCoverImager.TEXT_HEIGHT, main, color, optSecondary));
 
-		setBackground(BookCoverImager.getBackground(isEnabled(), isSelected(),
+		setBackground(CoverImager.getBackground(isEnabled(), isSelected(),
 				isHovered()));
 	}
 
@@ -104,6 +105,6 @@ public class BookBlock extends BookLine {
 	 */
 	static public java.awt.Image generateCoverImage(BasicLibrary lib,
 			BookInfo info) {
-		return BookCoverImager.generateCoverImage(lib, info);
+		return CoverImager.generateCoverImage(lib, info);
 	}
 }
