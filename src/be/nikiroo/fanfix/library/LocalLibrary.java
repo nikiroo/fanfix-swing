@@ -44,14 +44,17 @@ public class LocalLibrary extends BasicLibrary {
 	/**
 	 * Create a new {@link LocalLibrary} with the given back-end directory.
 	 * 
-	 * @param baseDir the directory where to find the {@link Story} objects
-	 * @param config  the configuration used to know which kind of default
-	 *                {@link OutputType} to use for images and non-images stories
+	 * @param baseDir
+	 *            the directory where to find the {@link Story} objects
+	 * @param config
+	 *            the configuration used to know which kind of default
+	 *            {@link OutputType} to use for images and non-images stories
 	 */
 	public LocalLibrary(File baseDir, ConfigBundle config) {
 		this(baseDir, //
 				config.getString(Config.FILE_FORMAT_NON_IMAGES_DOCUMENT_TYPE),
-				config.getString(Config.FILE_FORMAT_IMAGES_DOCUMENT_TYPE), false);
+				config.getString(Config.FILE_FORMAT_IMAGES_DOCUMENT_TYPE),
+				false);
 	}
 
 	/**
@@ -69,8 +72,9 @@ public class LocalLibrary extends BasicLibrary {
 	 */
 	public LocalLibrary(File baseDir, String text, String image,
 			boolean defaultIsHtml) {
-		this(baseDir, OutputType.valueOfAllOkUC(text,
-				defaultIsHtml ? OutputType.HTML : OutputType.INFO_TEXT),
+		this(baseDir,
+				OutputType.valueOfAllOkUC(text,
+						defaultIsHtml ? OutputType.HTML : OutputType.INFO_TEXT),
 				OutputType.valueOfAllOkUC(image,
 						defaultIsHtml ? OutputType.HTML : OutputType.CBZ));
 	}
@@ -104,7 +108,8 @@ public class LocalLibrary extends BasicLibrary {
 
 	@Override
 	public File getFile(String luid, Progress pg) throws IOException {
-		Instance.getInstance().getTraceHandler().trace(this.getClass().getSimpleName() + ": get file for " + luid);
+		Instance.getInstance().getTraceHandler().trace(
+				this.getClass().getSimpleName() + ": get file for " + luid);
 
 		File file = null;
 		String mess = "no file found for ";
@@ -117,7 +122,8 @@ public class LocalLibrary extends BasicLibrary {
 		}
 
 		Instance.getInstance().getTraceHandler()
-				.trace(this.getClass().getSimpleName() + ": " + mess + luid + " (" + meta.getTitle() + ")");
+				.trace(this.getClass().getSimpleName() + ": " + mess + luid
+						+ " (" + meta.getTitle() + ")");
 
 		return file;
 	}
@@ -200,8 +206,8 @@ public class LocalLibrary extends BasicLibrary {
 			// Maybe also adding some rollback cleanup if possible
 			if (relatedFile.getName().endsWith(".info")) {
 				try {
-					String name = relatedFile.getName().replaceFirst(
-							"\\.info$", "");
+					String name = relatedFile.getName().replaceFirst("\\.info$",
+							"");
 					relatedFile.delete();
 					InfoCover.writeInfo(newDir, name, meta);
 					relatedFile.getParentFile().delete();
@@ -244,7 +250,10 @@ public class LocalLibrary extends BasicLibrary {
 					e.printStackTrace();
 				} catch (IOException e) {
 					Instance.getInstance().getTraceHandler()
-							.error(new IOException("Cannot load the existing custom source cover: " + cover, e));
+							.error(new IOException(
+									"Cannot load the existing custom source cover: "
+											+ cover,
+									e));
 				}
 			}
 		}
@@ -277,7 +286,10 @@ public class LocalLibrary extends BasicLibrary {
 				e.printStackTrace();
 			} catch (IOException e) {
 				Instance.getInstance().getTraceHandler()
-						.error(new IOException("Cannot load the existing custom author cover: " + cover, e));
+						.error(new IOException(
+								"Cannot load the existing custom author cover: "
+										+ cover,
+								e));
 			}
 		}
 
@@ -307,7 +319,8 @@ public class LocalLibrary extends BasicLibrary {
 		dir.mkdirs();
 		File cover = new File(dir, ".cover");
 		try {
-			Instance.getInstance().getCache().saveAsImage(coverImage, cover, true);
+			Instance.getInstance().getCache().saveAsImage(coverImage, cover,
+					true);
 			if (sourceCovers != null) {
 				sourceCovers.put(source, coverImage);
 			}
@@ -328,7 +341,8 @@ public class LocalLibrary extends BasicLibrary {
 		File cover = getAuthorCoverFile(author);
 		cover.getParentFile().mkdirs();
 		try {
-			Instance.getInstance().getCache().saveAsImage(coverImage, cover, true);
+			Instance.getInstance().getCache().saveAsImage(coverImage, cover,
+					true);
 			if (authorCovers != null) {
 				authorCovers.put(author, coverImage);
 			}
@@ -465,8 +479,8 @@ public class LocalLibrary extends BasicLibrary {
 		if (title.length() > 40) {
 			title = title.substring(0, 40);
 		}
-		return new File(getExpectedDir(key.getSource()), key.getLuid() + "_"
-				+ title);
+		return new File(getExpectedDir(key.getSource()),
+				key.getLuid() + "_" + title);
 	}
 
 	/**
@@ -513,7 +527,8 @@ public class LocalLibrary extends BasicLibrary {
 	private File getAuthorCoverFile(String author) {
 		File aDir = new File(baseDir, "_AUTHORS");
 		String hash = StringUtils.getMd5Hash(author);
-		String ext = Instance.getInstance().getConfig().getString(Config.FILE_FORMAT_IMAGE_FORMAT_COVER);
+		String ext = Instance.getInstance().getConfig()
+				.getString(Config.FILE_FORMAT_IMAGE_FORMAT_COVER);
 		return new File(aDir, hash + "." + ext.toLowerCase());
 	}
 
@@ -558,13 +573,13 @@ public class LocalLibrary extends BasicLibrary {
 			}
 		}
 
-		String coverExt = "."
-				+ Instance.getInstance().getConfig().getString(Config.FILE_FORMAT_IMAGE_FORMAT_COVER).toLowerCase();
+		String coverExt = "." + Instance.getInstance().getConfig()
+				.getString(Config.FILE_FORMAT_IMAGE_FORMAT_COVER).toLowerCase();
 		File coverFile = new File(path + coverExt);
 		if (!coverFile.exists()) {
-			coverFile = new File(path.substring(0,
-					path.length() - fileExt.length())
-					+ coverExt);
+			coverFile = new File(
+					path.substring(0, path.length() - fileExt.length())
+							+ coverExt);
 		}
 
 		if (coverFile.exists()) {
@@ -653,8 +668,8 @@ public class LocalLibrary extends BasicLibrary {
 				addToStories(null, infoFileOrSubdir);
 			} else {
 				try {
-					MetaData meta = InfoReader
-							.readMeta(infoFileOrSubdir, false);
+					MetaData meta = InfoReader.readMeta(infoFileOrSubdir,
+							false);
 					try {
 						int id = Integer.parseInt(meta.getLuid());
 						if (id > lastId) {
@@ -671,8 +686,9 @@ public class LocalLibrary extends BasicLibrary {
 				} catch (IOException e) {
 					// We should not have not-supported files in the
 					// library
-					Instance.getInstance().getTraceHandler()
-							.error(new IOException("Cannot load file from library: " + infoFileOrSubdir, e));
+					Instance.getInstance().getTraceHandler().error(
+							new IOException("Cannot load file from library: "
+									+ infoFileOrSubdir, e));
 				}
 			}
 
