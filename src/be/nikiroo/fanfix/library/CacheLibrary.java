@@ -30,15 +30,19 @@ public class CacheLibrary extends BasicLibrary {
 	/**
 	 * Create a cache library around the given one.
 	 * <p>
-	 * It will return the same result, but those will be saved to disk at the same
-	 * time to be fetched quicker the next time.
+	 * It will return the same result, but those will be saved to disk at the
+	 * same time to be fetched quicker the next time.
 	 * 
-	 * @param cacheDir the cache directory where to save the files to disk
-	 * @param lib      the original library to wrap
-	 * @param config   the configuration used to know which kind of default
-	 *                 {@link OutputType} to use for images and non-images stories
+	 * @param cacheDir
+	 *            the cache directory where to save the files to disk
+	 * @param lib
+	 *            the original library to wrap
+	 * @param config
+	 *            the configuration used to know which kind of default
+	 *            {@link OutputType} to use for images and non-images stories
 	 */
-	public CacheLibrary(File cacheDir, BasicLibrary lib, UiConfigBundle config) {
+	public CacheLibrary(File cacheDir, BasicLibrary lib,
+			UiConfigBundle config) {
 		this.cacheLib = new LocalLibrary(cacheDir, //
 				config.getString(UiConfig.GUI_NON_IMAGES_DOCUMENT_TYPE),
 				config.getString(UiConfig.GUI_IMAGES_DOCUMENT_TYPE), true);
@@ -56,7 +60,8 @@ public class CacheLibrary extends BasicLibrary {
 	}
 
 	@Override
-	protected synchronized List<MetaData> getMetas(Progress pg) throws IOException {
+	protected synchronized List<MetaData> getMetas(Progress pg)
+			throws IOException {
 		// We make sure that cached metas have precedence
 
 		if (pg == null) {
@@ -67,7 +72,7 @@ public class CacheLibrary extends BasicLibrary {
 			if (metasReal == null) {
 				metasReal = lib.getMetas(pg);
 			}
-			
+
 			metasMixed = new ArrayList<MetaData>();
 			TreeSet<String> cachedLuids = new TreeSet<String>();
 			for (MetaData cachedMeta : cacheLib.getMetas(null)) {
@@ -86,7 +91,8 @@ public class CacheLibrary extends BasicLibrary {
 	}
 
 	@Override
-	public synchronized Story getStory(String luid, MetaData meta, Progress pg) throws IOException {
+	public synchronized Story getStory(String luid, MetaData meta, Progress pg)
+			throws IOException {
 		if (pg == null) {
 			pg = new Progress();
 		}
@@ -119,7 +125,8 @@ public class CacheLibrary extends BasicLibrary {
 	}
 
 	@Override
-	public synchronized File getFile(final String luid, Progress pg) throws IOException {
+	public synchronized File getFile(final String luid, Progress pg)
+			throws IOException {
 		if (pg == null) {
 			pg = new Progress();
 		}
@@ -225,8 +232,8 @@ public class CacheLibrary extends BasicLibrary {
 	 * Invalidate the {@link Story} cache (when the content has changed, but we
 	 * already have it) with the new given meta.
 	 * <p>
-	 * <b>Make sure to always use {@link MetaData} from the cached library 
-	 * in priority, here.</b>
+	 * <b>Make sure to always use {@link MetaData} from the cached library in
+	 * priority, here.</b>
 	 * 
 	 * @param meta
 	 *            the {@link Story} to clear from the cache
@@ -240,7 +247,7 @@ public class CacheLibrary extends BasicLibrary {
 		throw new IOException(
 				"This method is not supported in a CacheLibrary, please use updateMetaCache");
 	}
-	
+
 	// relplace the meta in Metas by Meta, add it if needed
 	// return TRUE = added
 	private boolean updateMetaCache(List<MetaData> metas, MetaData meta) {
@@ -258,7 +265,7 @@ public class CacheLibrary extends BasicLibrary {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -288,7 +295,8 @@ public class CacheLibrary extends BasicLibrary {
 	}
 
 	@Override
-	public synchronized Story save(Story story, String luid, Progress pg) throws IOException {
+	public synchronized Story save(Story story, String luid, Progress pg)
+			throws IOException {
 		Progress pgLib = new Progress();
 		Progress pgCacheLib = new Progress();
 
@@ -302,7 +310,7 @@ public class CacheLibrary extends BasicLibrary {
 
 		story = lib.save(story, luid, pgLib);
 		updateMetaCache(metasReal, story.getMeta());
-		
+
 		story = cacheLib.save(story, story.getMeta().getLuid(), pgCacheLib);
 		updateMetaCache(metasMixed, story.getMeta());
 
@@ -320,8 +328,8 @@ public class CacheLibrary extends BasicLibrary {
 	}
 
 	@Override
-	protected synchronized void changeSTA(String luid, String newSource, String newTitle, String newAuthor, Progress pg)
-			throws IOException {
+	protected synchronized void changeSTA(String luid, String newSource,
+			String newTitle, String newAuthor, Progress pg) throws IOException {
 		if (pg == null) {
 			pg = new Progress();
 		}
@@ -375,7 +383,8 @@ public class CacheLibrary extends BasicLibrary {
 	}
 
 	@Override
-	public synchronized MetaData imprt(URL url, Progress pg) throws IOException {
+	public synchronized MetaData imprt(URL url, Progress pg)
+			throws IOException {
 		if (pg == null) {
 			pg = new Progress();
 		}
