@@ -148,8 +148,8 @@ public class Actions {
 		Process proc = null;
 		if (program == null) {
 			boolean ok = false;
-			for (String starter : new String[] { "xdg-open", "see",
-					"start", "run", "open" }) {
+			for (String starter : new String[] { "xdg-open", "see", "start",
+					"run", "open" }) {
 				try {
 					Instance.getInstance().getTraceHandler()
 							.trace("starting external program: " + starter);
@@ -195,7 +195,7 @@ public class Actions {
 	 *            Action to execute on success
 	 */
 	static public void imprt(final Container parent, final String url,
-			final Progress pg, final Runnable onSuccess) {
+			Progress pg, final Runnable onSuccess) {
 		final Progress fpg = pg;
 		new SwingWorker<Void, Void>() {
 			@Override
@@ -206,14 +206,14 @@ public class Actions {
 
 				try {
 					Instance.getInstance().getLibrary()
-							.imprt(BasicReader.getUrl(url), fpg);
+							.imprt(BasicReader.getUrl(url), pg);
 
-					fpg.done();
+					pg.done();
 					if (onSuccess != null) {
 						onSuccess.run();
 					}
 				} catch (IOException e) {
-					fpg.done();
+					pg.done();
 					if (e instanceof UnknownHostException) {
 						UiHelper.error(parent,
 								Instance.getInstance().getTransGui().getString(

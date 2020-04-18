@@ -102,11 +102,14 @@ public class SearchBar extends ListenerPanel {
 	}
 
 	/**
-	 * Return the current text displayed by this {@link SearchBar}.
+	 * Return the current text displayed by this {@link SearchBar}, or an empty
+	 * {@link String} if none.
 	 * 
-	 * @return the text
+	 * @return the text, cannot be NULL
 	 */
 	public String getText() {
-		return text.getText();
+		// Should usually not be NULL, but not impossible
+		String text = this.text.getText();
+		return text == null ? "" : text;
 	}
 }

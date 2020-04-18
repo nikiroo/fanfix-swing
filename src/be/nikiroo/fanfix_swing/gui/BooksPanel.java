@@ -36,10 +36,16 @@ import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
 
 public class BooksPanel extends ListenerPanel {
 	private class ListModel extends DefaultListModel<BookInfo> {
+		public void fireElementChanged(int index) {
+			if (index >= 0) {
+				fireContentsChanged(this, index, index);
+			}
+		}
+
 		public void fireElementChanged(BookInfo element) {
 			int index = indexOf(element);
 			if (index >= 0) {
-				fireContentsChanged(element, index, index);
+				fireContentsChanged(this, index, index);
 			}
 		}
 	}
@@ -55,19 +61,19 @@ public class BooksPanel extends ListenerPanel {
 	private int hoveredIndex = -1;
 	private ListModel data = new ListModel();
 	private DelayWorker bookCoverUpdater;
-
-	private SearchBar searchBar;
+	private String filter = "";
 
 	public BooksPanel(boolean listMode) {
 		setLayout(new BorderLayout());
 
-		searchBar = new SearchBar();
-		add(searchBar, BorderLayout.NORTH);
+		final SearchBar search = new SearchBar();
+		add(search, BorderLayout.NORTH);
 
-		searchBar.addActionListener(new ActionListener() {
+		search.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				filter(searchBar.getText());
+				filter = search.getText();
+				filter();
 			}
 		});
 
@@ -113,11 +119,10 @@ public class BooksPanel extends ListenerPanel {
 		this.bookInfos.addAll(bookInfos);
 		bookCoverUpdater.clear();
 
-		filter(searchBar.getText());
+		filter();
 	}
 
-	// cannot be NULL
-	private void filter(String filter) {
+	private void filter() {
 		data.clear();
 		for (BookInfo bookInfo : bookInfos) {
 			if (bookInfo.getMainInfo() == null || filter.isEmpty()
@@ -166,9 +171,15 @@ public class BooksPanel extends ListenerPanel {
 						book.setCached(cached);
 						fireElementChanged(book);
 					}
-
+					
+					@Override
 					public void fireElementChanged(BookInfo book) {
 						data.fireElementChanged(book);
+					}
+					
+					@Override
+					public void removeElement(BookInfo book) {
+						data.removeElement(book);
 					}
 
 					@Override
@@ -228,8 +239,9 @@ public class BooksPanel extends ListenerPanel {
 					return;
 
 				if (hoveredIndex > -1) {
+					int index = hoveredIndex;
 					hoveredIndex = -1;
-					list.repaint();
+					data.fireElementChanged(index);
 				}
 			}
 

@@ -23,7 +23,7 @@ public class BookLine extends JPanel {
 
 	private static final int MAX_DISPLAY_SIZE = 40;
 
-	/** Colour used for the seconday item (author/word count). */
+	/** Colour used for the secondary item (author/word count). */
 	protected static final Color AUTHOR_COLOR = new Color(128, 128, 128);
 
 	private boolean selected;

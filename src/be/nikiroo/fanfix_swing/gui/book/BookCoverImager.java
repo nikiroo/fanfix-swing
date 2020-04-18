@@ -79,7 +79,7 @@ class BookCoverImager {
 	static public void paintOverlay(Graphics g, boolean enabled,
 			boolean selected, boolean hovered, boolean cached) {
 		Rectangle clip = g.getClipBounds();
-		if (clip.getWidth() <= 0 || clip.getHeight() <= 0) {
+		if (clip == null || clip.getWidth() <= 0 || clip.getHeight() <= 0) {
 			return;
 		}
 
