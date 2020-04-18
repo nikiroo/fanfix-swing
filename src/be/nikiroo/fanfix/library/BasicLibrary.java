@@ -98,7 +98,7 @@ abstract public class BasicLibrary {
 	 * Do <b>NOT</b> alter this file.
 	 * 
 	 * @param luid
-	 *            the Library UID of the story
+	 *            the Library UID of the story, can be NULL
 	 * @param pg
 	 *            the optional {@link Progress}
 	 * 
@@ -123,7 +123,7 @@ abstract public class BasicLibrary {
 	public abstract Image getCover(String luid) throws IOException;
 
 	// TODO: ensure it is the main used interface
-	public synchronized MetaResultList getList(Progress pg) throws IOException {
+	public MetaResultList getList(Progress pg) throws IOException {
 		return new MetaResultList(getMetas(pg));
 	}
 
@@ -338,7 +338,7 @@ abstract public class BasicLibrary {
 	 * @param pg
 	 *            the optional progress reporter
 	 */
-	public synchronized void refresh(Progress pg) {
+	public void refresh(Progress pg) {
 		try {
 			getMetas(pg);
 		} catch (IOException e) {
@@ -384,7 +384,7 @@ abstract public class BasicLibrary {
 	 * @throws IOException
 	 *             in case of IOException
 	 */
-	public synchronized List<String> getSources() throws IOException {
+	public List<String> getSources() throws IOException {
 		List<String> list = new ArrayList<String>();
 		for (MetaData meta : getMetas(null)) {
 			String storySource = meta.getSource();
@@ -414,8 +414,7 @@ abstract public class BasicLibrary {
 	 * @throws IOException
 	 *             in case of IOException
 	 */
-	public synchronized Map<String, List<String>> getSourcesGrouped()
-			throws IOException {
+	public Map<String, List<String>> getSourcesGrouped() throws IOException {
 		Map<String, List<String>> map = new TreeMap<String, List<String>>();
 		for (String source : getSources()) {
 			String name;
@@ -450,7 +449,7 @@ abstract public class BasicLibrary {
 	 * @throws IOException
 	 *             in case of IOException
 	 */
-	public synchronized List<String> getAuthors() throws IOException {
+	public List<String> getAuthors() throws IOException {
 		List<String> list = new ArrayList<String>();
 		for (MetaData meta : getMetas(null)) {
 			String storyAuthor = meta.getAuthor();
@@ -606,14 +605,14 @@ abstract public class BasicLibrary {
 	 * cover image <b>MAY</b> not be included.
 	 * 
 	 * @param luid
-	 *            the Library UID of the story
+	 *            the Library UID of the story, can be NULL
 	 * 
-	 * @return the corresponding {@link Story}
+	 * @return the corresponding {@link Story} or NULL if not found
 	 * 
 	 * @throws IOException
 	 *             in case of IOException
 	 */
-	public synchronized MetaData getInfo(String luid) throws IOException {
+	public MetaData getInfo(String luid) throws IOException {
 		if (luid != null) {
 			for (MetaData meta : getMetas(null)) {
 				if (luid.equals(meta.getLuid())) {
@@ -668,6 +667,8 @@ abstract public class BasicLibrary {
 	 * Retrieve a specific {@link Story}.
 	 * 
 	 * @param luid
+	 *            the LUID of the story
+	 * @param meta
 	 *            the meta of the story
 	 * @param pg
 	 *            the optional progress reporter
@@ -677,8 +678,7 @@ abstract public class BasicLibrary {
 	 * @throws IOException
 	 *             in case of IOException
 	 */
-	public synchronized Story getStory(String luid,
-			@SuppressWarnings("javadoc") MetaData meta, Progress pg)
+	public synchronized Story getStory(String luid, MetaData meta, Progress pg)
 			throws IOException {
 
 		if (pg == null) {
@@ -693,12 +693,21 @@ abstract public class BasicLibrary {
 		pg.addProgress(pgProcess, 1);
 
 		Story story = null;
-		File file = getFile(luid, pgGet);
+		File file = null;
+
+		if (luid != null && meta != null) {
+			file = getFile(luid, pgGet);
+		}
+
 		pgGet.done();
 		try {
-			SupportType type = SupportType.valueOfAllOkUC(meta.getType());
-			URL url = file.toURI().toURL();
-			if (type != null) {
+			if (file != null) {
+				SupportType type = SupportType.valueOfAllOkUC(meta.getType());
+				if (type == null) {
+					throw new IOException("Unknown type: " + meta.getType());
+				}
+
+				URL url = file.toURI().toURL();
 				story = BasicSupport.getSupport(type, url) //
 						.process(pgProcess);
 
@@ -706,13 +715,9 @@ abstract public class BasicLibrary {
 				meta.setCover(story.getMeta().getCover());
 				meta.setResume(story.getMeta().getResume());
 				story.setMeta(meta);
-				//
-			} else {
-				throw new IOException("Unknown type: " + meta.getType());
 			}
 		} catch (IOException e) {
-			// We should not have not-supported files in the
-			// library
+			// We should not have not-supported files in the library
 			Instance.getInstance().getTraceHandler()
 					.error(new IOException(String.format(
 							"Cannot load file of type '%s' from library: %s",

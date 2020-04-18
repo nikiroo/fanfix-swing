@@ -24,6 +24,8 @@ import be.nikiroo.utils.Progress;
 public class CacheLibrary extends BasicLibrary {
 	private List<MetaData> metasReal;
 	private List<MetaData> metasMixed;
+	private Object metasLock = new Object();
+
 	private BasicLibrary lib;
 	private LocalLibrary cacheLib;
 
@@ -60,28 +62,28 @@ public class CacheLibrary extends BasicLibrary {
 	}
 
 	@Override
-	protected synchronized List<MetaData> getMetas(Progress pg)
-			throws IOException {
-		// We make sure that cached metas have precedence
-
+	protected List<MetaData> getMetas(Progress pg) throws IOException {
 		if (pg == null) {
 			pg = new Progress();
 		}
 
-		if (metasMixed == null) {
-			if (metasReal == null) {
-				metasReal = lib.getMetas(pg);
-			}
+		synchronized (metasLock) {
+			// We make sure that cached metas have precedence
+			if (metasMixed == null) {
+				if (metasReal == null) {
+					metasReal = lib.getMetas(pg);
+				}
 
-			metasMixed = new ArrayList<MetaData>();
-			TreeSet<String> cachedLuids = new TreeSet<String>();
-			for (MetaData cachedMeta : cacheLib.getMetas(null)) {
-				metasMixed.add(cachedMeta);
-				cachedLuids.add(cachedMeta.getLuid());
-			}
-			for (MetaData realMeta : metasReal) {
-				if (!cachedLuids.contains(realMeta.getLuid())) {
-					metasMixed.add(realMeta);
+				metasMixed = new ArrayList<MetaData>();
+				TreeSet<String> cachedLuids = new TreeSet<String>();
+				for (MetaData cachedMeta : cacheLib.getMetas(null)) {
+					metasMixed.add(cachedMeta);
+					cachedLuids.add(cachedMeta.getLuid());
+				}
+				for (MetaData realMeta : metasReal) {
+					if (!cachedLuids.contains(realMeta.getLuid())) {
+						metasMixed.add(realMeta);
+					}
 				}
 			}
 		}
@@ -252,17 +254,19 @@ public class CacheLibrary extends BasicLibrary {
 	// return TRUE = added
 	private boolean updateMetaCache(List<MetaData> metas, MetaData meta) {
 		if (meta != null && metas != null) {
-			boolean changed = false;
-			for (int i = 0; i < metas.size(); i++) {
-				if (metas.get(i).getLuid().equals(meta.getLuid())) {
-					metas.set(i, meta);
-					changed = true;
+			synchronized (metasLock) {
+				boolean changed = false;
+				for (int i = 0; i < metas.size(); i++) {
+					if (metas.get(i).getLuid().equals(meta.getLuid())) {
+						metas.set(i, meta);
+						changed = true;
+					}
 				}
-			}
 
-			if (!changed) {
-				metas.add(meta);
-				return true;
+				if (!changed) {
+					metas.add(meta);
+					return true;
+				}
 			}
 		}
 
@@ -272,8 +276,10 @@ public class CacheLibrary extends BasicLibrary {
 	@Override
 	protected void invalidateInfo(String luid) {
 		if (luid == null) {
-			metasReal = null;
-			metasMixed = null;
+			synchronized (metasLock) {
+				metasReal = null;
+				metasMixed = null;
+			}
 		} else {
 			invalidateInfo(metasReal, luid);
 			invalidateInfo(metasMixed, luid);
@@ -286,9 +292,11 @@ public class CacheLibrary extends BasicLibrary {
 	// luid cannot be null
 	private void invalidateInfo(List<MetaData> metas, String luid) {
 		if (metas != null) {
-			for (int i = 0; i < metas.size(); i++) {
-				if (metas.get(i).getLuid().equals(luid)) {
-					metas.remove(i--);
+			synchronized (metasLock) {
+				for (int i = 0; i < metas.size(); i++) {
+					if (metas.get(i).getLuid().equals(luid)) {
+						metas.remove(i--);
+					}
 				}
 			}
 		}
@@ -318,7 +326,7 @@ public class CacheLibrary extends BasicLibrary {
 	}
 
 	@Override
-	public synchronized void delete(String luid) throws IOException {
+	public void delete(String luid) throws IOException {
 		if (isCached(luid)) {
 			cacheLib.delete(luid);
 		}
@@ -383,8 +391,7 @@ public class CacheLibrary extends BasicLibrary {
 	}
 
 	@Override
-	public synchronized MetaData imprt(URL url, Progress pg)
-			throws IOException {
+	public MetaData imprt(URL url, Progress pg) throws IOException {
 		if (pg == null) {
 			pg = new Progress();
 		}
@@ -397,7 +404,10 @@ public class CacheLibrary extends BasicLibrary {
 
 		MetaData meta = lib.imprt(url, pgImprt);
 		updateMetaCache(metasReal, meta);
-		metasMixed = null;
+		synchronized (metasLock) {
+			metasMixed = null;
+		}
+
 		clearFromCache(meta.getLuid());
 
 		pg.done();
