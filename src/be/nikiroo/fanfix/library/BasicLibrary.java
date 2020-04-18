@@ -126,9 +126,9 @@ abstract public class BasicLibrary {
 	public synchronized MetaResultList getList(Progress pg) throws IOException {
 		return new MetaResultList(getMetas(pg));
 	}
-	
-	//TODO: make something for (normal and custom) not-story covers
-	
+
+	// TODO: make something for (normal and custom) not-story covers
+
 	/**
 	 * Return the cover image associated to this source.
 	 * <p>
@@ -345,7 +345,7 @@ abstract public class BasicLibrary {
 			// We will let it fail later
 		}
 	}
-	
+
 	/**
 	 * Check if the {@link Story} denoted by this Library UID is present in the
 	 * cache (if we have no cache, we default to </t>true</tt>).
@@ -359,7 +359,7 @@ abstract public class BasicLibrary {
 		// By default, everything is cached
 		return true;
 	}
-	
+
 	/**
 	 * Clear the {@link Story} from the cache, if needed.
 	 * <p>
@@ -713,8 +713,10 @@ abstract public class BasicLibrary {
 		} catch (IOException e) {
 			// We should not have not-supported files in the
 			// library
-			Instance.getInstance().getTraceHandler().error(new IOException(
-					String.format("Cannot load file of type '%s' from library: %s", meta.getType(), file), e));
+			Instance.getInstance().getTraceHandler()
+					.error(new IOException(String.format(
+							"Cannot load file of type '%s' from library: %s",
+							meta.getType(), file), e));
 		} finally {
 			pgProcess.done();
 			pg.done();
@@ -876,15 +878,16 @@ abstract public class BasicLibrary {
 		if (pg == null) {
 			pg = new Progress();
 		}
-		
-		Instance.getInstance().getTraceHandler().trace(this.getClass().getSimpleName() + ": saving story " + luid);
+
+		Instance.getInstance().getTraceHandler().trace(
+				this.getClass().getSimpleName() + ": saving story " + luid);
 
 		// Do not change the original metadata, but change the original story
 		MetaData meta = story.getMeta().clone();
 		story.setMeta(meta);
 
 		pg.setName("Saving story");
-		
+
 		if (luid == null || luid.isEmpty()) {
 			meta.setLuid(String.format("%03d", getNextId()));
 		} else {
@@ -900,7 +903,8 @@ abstract public class BasicLibrary {
 		updateInfo(story.getMeta());
 
 		Instance.getInstance().getTraceHandler()
-				.trace(this.getClass().getSimpleName() + ": story saved (" + luid + ")");
+				.trace(this.getClass().getSimpleName() + ": story saved ("
+						+ luid + ")");
 
 		pg.setName(meta.getTitle());
 		pg.done();
@@ -917,14 +921,15 @@ abstract public class BasicLibrary {
 	 *             in case of I/O error
 	 */
 	public synchronized void delete(String luid) throws IOException {
-		Instance.getInstance().getTraceHandler().trace(this.getClass().getSimpleName() + ": deleting story " + luid);
+		Instance.getInstance().getTraceHandler().trace(
+				this.getClass().getSimpleName() + ": deleting story " + luid);
 
 		doDelete(luid);
 		invalidateInfo(luid);
 
 		Instance.getInstance().getTraceHandler()
-				.trace(this.getClass().getSimpleName() + ": story deleted (" + luid
-						+ ")");
+				.trace(this.getClass().getSimpleName() + ": story deleted ("
+						+ luid + ")");
 	}
 
 	/**
