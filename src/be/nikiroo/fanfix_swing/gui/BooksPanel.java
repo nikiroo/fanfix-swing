@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -15,9 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JList;
-import javax.swing.JPopupMenu;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingWorker;
@@ -30,36 +27,22 @@ import be.nikiroo.fanfix_swing.gui.book.BookBlock;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.book.BookLine;
 import be.nikiroo.fanfix_swing.gui.book.BookPopup;
+import be.nikiroo.fanfix_swing.gui.book.BookPopup.Informer;
 import be.nikiroo.fanfix_swing.gui.utils.DelayWorker;
+import be.nikiroo.fanfix_swing.gui.utils.ListModel;
+import be.nikiroo.fanfix_swing.gui.utils.ListModel.Predicate;
 import be.nikiroo.fanfix_swing.gui.utils.ListenerPanel;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
 
 public class BooksPanel extends ListenerPanel {
-	private class ListModel extends DefaultListModel<BookInfo> {
-		public void fireElementChanged(int index) {
-			if (index >= 0) {
-				fireContentsChanged(this, index, index);
-			}
-		}
-
-		public void fireElementChanged(BookInfo element) {
-			int index = indexOf(element);
-			if (index >= 0) {
-				fireContentsChanged(this, index, index);
-			}
-		}
-	}
-
 	static public final String INVALIDATE_CACHE = "invalidate_cache";
 
-	private List<BookInfo> bookInfos = new ArrayList<BookInfo>();
 	private Map<BookInfo, BookLine> books = new HashMap<BookInfo, BookLine>();
 	private boolean seeWordCount;
 	private boolean listMode;
 
 	private JList<BookInfo> list;
-	private int hoveredIndex = -1;
-	private ListModel data = new ListModel();
+	private ListModel<BookInfo> data;
 	private DelayWorker bookCoverUpdater;
 	private String filter = "";
 
@@ -79,7 +62,10 @@ public class BooksPanel extends ListenerPanel {
 
 		bookCoverUpdater = new DelayWorker(20);
 		bookCoverUpdater.start();
-		add(UiHelper.scroll(initList(listMode)), BorderLayout.CENTER);
+
+		list = initList();
+		setListMode(listMode);
+		add(UiHelper.scroll(list), BorderLayout.CENTER);
 	}
 
 	// null or empty -> all sources
@@ -115,23 +101,22 @@ public class BooksPanel extends ListenerPanel {
 	}
 
 	public void load(List<BookInfo> bookInfos) {
-		this.bookInfos.clear();
-		this.bookInfos.addAll(bookInfos);
+		data.clearItems();
+		data.addAllItems(bookInfos);
 		bookCoverUpdater.clear();
 
 		filter();
 	}
 
 	private void filter() {
-		data.clear();
-		for (BookInfo bookInfo : bookInfos) {
-			if (bookInfo.getMainInfo() == null || filter.isEmpty()
-					|| bookInfo.getMainInfo().toLowerCase()
-							.contains(filter.toLowerCase())) {
-				data.addElement(bookInfo);
+		data.filter(new Predicate<BookInfo>() {
+			@Override
+			public boolean test(BookInfo item) {
+				return item.getMainInfo() == null || filter.isEmpty()
+						|| item.getMainInfo().toLowerCase()
+								.contains(filter.toLowerCase());
 			}
-		}
-		list.repaint();
+		});
 	}
 
 	/**
@@ -161,90 +146,12 @@ public class BooksPanel extends ListenerPanel {
 		}
 	}
 
-	private JList<BookInfo> initList(boolean listMode) {
-		final JList<BookInfo> list = new JList<BookInfo>(data);
+	private JList<BookInfo> initList() {
+		final JList<BookInfo> list = new JList<BookInfo>();
+		data = new ListModel<BookInfo>(list, new BookPopup(
+				Instance.getInstance().getLibrary(), initInformer()));
 
-		final JPopupMenu popup = new BookPopup(
-				Instance.getInstance().getLibrary(), new BookPopup.Informer() {
-					@Override
-					public void setCached(BookInfo book, boolean cached) {
-						book.setCached(cached);
-						fireElementChanged(book);
-					}
-					
-					@Override
-					public void fireElementChanged(BookInfo book) {
-						data.fireElementChanged(book);
-					}
-					
-					@Override
-					public void removeElement(BookInfo book) {
-						data.removeElement(book);
-					}
-
-					@Override
-					public List<BookInfo> getSelected() {
-						List<BookInfo> selected = new ArrayList<BookInfo>();
-						for (int index : list.getSelectedIndices()) {
-							selected.add(data.get(index));
-						}
-
-						return selected;
-					}
-
-					@Override
-					public BookInfo getUniqueSelected() {
-						List<BookInfo> selected = getSelected();
-						if (selected.size() == 1) {
-							return selected.get(0);
-						}
-						return null;
-					}
-
-					@Override
-					public void invalidateCache() {
-						// TODO: also reset the popup menu for sources/author
-						fireActionPerformed(INVALIDATE_CACHE);
-					}
-				});
-
-		list.addMouseMotionListener(new MouseAdapter() {
-			@Override
-			public void mouseMoved(MouseEvent me) {
-				if (popup.isShowing())
-					return;
-
-				Point p = new Point(me.getX(), me.getY());
-				int index = list.locationToIndex(p);
-				if (index != hoveredIndex) {
-					hoveredIndex = index;
-					list.repaint();
-				}
-			}
-		});
 		list.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				check(e);
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				check(e);
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				if (popup.isShowing())
-					return;
-
-				if (hoveredIndex > -1) {
-					int index = hoveredIndex;
-					hoveredIndex = -1;
-					data.fireElementChanged(index);
-				}
-			}
-
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
@@ -265,17 +172,6 @@ public class BooksPanel extends ListenerPanel {
 							});
 				}
 			}
-
-			private void check(MouseEvent e) {
-				if (e.isPopupTrigger()) {
-					if (list.getSelectedIndices().length <= 1) {
-						list.setSelectedIndex(
-								list.locationToIndex(e.getPoint()));
-					}
-
-					popup.show(list, e.getX(), e.getY());
-				}
-			}
 		});
 
 		list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -283,9 +179,43 @@ public class BooksPanel extends ListenerPanel {
 		list.setCellRenderer(generateRenderer());
 		list.setVisibleRowCount(0);
 
-		this.list = list;
-		setListMode(listMode);
-		return this.list;
+		return list;
+	}
+
+	private Informer initInformer() {
+		return new BookPopup.Informer() {
+			@Override
+			public void setCached(BookInfo book, boolean cached) {
+				book.setCached(cached);
+				fireElementChanged(book);
+			}
+
+			@Override
+			public void fireElementChanged(BookInfo book) {
+				data.fireElementChanged(book);
+			}
+
+			@Override
+			public void removeElement(BookInfo book) {
+				data.removeElement(book);
+			}
+
+			@Override
+			public List<BookInfo> getSelected() {
+				return data.getSelectedElements();
+			}
+
+			@Override
+			public BookInfo getUniqueSelected() {
+				return data.getUniqueSelectedElement();
+			}
+
+			@Override
+			public void invalidateCache() {
+				// TODO: also reset the popup menu for sources/author
+				fireActionPerformed(INVALIDATE_CACHE);
+			}
+		};
 	}
 
 	private ListCellRenderer<BookInfo> generateRenderer() {
@@ -306,7 +236,7 @@ public class BooksPanel extends ListenerPanel {
 				}
 
 				book.setSelected(isSelected);
-				book.setHovered(index == hoveredIndex);
+				book.setHovered(data.isHovered(index));
 				return book;
 			}
 		};

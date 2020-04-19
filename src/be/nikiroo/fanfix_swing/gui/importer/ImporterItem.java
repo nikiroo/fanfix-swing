@@ -2,14 +2,18 @@ package be.nikiroo.fanfix_swing.gui.importer;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
 import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 
 import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
+import be.nikiroo.fanfix_swing.gui.utils.ListModel;
 import be.nikiroo.fanfix_swing.gui.utils.ListenerPanel;
 import be.nikiroo.utils.Progress;
 import be.nikiroo.utils.Progress.ProgressListener;
@@ -131,7 +135,7 @@ public class ImporterItem extends ListenerPanel {
 					progress = pg.getRelativeProgress();
 					action = currentAction;
 
-					// The rest must be done in the UI thead
+					// The rest must be done in the UI thread
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
