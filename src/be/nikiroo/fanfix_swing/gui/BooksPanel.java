@@ -149,7 +149,7 @@ public class BooksPanel extends ListenerPanel {
 
 	@SuppressWarnings("rawtypes") // JList<BookInfo> is not java 1.6
 	private JList initList() {
-		final JList<BookInfo> list = new JList<BookInfo>();
+		final JList list = new JList();
 		data = new ListModel<BookInfo>(list, new BookPopup(
 				Instance.getInstance().getLibrary(), initInformer()));
 
