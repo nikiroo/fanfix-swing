@@ -220,21 +220,22 @@ public class BooksPanel extends ListenerPanel {
 		};
 	}
 
-	private ListCellRenderer<BookInfo> generateRenderer() {
-		return new ListCellRenderer<BookInfo>() {
+	@SuppressWarnings("rawtypes") // ListCellRenderer<BookInfo> is not java 1.6
+	private ListCellRenderer generateRenderer() {
+		return new ListCellRenderer() {
 			@Override
-			public Component getListCellRendererComponent(
-					JList<? extends BookInfo> list, BookInfo value, int index,
-					boolean isSelected, boolean cellHasFocus) {
+			public Component getListCellRendererComponent(JList list,
+					Object value, int index, boolean isSelected,
+					boolean cellHasFocus) {
 				BookLine book = books.get(value);
 				if (book == null) {
 					if (listMode) {
-						book = new BookLine(value, seeWordCount);
+						book = new BookLine((BookInfo) value, seeWordCount);
 					} else {
-						book = new BookBlock(value, seeWordCount);
+						book = new BookBlock((BookInfo) value, seeWordCount);
 						startUpdateBookCover((BookBlock) book);
 					}
-					books.put(value, book);
+					books.put((BookInfo) value, book);
 				}
 
 				book.setSelected(isSelected);
