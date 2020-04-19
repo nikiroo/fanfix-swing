@@ -26,7 +26,8 @@ import javax.swing.ListCellRenderer;
  * @param <T>
  *            the type of elements and items (the same type)
  */
-public class ListModel<T> extends DefaultListModel<T> {
+@SuppressWarnings("rawtypes") // ListModel<T> and JList<T> are not java 1.6
+public class ListModel<T> extends DefaultListModel {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -77,7 +78,7 @@ public class ListModel<T> extends DefaultListModel<T> {
 
 	private int hoveredIndex;
 	private List<T> items = new ArrayList<T>();
-	private JList<T> list;
+	private JList list;
 
 	/**
 	 * Create a new {@link ListModel}.
@@ -85,7 +86,7 @@ public class ListModel<T> extends DefaultListModel<T> {
 	 * @param list
 	 *            the {@link JList} we will handle the data of (cannot be NULL)
 	 */
-	public ListModel(JList<T> list) {
+	public ListModel(JList list) {
 		this(list, null);
 	}
 
@@ -97,7 +98,8 @@ public class ListModel<T> extends DefaultListModel<T> {
 	 * @param popup
 	 *            the popup to use and keep track of (can be NULL)
 	 */
-	public ListModel(final JList<T> list, final JPopupMenu popup) {
+	@SuppressWarnings("unchecked") // ListModel<T> and JList<T> are not java 1.6
+	public ListModel(final JList list, final JPopupMenu popup) {
 		this.list = list;
 		list.setModel(this);
 
@@ -260,6 +262,7 @@ public class ListModel<T> extends DefaultListModel<T> {
 	 *            the filter will be copied as an element (can be NULL, in that
 	 *            case all items will be copied as elements)
 	 */
+	@SuppressWarnings("unchecked") // ListModel<T> and JList<T> are not java 1.6
 	public void filter(Predicate<T> filter) {
 		clear();
 		for (T item : items) {
@@ -326,6 +329,12 @@ public class ListModel<T> extends DefaultListModel<T> {
 		}
 	}
 
+	@SuppressWarnings("unchecked") // ListModel<T> and JList<T> are not java 1.6
+	@Override
+	public T get(int index) {
+		return (T) super.get(index);
+	}
+
 	/**
 	 * Generate a {@link ListCellRenderer} that supports {@link Hoverable}
 	 * elements.
@@ -339,20 +348,20 @@ public class ListModel<T> extends DefaultListModel<T> {
 	 * 
 	 * @return a suitable, {@link Hoverable} compatible renderer
 	 */
-	static public <T extends Component> ListCellRenderer<T> generateRenderer(
+	static public <T extends Component> ListCellRenderer generateRenderer(
 			final ListModel<T> model) {
-		return new ListCellRenderer<T>() {
+		return new ListCellRenderer() {
 			@Override
-			public Component getListCellRendererComponent(
-					JList<? extends T> list, T item, int index,
-					boolean isSelected, boolean cellHasFocus) {
+			public Component getListCellRendererComponent(JList list,
+					Object item, int index, boolean isSelected,
+					boolean cellHasFocus) {
 				if (item instanceof Hoverable) {
 					Hoverable hoverable = (Hoverable) item;
 					hoverable.setSelected(isSelected);
 					hoverable.setHovered(model.isHovered(index));
 				}
 
-				return item;
+				return (Component) item;
 			}
 		};
 	}

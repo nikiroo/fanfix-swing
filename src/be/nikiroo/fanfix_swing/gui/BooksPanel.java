@@ -41,7 +41,8 @@ public class BooksPanel extends ListenerPanel {
 	private boolean seeWordCount;
 	private boolean listMode;
 
-	private JList<BookInfo> list;
+	@SuppressWarnings("rawtypes") // JList<BookInfo> is not java 1.6
+	private JList list;
 	private ListModel<BookInfo> data;
 	private DelayWorker bookCoverUpdater;
 	private String filter = "";
@@ -146,7 +147,8 @@ public class BooksPanel extends ListenerPanel {
 		}
 	}
 
-	private JList<BookInfo> initList() {
+	@SuppressWarnings("rawtypes") // JList<BookInfo> is not java 1.6
+	private JList initList() {
 		final JList<BookInfo> list = new JList<BookInfo>();
 		data = new ListModel<BookInfo>(list, new BookPopup(
 				Instance.getInstance().getLibrary(), initInformer()));
@@ -252,6 +254,7 @@ public class BooksPanel extends ListenerPanel {
 								book.getInfo());
 					}
 
+					@Override
 					protected void done() {
 						try {
 							book.setCoverImage(get());

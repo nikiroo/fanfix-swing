@@ -32,10 +32,12 @@ public class ImporterFrame extends JFrame {
 	private ListModel<ImporterItem> data;
 	private String filter = "";
 
+	@SuppressWarnings("unchecked") // JList<ImporterItem> is not java 1.6
 	public ImporterFrame() {
 		setLayout(new BorderLayout());
 
-		JList<ImporterItem> list = new JList<ImporterItem>();
+		@SuppressWarnings("rawtypes") // JList<ImporterItem> is not java 1.6
+		JList list = new JList();
 		data = new ListModel<ImporterItem>(list);
 
 		list.setCellRenderer(ListModel.generateRenderer(data));
