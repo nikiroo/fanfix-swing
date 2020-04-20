@@ -14,11 +14,12 @@ import javax.swing.SwingUtilities;
 
 import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
 import be.nikiroo.fanfix_swing.gui.utils.ListModel;
+import be.nikiroo.fanfix_swing.gui.utils.ListModel.Hoverable;
 import be.nikiroo.fanfix_swing.gui.utils.ListenerPanel;
 import be.nikiroo.utils.Progress;
 import be.nikiroo.utils.Progress.ProgressListener;
 
-public class ImporterItem extends ListenerPanel {
+public class ImporterItem extends ListenerPanel implements Hoverable {
 	static public final String CHANGE = "change";
 
 	private String basename = "";
