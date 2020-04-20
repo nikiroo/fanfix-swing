@@ -213,7 +213,7 @@ public class BrowserPanel extends ListenerPanel {
 	}
 
 	/**
-	 * Reload all the data from the 3 tabs.
+	 * Reload all the data from the 3 tabs (without firing an action).
 	 */
 	public void reloadData() {
 		sourceTab.reloadData();

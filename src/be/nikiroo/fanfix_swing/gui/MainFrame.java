@@ -52,7 +52,7 @@ public class MainFrame extends JFrame {
 		browser.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				books.load(browser.getSelectedSources(),
+				books.loadData(browser.getSelectedSources(),
 						browser.getSelectedAuthors(),
 						browser.getSelectedTags());
 				details.setBook(browser.getHighlight());
@@ -100,9 +100,7 @@ public class MainFrame extends JFrame {
 					@Override
 					public void run() {
 						browser.reloadData();
-						books.load(browser.getSelectedSources(),
-								browser.getSelectedAuthors(),
-								browser.getSelectedTags());
+						books.reloadData();
 						details.setBook(browser.getHighlight());
 					}
 				});
@@ -117,9 +115,7 @@ public class MainFrame extends JFrame {
 					@Override
 					public void run() {
 						browser.reloadData();
-						books.load(browser.getSelectedSources(),
-								browser.getSelectedAuthors(),
-								browser.getSelectedTags());
+						books.reloadData();
 						details.setBook(browser.getHighlight());
 					}
 				});

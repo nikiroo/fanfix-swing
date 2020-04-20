@@ -47,6 +47,8 @@ public class BooksPanel extends ListenerPanel {
 	private DelayWorker bookCoverUpdater;
 	private String filter = "";
 
+	private Object[] lastLoad = new Object[4];
+
 	public BooksPanel(boolean listMode) {
 		setLayout(new BorderLayout());
 
@@ -72,8 +74,15 @@ public class BooksPanel extends ListenerPanel {
 	// null or empty -> all sources
 	// sources hierarchy supported ("source/" will includes all "source" and
 	// "source/*")
-	public void load(final List<String> sources, final List<String> authors,
+	public void loadData(final List<String> sources, final List<String> authors,
 			final List<String> tags) {
+		synchronized (lastLoad) {
+			lastLoad[0] = "sources, authors, tags";
+			lastLoad[1] = sources;
+			lastLoad[2] = authors;
+			lastLoad[3] = tags;
+		}
+
 		new SwingWorker<List<BookInfo>, Void>() {
 			@Override
 			protected List<BookInfo> doInBackground() throws Exception {
@@ -90,7 +99,7 @@ public class BooksPanel extends ListenerPanel {
 			@Override
 			protected void done() {
 				try {
-					load(get());
+					loadData(get());
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				} catch (ExecutionException e) {
@@ -101,7 +110,22 @@ public class BooksPanel extends ListenerPanel {
 		}.execute();
 	}
 
-	public void load(List<BookInfo> bookInfos) {
+	public void loadData(final BookInfo.Type type, final String value) {
+		synchronized (lastLoad) {
+			lastLoad[0] = "type";
+			lastLoad[1] = type;
+			lastLoad[2] = value;
+		}
+
+		// TODO todo todo
+	}
+
+	public void loadData(List<BookInfo> bookInfos) {
+		synchronized (lastLoad) {
+			lastLoad[0] = "bookinfos";
+			lastLoad[1] = bookInfos;
+		}
+
 		data.clearItems();
 		data.addAllItems(bookInfos);
 		bookCoverUpdater.clear();
@@ -109,6 +133,30 @@ public class BooksPanel extends ListenerPanel {
 		filter();
 	}
 
+	public void reloadData() {
+		Object[] lastLoad;
+		synchronized (this.lastLoad) {
+			lastLoad = this.lastLoad.clone();
+		}
+
+		if (lastLoad[0] == null) {
+			return; // nothing was loaded yet
+		}
+
+		if (lastLoad[0].toString().equals("sources, authors, tags")) {
+			loadData((List<String>) lastLoad[1], (List<String>) lastLoad[2],
+					(List<String>) lastLoad[3]);
+		} else if (lastLoad[0].toString().equals("type")) {
+			loadData((BookInfo.Type) lastLoad[1], (String) lastLoad[2]);
+		} else if (lastLoad[0].toString().equals("bookInfos")) {
+			loadData((List<BookInfo>) lastLoad[1]);
+		} else {
+			Instance.getInstance().getTraceHandler()
+					.error("Unknown last load type: " + lastLoad[0]);
+		}
+	}
+
+	// is UI!
 	private void filter() {
 		data.filter(new Predicate<BookInfo>() {
 			@Override

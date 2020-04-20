@@ -7,8 +7,6 @@ import java.util.Queue;
 
 import javax.swing.JPanel;
 
-import be.nikiroo.fanfix_swing.gui.SearchBar;
-
 /**
  * A {@link JPanel} with the default {@link ActionListener} add/remove/fire
  * methods.
@@ -54,7 +52,7 @@ public class ListenerPanel extends JPanel {
 
 	/**
 	 * Adds the specified action listener to receive action events from this
-	 * {@link SearchBar}.
+	 * {@link ListenerPanel}.
 	 *
 	 * @param listener
 	 *            the action listener to be added
@@ -71,7 +69,7 @@ public class ListenerPanel extends JPanel {
 
 	/**
 	 * Removes the specified action listener so that it no longer receives
-	 * action events from this {@link SearchBar}.
+	 * action events from this {@link ListenerPanel}.
 	 *
 	 * @param listener
 	 *            the action listener to be removed

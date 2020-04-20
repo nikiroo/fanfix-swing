@@ -5,7 +5,6 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -94,14 +93,19 @@ public abstract class BasicTab<T> extends ListenerPanel {
 		searchBar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				reloadData();
+				reloadData(true);
 			}
 		});
 
-		reloadData();
+		reloadData(true);
 	}
 
+	// does NOT send a change event
 	public void reloadData() {
+		reloadData(false);
+	}
+
+	private void reloadData(final boolean fireActionPerformed) {
 		final TreeSnapshot snapshot = new TreeSnapshot(tree) {
 			@Override
 			protected boolean isSamePath(TreePath oldPath, TreePath newPath) {
@@ -140,7 +144,9 @@ public abstract class BasicTab<T> extends ListenerPanel {
 
 				snapshot.apply();
 
-				fireActionPerformed(listenerCommand);
+				if (fireActionPerformed) {
+					fireActionPerformed(listenerCommand);
+				}
 			}
 		};
 		worker.execute();
