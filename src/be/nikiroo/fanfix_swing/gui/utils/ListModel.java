@@ -8,10 +8,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JPopupMenu;
 import javax.swing.ListCellRenderer;
+
+import be.nikiroo.utils.compat.DefaultListModel6;
+import be.nikiroo.utils.compat.JList6;
+import be.nikiroo.utils.compat.ListCellRenderer6;
 
 /**
  * A {@link javax.swing.ListModel} that can maintain 2 lists; one with the
@@ -26,8 +29,7 @@ import javax.swing.ListCellRenderer;
  * @param <T>
  *            the type of elements and items (the same type)
  */
-@SuppressWarnings("rawtypes") // ListModel<T> and JList<T> are not java 1.6
-public class ListModel<T> extends DefaultListModel {
+public class ListModel<T> extends DefaultListModel6<T> {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -78,7 +80,7 @@ public class ListModel<T> extends DefaultListModel {
 
 	private int hoveredIndex;
 	private List<T> items = new ArrayList<T>();
-	private JList list;
+	private JList6<T> list;
 
 	/**
 	 * Create a new {@link ListModel}.
@@ -86,8 +88,9 @@ public class ListModel<T> extends DefaultListModel {
 	 * @param list
 	 *            the {@link JList} we will handle the data of (cannot be NULL)
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" }) // not compatible Java 1.6
 	public ListModel(JList list) {
-		this(list, null);
+		this((JList6<T>) list);
 	}
 
 	/**
@@ -98,8 +101,30 @@ public class ListModel<T> extends DefaultListModel {
 	 * @param popup
 	 *            the popup to use and keep track of (can be NULL)
 	 */
-	@SuppressWarnings("unchecked") // ListModel<T> and JList<T> are not java 1.6
+	@SuppressWarnings({ "unchecked", "rawtypes" }) // not compatible Java 1.6
 	public ListModel(final JList list, final JPopupMenu popup) {
+		this((JList6<T>) list, popup);
+	}
+
+	/**
+	 * Create a new {@link ListModel}.
+	 * 
+	 * @param list
+	 *            the {@link JList6} we will handle the data of (cannot be NULL)
+	 */
+	public ListModel(JList6<T> list) {
+		this(list, null);
+	}
+
+	/**
+	 * Create a new {@link ListModel}.
+	 * 
+	 * @param list
+	 *            the {@link JList6} we will handle the data of (cannot be NULL)
+	 * @param popup
+	 *            the popup to use and keep track of (can be NULL)
+	 */
+	public ListModel(final JList6<T> list, final JPopupMenu popup) {
 		this.list = list;
 		list.setModel(this);
 
@@ -348,12 +373,12 @@ public class ListModel<T> extends DefaultListModel {
 	 * 
 	 * @return a suitable, {@link Hoverable} compatible renderer
 	 */
-	static public <T extends Component> ListCellRenderer generateRenderer(
+	static public <T extends Component> ListCellRenderer6<T> generateRenderer(
 			final ListModel<T> model) {
-		return new ListCellRenderer() {
+		return new ListCellRenderer6<T>() {
 			@Override
-			public Component getListCellRendererComponent(JList list,
-					Object item, int index, boolean isSelected,
+			public Component getListCellRendererComponent(JList6<T> list,
+					T item, int index, boolean isSelected,
 					boolean cellHasFocus) {
 				if (item instanceof Hoverable) {
 					Hoverable hoverable = (Hoverable) item;
@@ -361,7 +386,7 @@ public class ListModel<T> extends DefaultListModel {
 					hoverable.setHovered(model.isHovered(index));
 				}
 
-				return (Component) item;
+				return item;
 			}
 		};
 	}

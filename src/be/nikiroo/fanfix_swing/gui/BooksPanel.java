@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingWorker;
 
@@ -31,6 +29,8 @@ import be.nikiroo.fanfix_swing.gui.book.BookPopup.Informer;
 import be.nikiroo.fanfix_swing.gui.utils.DelayWorker;
 import be.nikiroo.fanfix_swing.gui.utils.ListModel;
 import be.nikiroo.fanfix_swing.gui.utils.ListModel.Predicate;
+import be.nikiroo.utils.compat.JList6;
+import be.nikiroo.utils.compat.ListCellRenderer6;
 import be.nikiroo.fanfix_swing.gui.utils.ListenerPanel;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
 
@@ -41,8 +41,7 @@ public class BooksPanel extends ListenerPanel {
 	private boolean seeWordCount;
 	private boolean listMode;
 
-	@SuppressWarnings("rawtypes") // JList<BookInfo> is not java 1.6
-	private JList list;
+	private JList6<BookInfo> list;
 	private ListModel<BookInfo> data;
 	private DelayWorker bookCoverUpdater;
 	private String filter = "";
@@ -195,9 +194,8 @@ public class BooksPanel extends ListenerPanel {
 		}
 	}
 
-	@SuppressWarnings("rawtypes") // JList<BookInfo> is not java 1.6
-	private JList initList() {
-		final JList list = new JList();
+	private JList6<BookInfo> initList() {
+		final JList6<BookInfo> list = new JList6<BookInfo>();
 		data = new ListModel<BookInfo>(list, new BookPopup(
 				Instance.getInstance().getLibrary(), initInformer()));
 
@@ -268,22 +266,21 @@ public class BooksPanel extends ListenerPanel {
 		};
 	}
 
-	@SuppressWarnings("rawtypes") // ListCellRenderer<BookInfo> is not java 1.6
-	private ListCellRenderer generateRenderer() {
-		return new ListCellRenderer() {
+	private ListCellRenderer6<BookInfo> generateRenderer() {
+		return new ListCellRenderer6<BookInfo>() {
 			@Override
-			public Component getListCellRendererComponent(JList list,
-					Object value, int index, boolean isSelected,
+			public Component getListCellRendererComponent(JList6<BookInfo> list,
+					BookInfo value, int index, boolean isSelected,
 					boolean cellHasFocus) {
 				BookLine book = books.get(value);
 				if (book == null) {
 					if (listMode) {
-						book = new BookLine((BookInfo) value, seeWordCount);
+						book = new BookLine(value, seeWordCount);
 					} else {
-						book = new BookBlock((BookInfo) value, seeWordCount);
+						book = new BookBlock(value, seeWordCount);
 						startUpdateBookCover((BookBlock) book);
 					}
-					books.put((BookInfo) value, book);
+					books.put(value, book);
 				}
 
 				book.setSelected(isSelected);
@@ -323,7 +320,7 @@ public class BooksPanel extends ListenerPanel {
 		this.listMode = listMode;
 		books.clear();
 		list.setLayoutOrientation(
-				listMode ? JList.VERTICAL : JList.HORIZONTAL_WRAP);
+				listMode ? JList6.VERTICAL : JList6.HORIZONTAL_WRAP);
 
 		StringBuilder longString = new StringBuilder();
 		for (int i = 0; i < 20; i++) {

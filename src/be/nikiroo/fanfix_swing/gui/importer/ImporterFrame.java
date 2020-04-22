@@ -12,7 +12,6 @@ import java.net.URL;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
@@ -27,17 +26,16 @@ import be.nikiroo.fanfix_swing.gui.SearchBar;
 import be.nikiroo.fanfix_swing.gui.utils.ListModel;
 import be.nikiroo.fanfix_swing.gui.utils.ListModel.Predicate;
 import be.nikiroo.utils.Progress;
+import be.nikiroo.utils.compat.JList6;
 
 public class ImporterFrame extends JFrame {
 	private ListModel<ImporterItem> data;
 	private String filter = "";
 
-	@SuppressWarnings("unchecked") // JList<ImporterItem> is not java 1.6
 	public ImporterFrame() {
 		setLayout(new BorderLayout());
 
-		@SuppressWarnings("rawtypes") // JList<ImporterItem> is not java 1.6
-		JList list = new JList();
+		JList6<ImporterItem> list = new JList6<ImporterItem>();
 		data = new ListModel<ImporterItem>(list);
 
 		list.setCellRenderer(ListModel.generateRenderer(data));
