@@ -24,19 +24,19 @@ import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
  * 
  * @author niki
  */
-public class PropertiesPane extends JPanel {
+public class PropertiesPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private final int space = 10;
 
 	/**
-	 * Create a new {@link PropertiesPane}.
+	 * Create a new {@link PropertiesPanel}.
 	 * 
 	 * @param lib
 	 *            the library to use for the cover image
 	 * @param meta
 	 *            the meta to describe
 	 */
-	public PropertiesPane(BasicLibrary lib, MetaData meta) {
+	public PropertiesPanel(BasicLibrary lib, MetaData meta) {
 		// Image
 		ImageIcon img = new ImageIcon(CoverImager.generateCoverImage(lib,
 				BookInfo.fromMeta(lib, meta)));
