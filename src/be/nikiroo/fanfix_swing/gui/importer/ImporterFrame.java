@@ -23,10 +23,10 @@ import be.nikiroo.fanfix.reader.BasicReader;
 import be.nikiroo.fanfix.supported.BasicSupport;
 import be.nikiroo.fanfix_swing.Actions;
 import be.nikiroo.fanfix_swing.gui.SearchBar;
-import be.nikiroo.fanfix_swing.gui.utils.ListModel;
-import be.nikiroo.fanfix_swing.gui.utils.ListModel.Predicate;
 import be.nikiroo.utils.Progress;
 import be.nikiroo.utils.compat.JList6;
+import be.nikiroo.utils.ui.ListModel;
+import be.nikiroo.utils.ui.ListModel.Predicate;
 
 public class ImporterFrame extends JFrame {
 	private ListModel<ImporterItem> data;

@@ -13,11 +13,11 @@ import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 
 import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
-import be.nikiroo.fanfix_swing.gui.utils.ListModel;
-import be.nikiroo.fanfix_swing.gui.utils.ListModel.Hoverable;
-import be.nikiroo.fanfix_swing.gui.utils.ListenerPanel;
 import be.nikiroo.utils.Progress;
 import be.nikiroo.utils.Progress.ProgressListener;
+import be.nikiroo.utils.ui.ListModel;
+import be.nikiroo.utils.ui.ListenerPanel;
+import be.nikiroo.utils.ui.ListModel.Hoverable;
 
 public class ImporterItem extends ListenerPanel implements Hoverable {
 	static public final String CHANGE = "change";

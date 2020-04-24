@@ -30,7 +30,7 @@ public class PropertiesFrame extends JFrame {
 		setTitle(Instance.getInstance().getTransGui().getString(
 				StringIdGui.TITLE_STORY, meta.getLuid(), meta.getTitle()));
 
-		PropertiesPane desc = new PropertiesPane(lib, meta);
+		PropertiesPanel desc = new PropertiesPanel(lib, meta);
 		setSize(800, (int) desc.getPreferredSize().getHeight()
 				+ 2 * desc.getBorderThickness());
 

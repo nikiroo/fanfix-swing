@@ -11,11 +11,11 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import be.nikiroo.fanfix_swing.gui.utils.ListenerPanel;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
 import be.nikiroo.fanfix_swing.images.IconGenerator;
 import be.nikiroo.fanfix_swing.images.IconGenerator.Icon;
 import be.nikiroo.fanfix_swing.images.IconGenerator.Size;
+import be.nikiroo.utils.ui.ListenerPanel;
 
 /**
  * A generic search/filter bar.

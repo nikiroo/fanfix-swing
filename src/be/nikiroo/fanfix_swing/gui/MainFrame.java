@@ -3,15 +3,17 @@ package be.nikiroo.fanfix_swing.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JSplitPane;
 
+import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.importer.ImporterFrame;
 import be.nikiroo.utils.Version;
 
@@ -19,6 +21,7 @@ public class MainFrame extends JFrame {
 	private BooksPanel books;
 	private DetailsPanel details;
 	private BrowserPanel browser;
+	private BreadCrumbsPanel goBack;
 	private ImporterFrame importer = new ImporterFrame();
 
 	public MainFrame(boolean sidePanel, boolean detailsPanel) {
@@ -26,11 +29,12 @@ public class MainFrame extends JFrame {
 		setSize(800, 600);
 		setJMenuBar(createMenuBar());
 
-		sidePanel = true;
-		detailsPanel = true;
+		// TODO: setSidePanel() and setDetailsPanel();
 
 		browser = new BrowserPanel();
 		books = new BooksPanel(true);
+		details = new DetailsPanel();
+		goBack = new BreadCrumbsPanel();
 
 		JComponent other = null;
 		boolean orientationH = true;
@@ -38,15 +42,14 @@ public class MainFrame extends JFrame {
 			other = browser;
 		} else if (sidePanel && detailsPanel) {
 			JComponent side = browser;
-			details = new DetailsPanel();
 			other = split(side, details, false, 0.5, 1);
 		} else if (!sidePanel && !detailsPanel) {
 			orientationH = false;
-			other = new JLabel("<< Go back");
+			other = goBack;
+			goBack.setVertical(false);
 		} else if (!sidePanel && detailsPanel) {
-			JComponent goBack = new JLabel("<< Go back");
-			details = new DetailsPanel();
 			other = split(goBack, details, false, 0.5, 1);
+			goBack.setVertical(true);
 		}
 
 		browser.addActionListener(new ActionListener() {
@@ -56,6 +59,35 @@ public class MainFrame extends JFrame {
 						browser.getSelectedAuthors(),
 						browser.getSelectedTags());
 				details.setBook(browser.getHighlight());
+			}
+		});
+		goBack.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				BookInfo book = goBack.getHighlight();
+				List<String> sources = new ArrayList<String>();
+				List<String> authors = new ArrayList<String>();
+				List<String> tags = new ArrayList<String>();
+
+				if (book != null && book.getMainInfo() != null) {
+					switch (book.getType()) {
+					case SOURCE:
+						sources.add(book.getMainInfo());
+						break;
+					case AUTHOR:
+						authors.add(book.getMainInfo());
+						break;
+					case TAG:
+						tags.add(book.getMainInfo());
+						break;
+
+					default:
+						break;
+					}
+				}
+
+				books.loadData(sources, authors, tags);
+				details.setBook(book);
 			}
 		});
 		books.addActionListener(new ActionListener() {

@@ -20,8 +20,8 @@ import be.nikiroo.fanfix_swing.gui.browser.AuthorTab;
 import be.nikiroo.fanfix_swing.gui.browser.BasicTab;
 import be.nikiroo.fanfix_swing.gui.browser.SourceTab;
 import be.nikiroo.fanfix_swing.gui.browser.TagsTab;
-import be.nikiroo.fanfix_swing.gui.utils.ListenerPanel;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
+import be.nikiroo.utils.ui.ListenerPanel;
 
 /**
  * Panel dedicated to browse the stories through different means: by authors, by
@@ -158,7 +158,7 @@ public class BrowserPanel extends ListenerPanel {
 	 * Return a special "all" {@link BookInfo} of the correct type when nothing
 	 * is selected.
 	 * 
-	 * @return the {@link BookInfo} to highlight, can be NULL
+	 * @return the {@link BookInfo} to highlight, cannot be NULL
 	 */
 	public BookInfo getHighlight() {
 		String selected1 = null;
@@ -182,7 +182,7 @@ public class BrowserPanel extends ListenerPanel {
 		}
 
 		// ...what?
-		return null;
+		return BookInfo.fromSource(lib, selected1);
 	}
 
 	/**

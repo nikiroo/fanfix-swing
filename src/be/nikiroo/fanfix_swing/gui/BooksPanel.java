@@ -26,13 +26,13 @@ import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.book.BookLine;
 import be.nikiroo.fanfix_swing.gui.book.BookPopup;
 import be.nikiroo.fanfix_swing.gui.book.BookPopup.Informer;
-import be.nikiroo.fanfix_swing.gui.utils.DelayWorker;
-import be.nikiroo.fanfix_swing.gui.utils.ListModel;
-import be.nikiroo.fanfix_swing.gui.utils.ListModel.Predicate;
 import be.nikiroo.utils.compat.JList6;
 import be.nikiroo.utils.compat.ListCellRenderer6;
-import be.nikiroo.fanfix_swing.gui.utils.ListenerPanel;
-import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
+import be.nikiroo.utils.ui.DelayWorker;
+import be.nikiroo.utils.ui.ListModel;
+import be.nikiroo.utils.ui.ListModel.Predicate;
+import be.nikiroo.utils.ui.ListenerPanel;
+import be.nikiroo.utils.ui.UIUtils;
 
 public class BooksPanel extends ListenerPanel {
 	static public final String INVALIDATE_CACHE = "invalidate_cache";
@@ -67,7 +67,7 @@ public class BooksPanel extends ListenerPanel {
 
 		list = initList();
 		setListMode(listMode);
-		add(UiHelper.scroll(list), BorderLayout.CENTER);
+		add(UIUtils.scroll(list, false), BorderLayout.CENTER);
 	}
 
 	// null or empty -> all sources

@@ -22,13 +22,13 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 
 import be.nikiroo.fanfix_swing.gui.SearchBar;
-import be.nikiroo.fanfix_swing.gui.utils.ListenerPanel;
-import be.nikiroo.fanfix_swing.gui.utils.TreeCellSpanner;
-import be.nikiroo.fanfix_swing.gui.utils.TreeSnapshot;
-import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
 import be.nikiroo.fanfix_swing.images.IconGenerator;
 import be.nikiroo.fanfix_swing.images.IconGenerator.Icon;
 import be.nikiroo.fanfix_swing.images.IconGenerator.Size;
+import be.nikiroo.utils.ui.ListenerPanel;
+import be.nikiroo.utils.ui.TreeCellSpanner;
+import be.nikiroo.utils.ui.TreeSnapshot;
+import be.nikiroo.utils.ui.UIUtils;
 
 public abstract class BasicTab<T> extends ListenerPanel {
 	private int totalCount = 0;
@@ -86,7 +86,7 @@ public abstract class BasicTab<T> extends ListenerPanel {
 			}
 		});
 
-		add(UiHelper.scroll(tree), BorderLayout.CENTER);
+		add(UIUtils.scroll(tree, false), BorderLayout.CENTER);
 
 		searchBar = new SearchBar();
 		add(searchBar, BorderLayout.NORTH);
