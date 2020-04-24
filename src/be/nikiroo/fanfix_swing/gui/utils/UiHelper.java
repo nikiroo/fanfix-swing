@@ -4,10 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
 import javax.swing.SwingUtilities;
 
 import be.nikiroo.fanfix.Instance;
@@ -35,14 +32,6 @@ public class UiHelper {
 
 		button.setSelected(pressed);
 		button.setBackground(pressed ? buttonPressed : buttonNormal);
-	}
-
-	static public JComponent scroll(JComponent pane) {
-		JScrollPane scroll = new JScrollPane(pane);
-		scroll.getVerticalScrollBar().setUnitIncrement(16);
-		scroll.setHorizontalScrollBarPolicy(
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		return scroll;
 	}
 
 	/**
