@@ -6,6 +6,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -15,6 +16,9 @@ import javax.swing.JSplitPane;
 
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.importer.ImporterFrame;
+import be.nikiroo.fanfix_swing.images.IconGenerator;
+import be.nikiroo.fanfix_swing.images.IconGenerator.Icon;
+import be.nikiroo.fanfix_swing.images.IconGenerator.Size;
 import be.nikiroo.utils.Version;
 
 public class MainFrame extends JFrame {
@@ -23,34 +27,18 @@ public class MainFrame extends JFrame {
 	private BrowserPanel browser;
 	private BreadCrumbsPanel goBack;
 	private ImporterFrame importer = new ImporterFrame();
+	
+	private List<JComponent> modeItems = new ArrayList<JComponent>();
+	private boolean sidePanel;
+	private boolean detailsPanel;
 
 	public MainFrame(boolean sidePanel, boolean detailsPanel) {
 		super("Fanfix " + Version.getCurrentVersion());
-		setSize(800, 600);
-		setJMenuBar(createMenuBar());
-
-		// TODO: setSidePanel() and setDetailsPanel();
 
 		browser = new BrowserPanel();
 		books = new BooksPanel(true);
 		details = new DetailsPanel();
 		goBack = new BreadCrumbsPanel();
-
-		JComponent other = null;
-		boolean orientationH = true;
-		if (sidePanel && !detailsPanel) {
-			other = browser;
-		} else if (sidePanel && detailsPanel) {
-			JComponent side = browser;
-			other = split(side, details, false, 0.5, 1);
-		} else if (!sidePanel && !detailsPanel) {
-			orientationH = false;
-			other = goBack;
-			goBack.setVertical(false);
-		} else if (!sidePanel && detailsPanel) {
-			other = split(goBack, details, false, 0.5, 1);
-			goBack.setVertical(true);
-		}
 
 		browser.addActionListener(new ActionListener() {
 			@Override
@@ -99,9 +87,21 @@ public class MainFrame extends JFrame {
 			}
 		});
 
-		JSplitPane split = split(other, books, orientationH, 0.5, 0);
-
-		this.add(split);
+		// To force an update
+		this.sidePanel = !sidePanel;
+		this.detailsPanel = !detailsPanel;
+		setMode(sidePanel, detailsPanel);
+		
+		setJMenuBar(createMenuBar());
+		setSize(800, 600);
+	}
+	
+	public void setSidePanel(boolean sidePanel) {
+		setMode(sidePanel, detailsPanel);
+	}
+	
+	public void setDetailsPanel(boolean detailsPanel) {
+		setMode(sidePanel, detailsPanel);
 	}
 
 	private JSplitPane split(JComponent leftTop, JComponent rightBottom,
@@ -119,6 +119,10 @@ public class MainFrame extends JFrame {
 	}
 
 	private JMenuBar createMenuBar() {
+		// TODO: use a correct checkmark image
+		final ImageIcon yesIcon = IconGenerator.get(Icon.clear, Size.x16);
+		final ImageIcon noIcon = IconGenerator.get(Icon.empty, Size.x16);
+
 		JMenuBar bar = new JMenuBar();
 
 		JMenu file = new JMenu("File");
@@ -162,21 +166,84 @@ public class MainFrame extends JFrame {
 
 		JMenu view = new JMenu("View");
 		view.setMnemonic(KeyEvent.VK_V);
-
-		JMenuItem listMode = new JMenuItem("List mode", KeyEvent.VK_L);
+		
+		final JMenuItem listMode = new JMenuItem("Show thumbnails", KeyEvent.VK_T);
+		listMode.setIcon(books.isListMode() ? noIcon : yesIcon);
 		listMode.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				books.setListMode(!books.isListMode());
+				listMode.setIcon(books.isListMode() ? noIcon : yesIcon);
 			}
 		});
 
-		view.add(listMode);
+		final JMenuItem sidePane = new JMenuItem("Show story browser", KeyEvent.VK_B);
+		sidePane.setIcon(sidePanel ? yesIcon : noIcon);
+		sidePane.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setSidePanel(!sidePanel);
+				sidePane.setIcon(sidePanel ? yesIcon : noIcon);
+			}
+		});
 
+		final JMenuItem detailsPane = new JMenuItem("Show details panel", KeyEvent.VK_D);
+		detailsPane.setIcon(detailsPanel ? yesIcon : noIcon);
+		detailsPane.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setDetailsPanel(!detailsPanel);
+				detailsPane.setIcon(detailsPanel ? yesIcon : noIcon);
+			}
+		});
+
+		view.add(sidePane);
+		view.add(detailsPane);
+		view.add(listMode);
+		
 		bar.add(file);
 		bar.add(edit);
 		bar.add(view);
 
 		return bar;
+	}
+	
+	private void setMode(boolean sidePanel, boolean detailsPanel) {
+		if (this.sidePanel == sidePanel && this.detailsPanel == detailsPanel) {
+			return;
+		}
+		
+		this.sidePanel = sidePanel;
+		this.detailsPanel = detailsPanel;
+		
+		for (JComponent comp : modeItems) {
+			this.remove(comp);
+		}
+		modeItems.clear();
+		
+		if (sidePanel && !detailsPanel) {
+			JSplitPane split = split(browser, books, true, 0.5, 0);
+			modeItems.add(split);
+			this.add(split);
+		} else if (sidePanel && detailsPanel) {
+			JSplitPane other = split(browser, details, false, 0.5, 1);
+			JSplitPane split = split(other, books, true, 0.5, 0);
+			modeItems.add(split);
+			this.add(split);
+		} else if (!sidePanel && !detailsPanel) {
+			goBack.setVertical(false);
+			JSplitPane split = split(goBack, books, false, 0.5, 0);
+			modeItems.add(split);
+			this.add(split);
+		} else if (!sidePanel && detailsPanel) {
+			goBack.setVertical(true);
+			JSplitPane other = split(goBack, details, false, 0.5, 1);
+			JSplitPane split = split(other, books, true, 0.5, 0);
+			modeItems.add(split);
+			this.add(split);
+		}
+		
+		this.revalidate();
+		this.repaint();
 	}
 }
