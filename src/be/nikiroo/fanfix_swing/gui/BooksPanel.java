@@ -210,7 +210,7 @@ public class BooksPanel extends ListenerPanel {
 					final BookInfo book = data.get(index);
 					BasicLibrary lib = Instance.getInstance().getLibrary();
 
-					Actions.openExternal(lib, book.getMeta(), BooksPanel.this,
+					Actions.openBook(lib, book.getMeta(), BooksPanel.this,
 							new Runnable() {
 								@Override
 								public void run() {

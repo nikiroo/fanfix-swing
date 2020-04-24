@@ -711,7 +711,7 @@ public class BookPopup extends JPopupMenu {
 			public void actionPerformed(ActionEvent e) {
 				final BookInfo book = informer.getUniqueSelected();
 				if (book != null) {
-					Actions.openExternal(lib, book.getMeta(),
+					Actions.openBook(lib, book.getMeta(),
 							BookPopup.this.getParent(), new Runnable() {
 								@Override
 								public void run() {

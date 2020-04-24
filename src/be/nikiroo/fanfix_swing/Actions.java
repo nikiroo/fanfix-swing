@@ -21,10 +21,11 @@ import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix.library.LocalLibrary;
 import be.nikiroo.fanfix.reader.BasicReader;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
+import be.nikiroo.fanfix_swing.gui.viewer.Viewer;
 import be.nikiroo.utils.Progress;
 
 public class Actions {
-	static public void openExternal(final BasicLibrary lib, MetaData meta,
+	static public void openBook(final BasicLibrary lib, MetaData meta,
 			final Container parent, final Runnable onDone) {
 		Container parentWindow = parent;
 		while (!(parentWindow instanceof Window) && parentWindow != null) {
@@ -64,10 +65,12 @@ public class Actions {
 
 		final SwingWorker<File, Void> worker = new SwingWorker<File, Void>() {
 			private File target;
+			private Story story;
 
 			@Override
 			protected File doInBackground() throws Exception {
 				target = lib.getFile(luid, null);
+				story = lib.getStory(luid, null);
 				return null;
 			}
 
@@ -75,7 +78,25 @@ public class Actions {
 			protected void done() {
 				try {
 					get();
-					openExternal(target, isImageDocument);
+					boolean internalImg = Instance
+							.getInstance()
+							.getUiConfig()
+							.getBoolean(
+									UiConfig.IMAGES_DOCUMENT_USE_INTERNAL_READER,
+									true);
+					boolean internalNonImg = Instance
+							.getInstance()
+							.getUiConfig()
+							.getBoolean(
+									UiConfig.NON_IMAGES_DOCUMENT_USE_INTERNAL_READER,
+									true);
+
+					if (isImageDocument && internalImg || !isImageDocument
+							&& internalNonImg) {
+						openInternal(story);
+					} else {
+						openExternal(target, isImageDocument);
+					}
 				} catch (Exception e) {
 					// TODO: i18n
 					UiHelper.error(parent, e.getLocalizedMessage(),
@@ -99,6 +120,19 @@ public class Actions {
 	}
 
 	/**
+	 * Open the {@link Story} with an internal reader.
+	 * <p>
+	 * Asynchronous.
+	 * 
+	 * @param story
+	 *            the story to open
+	 */
+	static private void openInternal(Story story) {
+		Viewer viewer = new Viewer(Instance.getInstance().getLibrary(), story);
+		viewer.setVisible(true);
+	}
+
+	/**
 	 * Open the {@link Story} with an external reader (the program will be
 	 * passed the given target file).
 	 * 
@@ -110,7 +144,7 @@ public class Actions {
 	 * @throws IOException
 	 *             in case of I/O error
 	 */
-	static public void openExternal(File target, boolean isImageDocument)
+	static private void openExternal(File target, boolean isImageDocument)
 			throws IOException {
 		String program = null;
 		if (isImageDocument) {
@@ -161,14 +195,13 @@ public class Actions {
 				}
 			}
 			if (!ok) {
-				throw new IOException(
-						"Cannot find a program to start the file");
+				throw new IOException("Cannot find a program to start the file");
 			}
 		} else {
 			Instance.getInstance().getTraceHandler()
 					.trace("starting external program: " + program);
-			proc = Runtime.getRuntime()
-					.exec(new String[] { program, target.getAbsolutePath() });
+			proc = Runtime.getRuntime().exec(
+					new String[] { program, target.getAbsolutePath() });
 		}
 
 		if (proc != null && sync) {
@@ -215,21 +248,26 @@ public class Actions {
 				} catch (IOException e) {
 					pg.done();
 					if (e instanceof UnknownHostException) {
-						UiHelper.error(parent,
-								Instance.getInstance().getTransGui().getString(
-										StringIdGui.ERROR_URL_NOT_SUPPORTED,
-										url),
-								Instance.getInstance().getTransGui().getString(
-										StringIdGui.TITLE_ERROR),
-								null);
-					} else {
-						UiHelper.error(parent,
-								Instance.getInstance().getTransGui().getString(
-										StringIdGui.ERROR_URL_IMPORT_FAILED,
-										url, e.getMessage()),
+						UiHelper.error(
+								parent,
+								Instance.getInstance()
+										.getTransGui()
+										.getString(
+												StringIdGui.ERROR_URL_NOT_SUPPORTED,
+												url),
 								Instance.getInstance().getTransGui()
 										.getString(StringIdGui.TITLE_ERROR),
-								e);
+								null);
+					} else {
+						UiHelper.error(
+								parent,
+								Instance.getInstance()
+										.getTransGui()
+										.getString(
+												StringIdGui.ERROR_URL_IMPORT_FAILED,
+												url, e.getMessage()),
+								Instance.getInstance().getTransGui()
+										.getString(StringIdGui.TITLE_ERROR), e);
 					}
 				}
 
