@@ -141,13 +141,12 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 
 	public void imprtFile(final Container parent) {
 		JFileChooser fc = new JFileChooser();
-
-		Progress pg = new Progress();
-		add(pg, "File");
-
 		if (fc.showOpenDialog(parent) != JFileChooser.CANCEL_OPTION) {
 			Object url = fc.getSelectedFile().getAbsolutePath();
 			if (url != null && !url.toString().isEmpty()) {
+				Progress pg = new Progress();
+				add(pg, "File");
+
 				Actions.imprt(parent, url.toString(), pg, new Runnable() {
 					@Override
 					public void run() {
@@ -184,9 +183,9 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 			basename = "unknown website";
 		}
 
-		add(pg, basename); // TODO: what when null?
-
 		if (url != null && !url.isEmpty()) {
+			add(pg, basename);
+
 			Actions.imprt(parent, url, pg, new Runnable() {
 				@Override
 				public void run() {
@@ -196,8 +195,6 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 
 			setVisible(true);
 		}
-
-		// TODO what when not ok?
 	}
 
 	private void add(Progress pg, final String basename) {
