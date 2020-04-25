@@ -22,7 +22,6 @@ import javax.swing.SwingWorker;
 import be.nikiroo.fanfix.Instance;
 import be.nikiroo.fanfix.data.MetaData;
 import be.nikiroo.fanfix.library.BasicLibrary;
-import be.nikiroo.fanfix_swing.Actions;
 import be.nikiroo.fanfix_swing.gui.book.BookBlock;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.book.BookLine;

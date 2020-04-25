@@ -106,6 +106,14 @@ public class BooksPanelActions {
 		}
 	}
 
+	public void redownload() {
+		MainFrame.getImporter().setVisible(true);
+		final List<BookInfo> selected = informer.getSelected();
+		for (BookInfo book : selected) {
+			MainFrame.getImporter().imprt(owner, book.getMeta().getUrl());
+		}
+	}
+
 	static private String trans(StringIdGui id, Object... values) {
 		return Instance.getInstance().getTransGui().getString(id, values);
 	}

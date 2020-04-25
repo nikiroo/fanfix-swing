@@ -27,13 +27,20 @@ import be.nikiroo.utils.Progress;
 import be.nikiroo.utils.compat.JList6;
 import be.nikiroo.utils.ui.ListModel;
 import be.nikiroo.utils.ui.ListModel.Predicate;
+import be.nikiroo.utils.ui.ListenerItem;
+import be.nikiroo.utils.ui.ListenerPanel;
 
-public class ImporterFrame extends JFrame {
+public class ImporterFrame extends JFrame implements ListenerItem {
+	static public final String IMPORTED = "imported";
+
+	private ListenerPanel root = new ListenerPanel();
 	private ListModel<ImporterItem> data;
 	private String filter = "";
 
 	public ImporterFrame() {
 		setLayout(new BorderLayout());
+		root.setLayout(new BorderLayout());
+		this.add(root);
 
 		JList6<ImporterItem> list = new JList6<ImporterItem>();
 		data = new ListModel<ImporterItem>(list);
@@ -43,7 +50,7 @@ public class ImporterFrame extends JFrame {
 		list.setSelectedIndex(0);
 		list.setVisibleRowCount(5);
 
-		this.add(list, BorderLayout.CENTER);
+		root.add(list, BorderLayout.CENTER);
 
 		JPanel top = new JPanel();
 		top.setLayout(new BorderLayout());
@@ -78,7 +85,7 @@ public class ImporterFrame extends JFrame {
 			}
 		});
 
-		this.add(top, BorderLayout.NORTH);
+		root.add(top, BorderLayout.NORTH);
 
 		setSize(800, 600);
 	}
@@ -87,14 +94,14 @@ public class ImporterFrame extends JFrame {
 	 * Ask for and import an {@link URL} into the main {@link LocalLibrary}.
 	 * <p>
 	 * Should be called inside the UI thread.
+	 * <p>
+	 * Will fire {@link ImporterFrame#IMPORTED} if/when successful.
 	 * 
 	 * @param parent
 	 *            a container we can use to display the {@link URL} chooser and
 	 *            to show error messages if any
-	 * @param onSuccess
-	 *            Action to execute on success
 	 */
-	public void imprtUrl(final Container parent, final Runnable onSuccess) {
+	public void imprtUrl(final Container parent) {
 		String clipboard = "";
 		try {
 			clipboard = ("" + Toolkit.getDefaultToolkit().getSystemClipboard()
@@ -115,38 +122,24 @@ public class ImporterFrame extends JFrame {
 						.getString(StringIdGui.TITLE_IMPORT_URL),
 				JOptionPane.QUESTION_MESSAGE, null, null, clipboard);
 
-		Progress pg = new Progress();
-		String basename = null;
-		try {
-			BasicSupport support = BasicSupport
-					.getSupport(BasicReader.getUrl(url.toString()));
-			basename = support.getType().getSourceName();
-		} catch (Exception e) {
-		}
-
-		add(pg, basename); // TODO: what when null?
-
 		if (url != null && !url.toString().isEmpty()) {
-			Actions.imprt(parent, url.toString(), pg, onSuccess);
+			imprt(parent, url.toString());
 		}
-		// TODO what when not ok?
-
-		setVisible(true);
 	}
 
 	/**
 	 * Ask for and import a {@link File} into the main {@link LocalLibrary}.
 	 * <p>
 	 * Should be called inside the UI thread.
+	 * <p>
+	 * Will fire {@link ImporterFrame#IMPORTED} if/when successful.
 	 * 
 	 * @param parent
 	 *            a container we can use to display the {@link File} chooser and
 	 *            to show error messages if any
-	 * @param onSuccess
-	 *            Action to execute on success
 	 */
 
-	public void imprtFile(final Container parent, final Runnable onSuccess) {
+	public void imprtFile(final Container parent) {
 		JFileChooser fc = new JFileChooser();
 
 		Progress pg = new Progress();
@@ -155,11 +148,56 @@ public class ImporterFrame extends JFrame {
 		if (fc.showOpenDialog(parent) != JFileChooser.CANCEL_OPTION) {
 			Object url = fc.getSelectedFile().getAbsolutePath();
 			if (url != null && !url.toString().isEmpty()) {
-				Actions.imprt(parent, url.toString(), pg, onSuccess);
+				Actions.imprt(parent, url.toString(), pg, new Runnable() {
+					@Override
+					public void run() {
+						fireActionPerformed(IMPORTED);
+					}
+				});
+
+				setVisible(true);
 			}
 		}
+	}
 
-		setVisible(true);
+	/**
+	 * Import an {@link URL} into the main {@link LocalLibrary}.
+	 * <p>
+	 * Should be called inside the UI thread.
+	 * <p>
+	 * Will fire {@link ImporterFrame#IMPORTED} if/when successful.
+	 * 
+	 * @param parent
+	 *            a container we can use to display the {@link URL} chooser and
+	 *            to show error messages if any
+	 * @param url
+	 *            the URL to import
+	 */
+	public void imprt(final Container parent, String url) {
+		Progress pg = new Progress();
+		String basename = null;
+		try {
+			BasicSupport support = BasicSupport
+					.getSupport(BasicReader.getUrl(url));
+			basename = support.getType().getSourceName();
+		} catch (Exception e) {
+			basename = "unknown website";
+		}
+
+		add(pg, basename); // TODO: what when null?
+
+		if (url != null && !url.isEmpty()) {
+			Actions.imprt(parent, url, pg, new Runnable() {
+				@Override
+				public void run() {
+					fireActionPerformed(IMPORTED);
+				}
+			});
+
+			setVisible(true);
+		}
+
+		// TODO what when not ok?
 	}
 
 	private void add(Progress pg, final String basename) {
@@ -184,5 +222,30 @@ public class ImporterFrame extends JFrame {
 						|| text.toLowerCase().contains(filter.toLowerCase());
 			}
 		});
+	}
+
+	@Override
+	public boolean hasListeners() {
+		return root.hasListeners();
+	}
+
+	@Override
+	public int getWaitingEventCount() {
+		return root.getWaitingEventCount();
+	}
+
+	@Override
+	public void addActionListener(ActionListener listener) {
+		root.addActionListener(listener);
+	}
+
+	@Override
+	public void removeActionListener(ActionListener listener) {
+		root.removeActionListener(listener);
+	}
+
+	@Override
+	public void fireActionPerformed(String listenerCommand) {
+		root.fireActionPerformed(listenerCommand);
 	}
 }

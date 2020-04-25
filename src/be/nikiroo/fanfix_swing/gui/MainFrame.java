@@ -32,11 +32,12 @@ import be.nikiroo.utils.Version;
 import be.nikiroo.utils.ui.ConfigEditor;
 
 public class MainFrame extends JFrame {
+	static private ImporterFrame importer;
+
 	private BooksPanel books;
 	private DetailsPanel details;
 	private BrowserPanel browser;
 	private BreadCrumbsPanel goBack;
-	private ImporterFrame importer = new ImporterFrame();
 
 	private List<JComponent> modeItems = new ArrayList<JComponent>();
 	private boolean sidePanel;
@@ -46,8 +47,24 @@ public class MainFrame extends JFrame {
 	public MainFrame(boolean sidePanel, boolean detailsPanel) {
 		super("Fanfix " + Version.getCurrentVersion());
 
+		if (importer == null) {
+			importer = new ImporterFrame();
+		}
+
+		importer.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (e != null && ImporterFrame.IMPORTED
+						.equals(e.getActionCommand())) {
+					browser.reloadData();
+					books.reloadData();
+					details.setBook(browser.getHighlight());
+				}
+			}
+		});
+
 		browser = new BrowserPanel();
-		books = new BooksPanel(true);
+		books = new BooksPanel(true); // TODO: very slow here!!
 		details = new DetailsPanel();
 		goBack = new BreadCrumbsPanel();
 
@@ -117,6 +134,10 @@ public class MainFrame extends JFrame {
 		setSize(800, 600);
 	}
 
+	static public ImporterFrame getImporter() {
+		return importer;
+	}
+
 	public void setSidePanel(boolean sidePanel) {
 		setMode(sidePanel, detailsPanel);
 	}
@@ -155,14 +176,7 @@ public class MainFrame extends JFrame {
 		mnuDownload.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				importer.imprtUrl(MainFrame.this, new Runnable() {
-					@Override
-					public void run() {
-						browser.reloadData();
-						books.reloadData();
-						details.setBook(browser.getHighlight());
-					}
-				});
+				importer.imprtUrl(MainFrame.this);
 			}
 		});
 
@@ -170,14 +184,7 @@ public class MainFrame extends JFrame {
 		mnuImprtFile.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				importer.imprtFile(MainFrame.this, new Runnable() {
-					@Override
-					public void run() {
-						browser.reloadData();
-						books.reloadData();
-						details.setBook(browser.getHighlight());
-					}
-				});
+				importer.imprtFile(MainFrame.this);
 			}
 		});
 

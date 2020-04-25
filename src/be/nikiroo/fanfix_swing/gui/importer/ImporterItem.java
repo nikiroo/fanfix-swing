@@ -2,22 +2,18 @@ package be.nikiroo.fanfix_swing.gui.importer;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
 import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 
 import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
 import be.nikiroo.utils.Progress;
 import be.nikiroo.utils.Progress.ProgressListener;
-import be.nikiroo.utils.ui.ListModel;
-import be.nikiroo.utils.ui.ListenerPanel;
 import be.nikiroo.utils.ui.ListModel.Hoverable;
+import be.nikiroo.utils.ui.ListenerPanel;
 
 public class ImporterItem extends ListenerPanel implements Hoverable {
 	static public final String CHANGE = "change";

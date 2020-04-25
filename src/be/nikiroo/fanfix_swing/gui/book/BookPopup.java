@@ -514,19 +514,7 @@ public class BookPopup extends JPopupMenu {
 		refresh.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// final GuiReaderBook selectedBook =
-				// mainPanel.getSelectedBook();
-				// if (selectedBook != null) {
-				// final MetaData meta = selectedBook.getInfo().getMeta();
-				// mainPanel.imprt(meta.getUrl(), new MetaDataRunnable() {
-				// @Override
-				// public void run(MetaData newMeta) {
-				// if (!newMeta.getSource().equals(meta.getSource())) {
-				// reader.changeSource(newMeta.getLuid(), meta.getSource());
-				// }
-				// }
-				// }, trans(StringIdGui.PROGRESS_CHANGE_SOURCE));
-				// }
+				informer.getActions().redownload();
 			}
 		});
 
