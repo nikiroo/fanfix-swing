@@ -480,7 +480,9 @@ public class BookPopup extends JPopupMenu {
 								// simple fireElementChanged is not
 								// enough, we need to clear the whole cache (for
 								// BrowserPanel for instance)
-								informer.invalidateCache();
+								if (what != ChangeAction.TITLE) {
+									informer.invalidateCache();
+								}
 
 								// But we ALSO fire those, because they appear
 								// before the whole refresh...
@@ -492,7 +494,7 @@ public class BookPopup extends JPopupMenu {
 								// Sources/Authors(/Tags?) list
 
 								// Even if problems occurred, still invalidate
-								// the cache
+								// the cache above
 								get();
 							} catch (Exception e) {
 								UiHelper.error(BookPopup.this.getParent(),
