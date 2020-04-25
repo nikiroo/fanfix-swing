@@ -2,6 +2,12 @@
 
 # Version WIP
 
+- new: menu de configration
+- new: afficheur interne (histoires avec et sans images)
+- new: la plupart des options du menu contetuel fonctionnent
+- new: afficher/cacher les panneaux sur le côté
+- fix: améliorations graphiques
+
 # Version 0.0.1
 
 - new: wrapper EXE pour Windows

@@ -2,6 +2,12 @@
 
 # Version WIP
 
+- new: configuration panel
+- new: internal viewer (both images and non-images documents)
+- new: most of the right-click menu options now work
+- new: show/hide side panels
+- fix: graphical improvements
+
 # Version 0.0.1
 
 - new: wrapper EXE pour Windows
