@@ -13,6 +13,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JSplitPane;
+import javax.swing.SwingUtilities;
 
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.importer.ImporterFrame;
@@ -29,6 +30,7 @@ public class MainFrame extends JFrame {
 	private ImporterFrame importer = new ImporterFrame();
 	
 	private List<JComponent> modeItems = new ArrayList<JComponent>();
+	private JSplitPane crumbsbreadPane;
 	private boolean sidePanel;
 	private boolean detailsPanel;
 
@@ -76,6 +78,18 @@ public class MainFrame extends JFrame {
 
 				books.loadData(sources, authors, tags);
 				details.setBook(book);
+				
+				if (crumbsbreadPane != null) {
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							if (crumbsbreadPane != null) {
+								crumbsbreadPane.revalidate();
+								crumbsbreadPane.repaint();
+							}	
+						}
+					});
+				}
 			}
 		});
 		books.addActionListener(new ActionListener() {
@@ -219,6 +233,7 @@ public class MainFrame extends JFrame {
 		for (JComponent comp : modeItems) {
 			this.remove(comp);
 		}
+		crumbsbreadPane = null;
 		modeItems.clear();
 		
 		if (sidePanel && !detailsPanel) {
@@ -237,13 +252,28 @@ public class MainFrame extends JFrame {
 			this.add(split);
 		} else if (!sidePanel && detailsPanel) {
 			goBack.setVertical(true);
-			JSplitPane other = split(goBack, details, false, 0.5, 1);
+			JSplitPane other = split(goBack, details, false, 0.5, 0);
 			JSplitPane split = split(other, books, true, 0.5, 0);
+			crumbsbreadPane = split;
 			modeItems.add(split);
 			this.add(split);
 		}
-		
+
 		this.revalidate();
 		this.repaint();
+		
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				browser.revalidate();
+				browser.repaint();
+				books.revalidate();
+				books.repaint();
+				details.revalidate();
+				details.repaint();
+				goBack.revalidate();
+				goBack.repaint();
+			}
+		});
 	}
 }
