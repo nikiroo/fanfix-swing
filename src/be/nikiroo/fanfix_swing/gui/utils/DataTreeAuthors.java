@@ -11,6 +11,10 @@ import be.nikiroo.utils.ui.DataNode;
 import be.nikiroo.utils.ui.DataTree;
 
 public class DataTreeAuthors extends DataTreeSources {
+	public DataTreeAuthors(boolean flat) {
+		super(flat);
+	}
+
 	@Override
 	protected boolean checkFilter(String filter, DataNodeBook userData) {
 		return userData.toString().toLowerCase().contains(filter.toLowerCase());
@@ -18,9 +22,15 @@ public class DataTreeAuthors extends DataTreeSources {
 
 	@Override
 	protected DataNode<DataNodeBook> extractData() throws IOException {
+		if (isFlat()) {
+			return getNodeFlat(
+					Instance.getInstance().getLibrary().getList().getAuthors(),
+					Type.AUTHOR);
+		}
+
 		Map<String, List<String>> authorsGrouped = Instance.getInstance()
 				.getLibrary().getAuthorsGrouped();
-		
+
 		if (authorsGrouped.size() == 1) {
 			List<String> authors = authorsGrouped.values().iterator().next();
 			return getNodeFlat(authors, Type.AUTHOR);

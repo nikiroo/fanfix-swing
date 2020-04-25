@@ -11,6 +11,10 @@ import be.nikiroo.fanfix_swing.gui.book.BookInfo.Type;
 import be.nikiroo.utils.ui.DataNode;
 
 public class DataTreeTag extends DataTreeSources {
+	public DataTreeTag(boolean flat) {
+		super(flat);
+	}
+
 	@Override
 	protected boolean checkFilter(String filter, DataNodeBook userData) {
 		return userData.toString().toLowerCase().contains(filter.toLowerCase());
@@ -18,21 +22,8 @@ public class DataTreeTag extends DataTreeSources {
 
 	@Override
 	protected DataNode<DataNodeBook> extractData() throws IOException {
-		List<String> tagList = new ArrayList<String>();
-		MetaResultList metas = Instance.getInstance().getLibrary().getList();
-		// TODO: getTagList, getAuthorList... ? including grouped?
-		for (MetaData meta : metas.getMetas()) {
-			List<String> tags = meta.getTags();
-			if (tags != null) {
-				for (String tag : tags) {
-					if (!tagList.contains(tag)) {
-						tagList.add(tag);
-					}
-				}
-			}
-		}
-		sort(tagList);
-
-		return getNodeFlat(tagList, Type.TAG);
+		return getNodeFlat(
+				Instance.getInstance().getLibrary().getList().getTags(),
+				Type.TAG);
 	}
 }

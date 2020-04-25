@@ -11,17 +11,33 @@ import be.nikiroo.utils.ui.DataNode;
 import be.nikiroo.utils.ui.DataTree;
 
 public class DataTreeSources extends DataTree<DataNodeBook> {
+	private boolean flat;
+
+	public DataTreeSources(boolean flat) {
+		this.flat = flat;
+	}
+
+	protected boolean isFlat() {
+		return flat;
+	}
+
 	@Override
 	protected boolean checkFilter(String filter, DataNodeBook userData) {
-		// TODO
-		return userData.toString().toLowerCase().contains(filter.toLowerCase());
+		return userData.getName().toLowerCase().contains(filter.toLowerCase())
+				|| userData.getSubname().toLowerCase()
+						.contains(filter.toLowerCase());
 	}
 
 	@Override
 	protected DataNode<DataNodeBook> extractData() throws IOException {
+		if (isFlat()) {
+			return getNodeFlat(
+					Instance.getInstance().getLibrary().getList().getSources(),
+					Type.SOURCE);
+		}
+
 		Map<String, List<String>> sourcesGrouped = Instance.getInstance()
 				.getLibrary().getSourcesGrouped();
-
 		return getNodeGrouped(sourcesGrouped, Type.SOURCE);
 	}
 
@@ -29,11 +45,9 @@ public class DataTreeSources extends DataTree<DataNodeBook> {
 			Type type) throws IOException {
 		List<DataNode<DataNodeBook>> nodes = new ArrayList<DataNode<DataNodeBook>>();
 
-		// TODO: getResult() -> getTagList, getAuthorList... ?
-		List<String> authors = Instance.getInstance().getLibrary().getAuthors();
-		for (String author : authors) {
+		for (String data : flatData) {
 			nodes.add(new DataNode<DataNodeBook>(null,
-					new DataNodeBook(type, author)));
+					new DataNodeBook(type, data)));
 		}
 
 		return new DataNode<DataNodeBook>(nodes,

@@ -23,15 +23,15 @@ public class BreadCrumbsPanel extends BreadCrumbsBar<DataNodeBook> {
 			protected DataNode<DataNodeBook> extractData() throws IOException {
 				List<? extends DataNode<DataNodeBook>> children = null;
 
-				children = new DataTreeSources().loadData().getChildren();
+				children = new DataTreeSources(false).loadData().getChildren();
 				DataNode<DataNodeBook> sources = new DataNode<DataNodeBook>(
 						children, new DataNodeBook(Type.SOURCE, "Sources", true,
 								!children.isEmpty()));
-				children = new DataTreeAuthors().loadData().getChildren();
+				children = new DataTreeAuthors(false).loadData().getChildren();
 				DataNode<DataNodeBook> authors = new DataNode<DataNodeBook>(
 						children, new DataNodeBook(Type.AUTHOR, "Authors", true,
 								!children.isEmpty()));
-				children = new DataTreeTag().loadData().getChildren();
+				children = new DataTreeTag(false).loadData().getChildren();
 				DataNode<DataNodeBook> tags = new DataNode<DataNodeBook>(
 						children, new DataNodeBook(Type.TAG, "Tags", true,
 								!children.isEmpty()));
