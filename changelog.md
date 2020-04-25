@@ -2,6 +2,8 @@
 
 # Version WIP
 
+- new: redownload (but do not delete original)
+
 # Version 0.0.2
 
 - new: configuration panel

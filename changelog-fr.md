@@ -2,6 +2,8 @@
 
 # Version WIP
 
+- new: option de re-téléchargement (sans supprimer l'ancien)
+
 # Version 0.0.2
 
 - new: menu de configration
