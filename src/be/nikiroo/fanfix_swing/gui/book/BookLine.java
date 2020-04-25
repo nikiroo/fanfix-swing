@@ -176,10 +176,13 @@ public class BookLine extends JPanel {
 	/**
 	 * Return a display-ready version of {@link BookInfo#getMainInfo()}.
 	 * 
+	 * @param limit
+	 *            TRUE to allow shortening
+	 * 
 	 * @return the main info in a ready-to-display version
 	 */
-	protected String getMainInfoDisplay() {
-		return toDisplay(getInfo().getMainInfo());
+	protected String getMainInfoDisplay(boolean limit) {
+		return toDisplay(getInfo().getMainInfo(), limit);
 	}
 
 	/**
@@ -188,19 +191,21 @@ public class BookLine extends JPanel {
 	 * 
 	 * @param seeCount
 	 *            TRUE for word/image/story count, FALSE for author name
+	 * @param limit
+	 *            TRUE to allow shortening
 	 * 
 	 * @return the main info in a ready-to-display version
 	 */
-	protected String getSecondaryInfoDisplay(boolean seeCount) {
-		return toDisplay(getInfo().getSecondaryInfo(seeCount));
+	protected String getSecondaryInfoDisplay(boolean seeCount, boolean limit) {
+		return toDisplay(getInfo().getSecondaryInfo(seeCount), limit);
 	}
 
 	/**
 	 * Update the title with the currently registered information.
 	 */
 	protected void updateMeta() {
-		String main = getMainInfoDisplay();
-		String optSecondary = getSecondaryInfoDisplay(isSeeWordCount());
+		String main = getMainInfoDisplay(false);
+		String optSecondary = getSecondaryInfoDisplay(isSeeWordCount(), false);
 
 		title.setText(main);
 		secondary.setText(optSecondary + " ");
@@ -221,14 +226,16 @@ public class BookLine extends JPanel {
 	 * 
 	 * @param value
 	 *            the full value
+	 * @param limit
+	 *            TRUE to allow shortening
 	 * 
 	 * @return the display-ready value
 	 */
-	private String toDisplay(String value) {
+	private String toDisplay(String value, boolean limit) {
 		if (value == null)
 			value = "";
 
-		if (value.length() > MAX_DISPLAY_SIZE) {
+		if (limit && value.length() > MAX_DISPLAY_SIZE) {
 			value = value.substring(0, MAX_DISPLAY_SIZE - 3) + "...";
 		}
 

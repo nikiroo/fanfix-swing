@@ -79,8 +79,8 @@ public class BookBlock extends BookLine {
 
 	@Override
 	protected void updateMeta() {
-		String main = getMainInfoDisplay();
-		String optSecondary = getSecondaryInfoDisplay(isSeeWordCount());
+		String main = getMainInfoDisplay(true);
+		String optSecondary = getSecondaryInfoDisplay(isSeeWordCount(), true);
 		String color = String.format("#%X%X%X", AUTHOR_COLOR.getRed(),
 				AUTHOR_COLOR.getGreen(), AUTHOR_COLOR.getBlue());
 		title.setText(String.format("<html>"
