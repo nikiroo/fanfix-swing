@@ -314,7 +314,7 @@ public class MainFrame extends JFrame {
 			};
 		}
 
-		this.revalidate();
+		this.validate();
 		this.repaint();
 
 		SwingUtilities.invokeLater(new Runnable() {
