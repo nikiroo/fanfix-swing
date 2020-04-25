@@ -46,6 +46,10 @@ public class DataNodeBook {
 	}
 
 	public String getPath() {
+		if (type != type.SOURCE) {
+			return getSubnameOrName();
+		}
+
 		String slash = "";
 		if (!name.isEmpty()) {
 			if (children || !subname.isEmpty()) {
@@ -60,15 +64,23 @@ public class DataNodeBook {
 		return name;
 	}
 
-	public String getDisplay() {
-		if (display != null)
-			return display;
+	public String getSubname() {
+		return subname;
+	}
 
+	public String getSubnameOrName() {
 		if (!subname.isEmpty()) {
 			return subname;
 		}
 
 		return name;
+	}
+
+	public String getDisplay() {
+		if (display != null)
+			return display;
+
+		return getSubnameOrName();
 	}
 
 	public void setDisplay(String display) {

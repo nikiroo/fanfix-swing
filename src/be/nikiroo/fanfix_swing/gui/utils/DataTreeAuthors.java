@@ -10,7 +10,7 @@ import be.nikiroo.fanfix_swing.gui.book.BookInfo.Type;
 import be.nikiroo.utils.ui.DataNode;
 import be.nikiroo.utils.ui.DataTree;
 
-public class DataTreeAuthors extends DataTree<DataNodeBook> {
+public class DataTreeAuthors extends DataTreeSources {
 	@Override
 	protected boolean checkFilter(String filter, DataNodeBook userData) {
 		return userData.toString().toLowerCase().contains(filter.toLowerCase());
@@ -18,16 +18,14 @@ public class DataTreeAuthors extends DataTree<DataNodeBook> {
 
 	@Override
 	protected DataNode<DataNodeBook> extractData() throws IOException {
-		List<DataNode<DataNodeBook>> nodes = new ArrayList<DataNode<DataNodeBook>>();
-
-		// TODO: getResult() -> getTagList, getAuthorList... ?
-		List<String> authors = Instance.getInstance().getLibrary().getAuthors();
-		for (String author : authors) {
-			nodes.add(new DataNode<DataNodeBook>(null,
-					new DataNodeBook(Type.AUTHOR, author)));
+		Map<String, List<String>> authorsGrouped = Instance.getInstance()
+				.getLibrary().getAuthorsGrouped();
+		
+		if (authorsGrouped.size() == 1) {
+			List<String> authors = authorsGrouped.values().iterator().next();
+			return getNodeFlat(authors, Type.AUTHOR);
 		}
 
-		return new DataNode<DataNodeBook>(nodes,
-				new DataNodeBook(Type.AUTHOR, !nodes.isEmpty()));
+		return getNodeGrouped(authorsGrouped, Type.AUTHOR);
 	}
 }

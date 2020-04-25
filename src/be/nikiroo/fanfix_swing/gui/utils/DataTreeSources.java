@@ -19,10 +19,31 @@ public class DataTreeSources extends DataTree<DataNodeBook> {
 
 	@Override
 	protected DataNode<DataNodeBook> extractData() throws IOException {
-		List<DataNode<DataNodeBook>> nodes = new ArrayList<DataNode<DataNodeBook>>();
-
 		Map<String, List<String>> sourcesGrouped = Instance.getInstance()
 				.getLibrary().getSourcesGrouped();
+
+		return getNodeGrouped(sourcesGrouped, Type.SOURCE);
+	}
+
+	protected DataNode<DataNodeBook> getNodeFlat(List<String> flatData,
+			Type type) throws IOException {
+		List<DataNode<DataNodeBook>> nodes = new ArrayList<DataNode<DataNodeBook>>();
+
+		// TODO: getResult() -> getTagList, getAuthorList... ?
+		List<String> authors = Instance.getInstance().getLibrary().getAuthors();
+		for (String author : authors) {
+			nodes.add(new DataNode<DataNodeBook>(null,
+					new DataNodeBook(type, author)));
+		}
+
+		return new DataNode<DataNodeBook>(nodes,
+				new DataNodeBook(type, !nodes.isEmpty()));
+	}
+
+	protected DataNode<DataNodeBook> getNodeGrouped(
+			Map<String, List<String>> sourcesGrouped, Type type)
+			throws IOException {
+		List<DataNode<DataNodeBook>> nodes = new ArrayList<DataNode<DataNodeBook>>();
 
 		List<String> sources = new ArrayList<String>(sourcesGrouped.keySet());
 		sort(sources);
@@ -37,7 +58,7 @@ public class DataTreeSources extends DataTree<DataNodeBook> {
 				for (String subSource : children) {
 					boolean baseSubSource = subSource.isEmpty()
 							&& children.size() > 1;
-					DataNodeBook book = new DataNodeBook(Type.SOURCE, source,
+					DataNodeBook book = new DataNodeBook(type, source,
 							subSource, false);
 					if (baseSubSource)
 						book.setDisplay("*");
@@ -46,10 +67,10 @@ public class DataTreeSources extends DataTree<DataNodeBook> {
 			}
 
 			nodes.add(new DataNode<DataNodeBook>(subnodes,
-					new DataNodeBook(Type.SOURCE, source, "", hasChildren)));
+					new DataNodeBook(type, source, "", hasChildren)));
 		}
 
 		return new DataNode<DataNodeBook>(nodes,
-				new DataNodeBook(Type.SOURCE, !nodes.isEmpty()));
+				new DataNodeBook(type, !nodes.isEmpty()));
 	}
 }
