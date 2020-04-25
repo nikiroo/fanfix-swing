@@ -1,5 +1,6 @@
 package be.nikiroo.fanfix_swing.gui;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -12,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 
@@ -28,11 +30,11 @@ public class MainFrame extends JFrame {
 	private BrowserPanel browser;
 	private BreadCrumbsPanel goBack;
 	private ImporterFrame importer = new ImporterFrame();
-	
+
 	private List<JComponent> modeItems = new ArrayList<JComponent>();
-	private JSplitPane crumbsbreadPane;
 	private boolean sidePanel;
 	private boolean detailsPanel;
+	private Runnable onCrumbsbreadChange;
 
 	public MainFrame(boolean sidePanel, boolean detailsPanel) {
 		super("Fanfix " + Version.getCurrentVersion());
@@ -78,15 +80,13 @@ public class MainFrame extends JFrame {
 
 				books.loadData(sources, authors, tags);
 				details.setBook(book);
-				
-				if (crumbsbreadPane != null) {
+
+				if (onCrumbsbreadChange != null) {
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
-							if (crumbsbreadPane != null) {
-								crumbsbreadPane.revalidate();
-								crumbsbreadPane.repaint();
-							}	
+							if (onCrumbsbreadChange != null)
+								onCrumbsbreadChange.run();
 						}
 					});
 				}
@@ -105,15 +105,15 @@ public class MainFrame extends JFrame {
 		this.sidePanel = !sidePanel;
 		this.detailsPanel = !detailsPanel;
 		setMode(sidePanel, detailsPanel);
-		
+
 		setJMenuBar(createMenuBar());
 		setSize(800, 600);
 	}
-	
+
 	public void setSidePanel(boolean sidePanel) {
 		setMode(sidePanel, detailsPanel);
 	}
-	
+
 	public void setDetailsPanel(boolean detailsPanel) {
 		setMode(sidePanel, detailsPanel);
 	}
@@ -180,8 +180,9 @@ public class MainFrame extends JFrame {
 
 		JMenu view = new JMenu("View");
 		view.setMnemonic(KeyEvent.VK_V);
-		
-		final JMenuItem listMode = new JMenuItem("Show thumbnails", KeyEvent.VK_T);
+
+		final JMenuItem listMode = new JMenuItem("Show thumbnails",
+				KeyEvent.VK_T);
 		listMode.setIcon(books.isListMode() ? noIcon : yesIcon);
 		listMode.addActionListener(new ActionListener() {
 			@Override
@@ -191,7 +192,8 @@ public class MainFrame extends JFrame {
 			}
 		});
 
-		final JMenuItem sidePane = new JMenuItem("Show story browser", KeyEvent.VK_B);
+		final JMenuItem sidePane = new JMenuItem("Show story browser",
+				KeyEvent.VK_B);
 		sidePane.setIcon(sidePanel ? yesIcon : noIcon);
 		sidePane.addActionListener(new ActionListener() {
 			@Override
@@ -201,7 +203,8 @@ public class MainFrame extends JFrame {
 			}
 		});
 
-		final JMenuItem detailsPane = new JMenuItem("Show details panel", KeyEvent.VK_D);
+		final JMenuItem detailsPane = new JMenuItem("Show details panel",
+				KeyEvent.VK_D);
 		detailsPane.setIcon(detailsPanel ? yesIcon : noIcon);
 		detailsPane.addActionListener(new ActionListener() {
 			@Override
@@ -214,28 +217,28 @@ public class MainFrame extends JFrame {
 		view.add(sidePane);
 		view.add(detailsPane);
 		view.add(listMode);
-		
+
 		bar.add(file);
 		bar.add(edit);
 		bar.add(view);
 
 		return bar;
 	}
-	
+
 	private void setMode(boolean sidePanel, boolean detailsPanel) {
 		if (this.sidePanel == sidePanel && this.detailsPanel == detailsPanel) {
 			return;
 		}
-		
+
 		this.sidePanel = sidePanel;
 		this.detailsPanel = detailsPanel;
-		
+
+		onCrumbsbreadChange = null;
 		for (JComponent comp : modeItems) {
 			this.remove(comp);
 		}
-		crumbsbreadPane = null;
 		modeItems.clear();
-		
+
 		if (sidePanel && !detailsPanel) {
 			JSplitPane split = split(browser, books, true, 0.5, 0);
 			modeItems.add(split);
@@ -247,21 +250,32 @@ public class MainFrame extends JFrame {
 			this.add(split);
 		} else if (!sidePanel && !detailsPanel) {
 			goBack.setVertical(false);
-			JSplitPane split = split(goBack, books, false, 0.5, 0);
-			modeItems.add(split);
-			this.add(split);
+			final JPanel pane = new JPanel(new BorderLayout());
+			pane.add(books, BorderLayout.CENTER);
+			pane.add(goBack, BorderLayout.NORTH);
+			modeItems.add(pane);
+			this.add(pane);
 		} else if (!sidePanel && detailsPanel) {
 			goBack.setVertical(true);
-			JSplitPane other = split(goBack, details, false, 0.5, 0);
+			final JSplitPane other = split(goBack, details, false, 0.5, 0);
 			JSplitPane split = split(other, books, true, 0.5, 0);
-			crumbsbreadPane = split;
 			modeItems.add(split);
 			this.add(split);
+
+			onCrumbsbreadChange = new Runnable() {
+				@Override
+				public void run() {
+					other.setDividerLocation(
+							other.getTopComponent().getMinimumSize().height);
+					other.revalidate();
+					other.repaint();
+				}
+			};
 		}
 
 		this.revalidate();
 		this.repaint();
-		
+
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
