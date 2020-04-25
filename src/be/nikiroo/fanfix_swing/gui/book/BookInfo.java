@@ -341,4 +341,9 @@ public class BookInfo {
 
 		return info;
 	}
+	
+	@Override
+	public String toString() {
+		return "BookInfo: " + type + " " + id;
+	}
 }

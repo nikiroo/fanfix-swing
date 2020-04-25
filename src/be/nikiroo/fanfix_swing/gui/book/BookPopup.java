@@ -83,6 +83,9 @@ public class BookPopup extends JPopupMenu {
 		addSeparator();
 		add(createMenuItemExport());
 		if (status.isWritable()) {
+			// TODO: create a dedicated method to refresh those lists
+			// TODO: call it when adding/removing things
+			// TODO: call it deferred so not to slow startup
 			add(createMenuItemMoveTo());
 			add(createMenuItemSetCoverForSource());
 			add(createMenuItemSetCoverForAuthor());

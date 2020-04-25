@@ -31,8 +31,10 @@ import be.nikiroo.utils.compat.JList6;
 import be.nikiroo.utils.compat.ListCellRenderer6;
 import be.nikiroo.utils.ui.DelayWorker;
 import be.nikiroo.utils.ui.ListModel;
+import be.nikiroo.utils.ui.ListSnapshot;
 import be.nikiroo.utils.ui.ListModel.Predicate;
 import be.nikiroo.utils.ui.ListenerPanel;
+import be.nikiroo.utils.ui.TreeSnapshot;
 import be.nikiroo.utils.ui.UIUtils;
 
 public class BooksPanel extends ListenerPanel {
@@ -113,7 +115,8 @@ public class BooksPanel extends ListenerPanel {
 		}.execute();
 	}
 
-	public void loadData(final BookInfo.Type type, final String value) {
+	// TODO
+	private void loadData(final BookInfo.Type type, final String value) {
 		synchronized (lastLoad) {
 			lastLoad[0] = "type";
 			lastLoad[1] = type;
@@ -123,11 +126,12 @@ public class BooksPanel extends ListenerPanel {
 		// TODO todo todo
 	}
 
-	public void loadData(List<BookInfo> bookInfos) {
-		synchronized (lastLoad) {
-			lastLoad[0] = "bookinfos";
-			lastLoad[1] = bookInfos;
-		}
+	// TODO
+	private void loadData(List<BookInfo> bookInfos) {
+		// synchronized (lastLoad) {
+		// lastLoad[0] = "bookInfos";
+		// lastLoad[1] = bookInfos;
+		// }
 
 		data.clearItems();
 		data.addAllItems(bookInfos);
@@ -146,6 +150,8 @@ public class BooksPanel extends ListenerPanel {
 			return; // nothing was loaded yet
 		}
 
+		ListSnapshot snapshot = new ListSnapshot(list);
+
 		if (lastLoad[0].toString().equals("sources, authors, tags")) {
 			loadData((List<String>) lastLoad[1], (List<String>) lastLoad[2],
 					(List<String>) lastLoad[3]);
@@ -157,6 +163,8 @@ public class BooksPanel extends ListenerPanel {
 			Instance.getInstance().getTraceHandler()
 					.error("Unknown last load type: " + lastLoad[0]);
 		}
+
+		snapshot.apply();
 	}
 
 	// is UI!
