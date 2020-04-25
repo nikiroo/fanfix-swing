@@ -29,7 +29,7 @@ public class DataTreeAuthors extends DataTreeSources {
 		}
 
 		Map<String, List<String>> authorsGrouped = Instance.getInstance()
-				.getLibrary().getAuthorsGrouped();
+				.getLibrary().getList().getAuthorsGrouped();
 
 		if (authorsGrouped.size() == 1) {
 			List<String> authors = authorsGrouped.values().iterator().next();

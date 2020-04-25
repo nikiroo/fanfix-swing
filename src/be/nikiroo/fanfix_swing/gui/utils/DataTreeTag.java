@@ -22,8 +22,14 @@ public class DataTreeTag extends DataTreeSources {
 
 	@Override
 	protected DataNode<DataNodeBook> extractData() throws IOException {
-		return getNodeFlat(
-				Instance.getInstance().getLibrary().getList().getTags(),
+		if (isFlat()) {
+			return getNodeFlat(
+					Instance.getInstance().getLibrary().getList().getTags(),
+					Type.TAG);
+		}
+
+		return getNodeGrouped(
+				Instance.getInstance().getLibrary().getList().getTagsGrouped(),
 				Type.TAG);
 	}
 }
