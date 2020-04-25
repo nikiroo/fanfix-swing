@@ -1,3 +1,4 @@
+
 package be.nikiroo.fanfix_swing.gui;
 
 import java.awt.BorderLayout;
@@ -15,14 +16,20 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
 
+import be.nikiroo.fanfix.Instance;
+import be.nikiroo.fanfix.bundles.Config;
+import be.nikiroo.fanfix.bundles.StringIdGui;
+import be.nikiroo.fanfix.bundles.UiConfig;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.importer.ImporterFrame;
 import be.nikiroo.fanfix_swing.images.IconGenerator;
 import be.nikiroo.fanfix_swing.images.IconGenerator.Icon;
 import be.nikiroo.fanfix_swing.images.IconGenerator.Size;
 import be.nikiroo.utils.Version;
+import be.nikiroo.utils.ui.ConfigEditor;
 
 public class MainFrame extends JFrame {
 	private BooksPanel books;
@@ -139,11 +146,13 @@ public class MainFrame extends JFrame {
 
 		JMenuBar bar = new JMenuBar();
 
+		// FILE
+
 		JMenu file = new JMenu("File");
 		file.setMnemonic(KeyEvent.VK_F);
 
-		JMenuItem item1 = new JMenuItem("Download", KeyEvent.VK_D);
-		item1.addActionListener(new ActionListener() {
+		JMenuItem mnuDownload = new JMenuItem("Download", KeyEvent.VK_D);
+		mnuDownload.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				importer.imprtUrl(MainFrame.this, new Runnable() {
@@ -157,8 +166,8 @@ public class MainFrame extends JFrame {
 			}
 		});
 
-		JMenuItem item2 = new JMenuItem("Import file", KeyEvent.VK_I);
-		item2.addActionListener(new ActionListener() {
+		JMenuItem mnuImprtFile = new JMenuItem("Import file", KeyEvent.VK_I);
+		mnuImprtFile.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				importer.imprtFile(MainFrame.this, new Runnable() {
@@ -172,51 +181,83 @@ public class MainFrame extends JFrame {
 			}
 		});
 
-		file.add(item1);
-		file.add(item2);
+		file.add(mnuDownload);
+		file.add(mnuImprtFile);
+
+		// EDIT
 
 		JMenu edit = new JMenu("Edit");
 		edit.setMnemonic(KeyEvent.VK_E);
 
+		JMenuItem mnuPrefs = new JMenuItem("Preferences", KeyEvent.VK_P);
+		mnuPrefs.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ConfigEditor<Config> ed = new ConfigEditor<Config>(Config.class,
+						Instance.getInstance().getConfig(),
+						Instance.getInstance().getTransGui()
+								.getString(StringIdGui.SUBTITLE_CONFIG));
+				ConfigEditor<UiConfig> edUi = new ConfigEditor<UiConfig>(
+						UiConfig.class, Instance.getInstance().getUiConfig(),
+						Instance.getInstance().getTransGui()
+								.getString(StringIdGui.SUBTITLE_CONFIG_UI));
+
+				// TODO: Very bad UI...
+				JFrame frame = new JFrame("Preferences");
+				JTabbedPane tabs = new JTabbedPane();
+				tabs.add(ed, "Core preferences");
+				tabs.add(edUi, "Graphical preferences");
+				frame.add(tabs);
+				frame.setSize(900, 600);
+				frame.setVisible(true);
+			}
+		});
+
+		edit.add(mnuPrefs);
+
+		// VIEW
+
 		JMenu view = new JMenu("View");
 		view.setMnemonic(KeyEvent.VK_V);
 
-		final JMenuItem listMode = new JMenuItem("Show thumbnails",
+		final JMenuItem mnuListMode = new JMenuItem("Show thumbnails",
 				KeyEvent.VK_T);
-		listMode.setIcon(books.isListMode() ? noIcon : yesIcon);
-		listMode.addActionListener(new ActionListener() {
+		mnuListMode.setIcon(books.isListMode() ? noIcon : yesIcon);
+		mnuListMode.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				books.setListMode(!books.isListMode());
-				listMode.setIcon(books.isListMode() ? noIcon : yesIcon);
+				mnuListMode.setIcon(books.isListMode() ? noIcon : yesIcon);
 			}
 		});
 
-		final JMenuItem sidePane = new JMenuItem("Show story browser",
+		final JMenuItem mnuSidePane = new JMenuItem("Show story browser",
 				KeyEvent.VK_B);
-		sidePane.setIcon(sidePanel ? yesIcon : noIcon);
-		sidePane.addActionListener(new ActionListener() {
+		mnuSidePane.setIcon(sidePanel ? yesIcon : noIcon);
+		mnuSidePane.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setSidePanel(!sidePanel);
-				sidePane.setIcon(sidePanel ? yesIcon : noIcon);
+				mnuSidePane.setIcon(sidePanel ? yesIcon : noIcon);
 			}
 		});
 
-		final JMenuItem detailsPane = new JMenuItem("Show details panel",
+		final JMenuItem mnuDetailsPane = new JMenuItem("Show details panel",
 				KeyEvent.VK_D);
-		detailsPane.setIcon(detailsPanel ? yesIcon : noIcon);
-		detailsPane.addActionListener(new ActionListener() {
+		mnuDetailsPane.setIcon(detailsPanel ? yesIcon : noIcon);
+		mnuDetailsPane.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setDetailsPanel(!detailsPanel);
-				detailsPane.setIcon(detailsPanel ? yesIcon : noIcon);
+				mnuDetailsPane.setIcon(detailsPanel ? yesIcon : noIcon);
 			}
 		});
 
-		view.add(sidePane);
-		view.add(detailsPane);
-		view.add(listMode);
+		view.add(mnuSidePane);
+		view.add(mnuDetailsPane);
+		view.add(mnuListMode);
+
+		//
 
 		bar.add(file);
 		bar.add(edit);
