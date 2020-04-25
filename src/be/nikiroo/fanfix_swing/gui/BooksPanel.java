@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -45,6 +47,9 @@ public class BooksPanel extends ListenerPanel {
 	private ListModel<BookInfo> data;
 	private DelayWorker bookCoverUpdater;
 	private String filter = "";
+
+	private Informer informer;
+	private BooksPanelActions actions;
 
 	private Object[] lastLoad = new Object[4];
 
@@ -195,9 +200,11 @@ public class BooksPanel extends ListenerPanel {
 	}
 
 	private JList6<BookInfo> initList() {
+		informer = initInformer();
+		actions = new BooksPanelActions(this, informer);
 		final JList6<BookInfo> list = new JList6<BookInfo>();
-		data = new ListModel<BookInfo>(list, new BookPopup(
-				Instance.getInstance().getLibrary(), initInformer()));
+		data = new ListModel<BookInfo>(list,
+				new BookPopup(Instance.getInstance().getLibrary(), informer));
 
 		list.addMouseListener(new MouseAdapter() {
 			@Override
@@ -206,19 +213,23 @@ public class BooksPanel extends ListenerPanel {
 				if (e.getClickCount() == 2) {
 					int index = list.locationToIndex(e.getPoint());
 					list.setSelectedIndex(index);
-
-					final BookInfo book = data.get(index);
-					BasicLibrary lib = Instance.getInstance().getLibrary();
-
-					Actions.openBook(lib, book.getMeta(), BooksPanel.this,
-							new Runnable() {
-								@Override
-								public void run() {
-									book.setCached(true);
-									data.fireElementChanged(book);
-								}
-							});
+					actions.openBook();
 				}
+			}
+		});
+
+		list.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER
+						|| e.getKeyCode() == KeyEvent.VK_ACCEPT) {
+					actions.openBook();
+					e.consume();
+				} else if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+					actions.deleteBooks();
+					e.consume();
+				}
+				super.keyTyped(e);
 			}
 		});
 
@@ -232,6 +243,11 @@ public class BooksPanel extends ListenerPanel {
 
 	private Informer initInformer() {
 		return new BookPopup.Informer() {
+			@Override
+			public BooksPanelActions getActions() {
+				return actions;
+			}
+
 			@Override
 			public void setCached(BookInfo book, boolean cached) {
 				book.setCached(cached);

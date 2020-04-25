@@ -29,7 +29,7 @@ import be.nikiroo.fanfix.data.Story;
 import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix.library.BasicLibrary.Status;
 import be.nikiroo.fanfix.output.BasicOutput.OutputType;
-import be.nikiroo.fanfix_swing.Actions;
+import be.nikiroo.fanfix_swing.gui.BooksPanelActions;
 import be.nikiroo.fanfix_swing.gui.PropertiesFrame;
 import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
@@ -38,6 +38,8 @@ import be.nikiroo.utils.ui.ConfigEditor;
 
 public class BookPopup extends JPopupMenu {
 	public abstract interface Informer {
+
+		public BooksPanelActions getActions();
 
 		// not null
 		public List<BookInfo> getSelected();
@@ -616,60 +618,7 @@ public class BookPopup extends JPopupMenu {
 		delete.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				final List<BookInfo> selected = informer.getSelected();
-
-				// TODO: i18n is geared towards ONE item
-				if (selected.size() > 0) {
-					String one;
-					String two;
-					if (selected.size() == 1) {
-						MetaData meta = selected.get(0).getMeta();
-						one = meta.getLuid();
-						two = meta.getTitle();
-					} else {
-						one = "";
-						two = selected.size() + " stories";
-					}
-
-					int rep = JOptionPane.showConfirmDialog(
-							BookPopup.this.getParent(),
-							trans(StringIdGui.SUBTITLE_DELETE, one, two),
-							trans(StringIdGui.TITLE_DELETE),
-							JOptionPane.OK_CANCEL_OPTION);
-
-					if (rep == JOptionPane.OK_OPTION) {
-						new SwingWorker<Void, BookInfo>() {
-
-							@Override
-							public Void doInBackground() throws Exception {
-								for (BookInfo info : selected) {
-									lib.delete(info.getMeta().getLuid());
-									publish(info);
-								}
-
-								return null;
-							}
-
-							@Override
-							protected void process(List<BookInfo> chunks) {
-								for (BookInfo info : chunks) {
-									informer.removeElement(info);
-								}
-							}
-
-							@Override
-							protected void done() {
-								try {
-									get();
-								} catch (Exception e) {
-									UiHelper.error(BookPopup.this.getParent(),
-											e.getLocalizedMessage(),
-											"IOException", e);
-								}
-							}
-						}.execute();
-					}
-				}
+				informer.getActions().deleteBooks();
 			}
 		});
 
@@ -709,16 +658,7 @@ public class BookPopup extends JPopupMenu {
 		open.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				final BookInfo book = informer.getUniqueSelected();
-				if (book != null) {
-					Actions.openBook(lib, book.getMeta(),
-							BookPopup.this.getParent(), new Runnable() {
-								@Override
-								public void run() {
-									informer.setCached(book, true);
-								}
-							});
-				}
+				informer.getActions().openBook();
 			}
 		});
 
