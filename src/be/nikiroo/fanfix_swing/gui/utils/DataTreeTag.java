@@ -17,7 +17,8 @@ public class DataTreeTag extends DataTreeSources {
 
 	@Override
 	protected boolean checkFilter(String filter, DataNodeBook userData) {
-		return userData.toString().toLowerCase().contains(filter.toLowerCase());
+		return userData
+				.getSubnameOrName().toLowerCase().contains(filter.toLowerCase());
 	}
 
 	@Override
