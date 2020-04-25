@@ -2,6 +2,8 @@
 
 # Version WIP
 
+# Version 0.0.2
+
 - new: configuration panel
 - new: internal viewer (both images and non-images documents)
 - new: most of the right-click menu options now work

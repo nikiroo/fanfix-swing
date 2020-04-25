@@ -2,6 +2,8 @@
 
 # Version WIP
 
+# Version 0.0.2
+
 - new: menu de configration
 - new: afficheur interne (histoires avec et sans images)
 - new: la plupart des options du menu contetuel fonctionnent
