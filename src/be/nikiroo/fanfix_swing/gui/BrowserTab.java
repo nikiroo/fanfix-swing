@@ -1,4 +1,4 @@
-package be.nikiroo.fanfix_swing.gui.browser;
+package be.nikiroo.fanfix_swing.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -19,7 +19,6 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 
-import be.nikiroo.fanfix_swing.gui.SearchBar;
 import be.nikiroo.fanfix_swing.gui.utils.DataNodeBook;
 import be.nikiroo.fanfix_swing.images.IconGenerator;
 import be.nikiroo.fanfix_swing.images.IconGenerator.Icon;
@@ -31,7 +30,7 @@ import be.nikiroo.utils.ui.TreeCellSpanner;
 import be.nikiroo.utils.ui.TreeSnapshot;
 import be.nikiroo.utils.ui.UIUtils;
 
-public class BasicTab extends ListenerPanel {
+public class BrowserTab extends ListenerPanel {
 	private int totalCount = 0;
 	private List<String> selectedElements = new ArrayList<String>();
 	private String baseTitle;
@@ -43,7 +42,7 @@ public class BasicTab extends ListenerPanel {
 	private DataTree<DataNodeBook> data;
 	private SearchBar searchBar;
 
-	public BasicTab(DataTree<DataNodeBook> data, int index,
+	public BrowserTab(DataTree<DataNodeBook> data, int index,
 			String listenerCommand) {
 		setLayout(new BorderLayout());
 
@@ -83,9 +82,9 @@ public class BasicTab extends ListenerPanel {
 					}
 				}
 
-				BasicTab.this.selectedElements = elements;
+				BrowserTab.this.selectedElements = elements;
 
-				fireActionPerformed(BasicTab.this.listenerCommand);
+				fireActionPerformed(BrowserTab.this.listenerCommand);
 			}
 		});
 

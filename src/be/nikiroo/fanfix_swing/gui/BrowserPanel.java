@@ -16,7 +16,6 @@ import javax.swing.event.ChangeListener;
 import be.nikiroo.fanfix.Instance;
 import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
-import be.nikiroo.fanfix_swing.gui.browser.BasicTab;
 import be.nikiroo.fanfix_swing.gui.utils.DataTreeAuthors;
 import be.nikiroo.fanfix_swing.gui.utils.DataTreeSources;
 import be.nikiroo.fanfix_swing.gui.utils.DataTreeTag;
@@ -62,9 +61,9 @@ public class BrowserPanel extends ListenerPanel {
 	static public final String TAB_CHANGE = "tab_change";
 
 	private JTabbedPane tabs;
-	private BasicTab sourceTab;
-	private BasicTab authorTab;
-	private BasicTab tagsTab;
+	private BrowserTab sourceTab;
+	private BrowserTab authorTab;
+	private BrowserTab tagsTab;
 
 	private boolean keepSelection;
 
@@ -78,11 +77,11 @@ public class BrowserPanel extends ListenerPanel {
 		tabs = new JTabbedPane();
 
 		int index = 0;
-		tabs.add(sourceTab = new BasicTab(new DataTreeSources(false), index++,
+		tabs.add(sourceTab = new BrowserTab(new DataTreeSources(false), index++,
 				SOURCE_SELECTION));
-		tabs.add(authorTab = new BasicTab(new DataTreeAuthors(true), index++,
+		tabs.add(authorTab = new BrowserTab(new DataTreeAuthors(true), index++,
 				AUTHOR_SELECTION));
-		tabs.add(tagsTab = new BasicTab(new DataTreeTag(true), index++,
+		tabs.add(tagsTab = new BrowserTab(new DataTreeTag(true), index++,
 				TAGS_SELECTION));
 
 		configureTab(tabs, sourceTab, "Sources", "Tooltip for Sources");
@@ -128,12 +127,12 @@ public class BrowserPanel extends ListenerPanel {
 			if (i == tabs.getSelectedIndex())
 				continue;
 
-			BasicTab tab = (BasicTab) tabs.getComponent(i);
+			BrowserTab tab = (BrowserTab) tabs.getComponent(i);
 			tab.unselect();
 		}
 	}
 
-	private void configureTab(JTabbedPane tabs, BasicTab tab, String name,
+	private void configureTab(JTabbedPane tabs, BrowserTab tab, String name,
 			String tooltip) {
 		tab.setBaseTitle(name);
 		tabs.setTitleAt(tab.getIndex(), tab.getTitle());
@@ -141,7 +140,7 @@ public class BrowserPanel extends ListenerPanel {
 		listenTabs(tabs, tab);
 	}
 
-	private void listenTabs(final JTabbedPane tabs, final BasicTab tab) {
+	private void listenTabs(final JTabbedPane tabs, final BrowserTab tab) {
 		tab.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -163,9 +162,9 @@ public class BrowserPanel extends ListenerPanel {
 	public BookInfo getHighlight() {
 		String selected1 = null;
 		Component selectedTab = tabs.getSelectedComponent();
-		if (selectedTab instanceof BasicTab) {
+		if (selectedTab instanceof BrowserTab) {
 			@SuppressWarnings({ "unchecked", "rawtypes" })
-			List<String> selectedAll = ((BasicTab) selectedTab)
+			List<String> selectedAll = ((BrowserTab) selectedTab)
 					.getSelectedElements();
 			if (!selectedAll.isEmpty()) {
 				selected1 = selectedAll.get(0);
