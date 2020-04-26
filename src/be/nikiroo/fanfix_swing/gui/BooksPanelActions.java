@@ -402,45 +402,44 @@ public class BooksPanelActions {
 		}
 	}
 	
-	public void setCoverFor(ChangeAction what) {
-		// SOURCE:
-		
-		// final GuiReaderBook selectedBook =
-		// mainPanel.getSelectedBook();
-		// if (selectedBook != null) {
-		// BasicLibrary lib = lib;
-		// String luid = selectedBook.getInfo().getMeta().getLuid();
-		// String source = selectedBook.getInfo().getMeta().getSource();
-		//
-		// try {
-		// lib.setSourceCover(source, luid);
-		// } catch (IOException e) {
-		// error(e.getLocalizedMessage(), "IOException", e);
-		// }
-		//
-		// GuiReaderBookInfo sourceInfo =
-		// GuiReaderBookInfo.fromSource(lib, source);
-		// GuiReaderCoverImager.clearIcon(sourceInfo);
-		// }
-		
-		// AUTHOR:
-		
-		// final GuiReaderBook selectedBook =
-		// mainPanel.getSelectedBook();
-		// if (selectedBook != null) {
-		// String luid = selectedBook.getInfo().getMeta().getLuid();
-		// String author = selectedBook.getInfo().getMeta().getAuthor();
-		//
-		// try {
-		// lib.setAuthorCover(author, luid);
-		// } catch (IOException e) {
-		// error(e.getLocalizedMessage(), "IOException", e);
-		// }
-		//
-		// GuiReaderBookInfo authorInfo =
-		// GuiReaderBookInfo.fromAuthor(lib, author);
-		// GuiReaderCoverImager.clearIcon(authorInfo);
-		// }
+	public void setCoverFor(final ChangeAction what) {
+		final BookInfo book = informer.getUniqueSelected();
+		if (book != null) {
+			final BasicLibrary lib = Instance.getInstance().getLibrary();
+			final String luid = book.getMeta().getLuid();
+
+			new SwingWorker<Void, Void>() {
+				@Override
+				protected Void doInBackground() throws Exception {
+					switch (what) {
+					case SOURCE:
+						lib.setSourceCover(book.getMeta().getSource(), luid);
+						break;
+					case AUTHOR:
+						lib.setAuthorCover(book.getMeta().getAuthor(), luid);
+						break;
+					case TITLE:
+						throw new IllegalArgumentException(
+								"Cannot change TITLE cover");
+					}
+
+					return null;
+				}
+
+				@Override
+				protected void done() {
+					try {
+						get();
+						// TODO: informer.what? (notify cover for source/author
+						// changed -> browser)
+						informer.invalidateCache();
+					} catch (Exception e) {
+						UiHelper.error(owner, e.getLocalizedMessage(),
+								"IOException", e);
+					}
+				}
+			}.execute();
+		}
 	}
 	
 	static private String trans(StringIdGui id, Object... values) {
