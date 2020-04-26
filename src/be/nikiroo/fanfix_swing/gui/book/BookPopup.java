@@ -27,6 +27,7 @@ import be.nikiroo.fanfix.bundles.UiConfig;
 import be.nikiroo.fanfix.data.MetaData;
 import be.nikiroo.fanfix.data.Story;
 import be.nikiroo.fanfix.library.BasicLibrary;
+import be.nikiroo.fanfix.library.MetaResultList;
 import be.nikiroo.fanfix.library.BasicLibrary.Status;
 import be.nikiroo.fanfix.output.BasicOutput.OutputType;
 import be.nikiroo.fanfix_swing.gui.BooksPanelActions;
@@ -69,10 +70,10 @@ public class BookPopup extends JPopupMenu {
 		AUTHOR
 	}
 
-	// be careful with that
 	private BasicLibrary lib;
-
 	private Informer informer;
+	private JMenuItem moveTo; // to update later
+	private JMenuItem setAuthor; // to update later
 
 	public BookPopup(BasicLibrary lib, Informer informer) {
 		this.lib = lib;
@@ -83,10 +84,7 @@ public class BookPopup extends JPopupMenu {
 		addSeparator();
 		add(createMenuItemExport());
 		if (status.isWritable()) {
-			// TODO: create a dedicated method to refresh those lists
-			// TODO: call it when adding/removing things
-			// TODO: call it deferred so not to slow startup
-			add(createMenuItemMoveTo());
+			moveTo = add(createMenuItemMoveTo(null));
 			add(createMenuItemSetCoverForSource());
 			add(createMenuItemSetCoverForAuthor());
 		}
@@ -96,16 +94,50 @@ public class BookPopup extends JPopupMenu {
 			add(createMenuItemRedownload());
 			addSeparator();
 			add(createMenuItemRename());
-			add(createMenuItemSetAuthor());
+			setAuthor = add(createMenuItemSetAuthor(null));
 			addSeparator();
 			add(createMenuItemDelete());
 		}
 		addSeparator();
 		add(createMenuItemProperties());
+
+		reloadMoveToSetAuthor();
 	}
 
-	private String trans(StringIdGui id, Object... values) {
-		return Instance.getInstance().getTransGui().getString(id, values);
+	public void reloadData() {
+		reloadMoveToSetAuthor();
+	}
+
+	private void reloadMoveToSetAuthor() {
+		new SwingWorker<MetaResultList, Void>() {
+			@Override
+			protected MetaResultList doInBackground() throws Exception {
+				return lib.getList();
+			}
+
+			@Override
+			protected void done() {
+				try {
+					MetaResultList list = get();
+
+					if (moveTo != null) {
+						remove(moveTo);
+					}
+					moveTo = add(
+							createMenuItemMoveTo(list.getSourcesGrouped()));
+
+					if (setAuthor != null) {
+						remove(setAuthor);
+					}
+					setAuthor = add(
+							createMenuItemSetAuthor(list.getAuthorsGrouped()));
+
+				} catch (Exception e) {
+					UiHelper.error(BookPopup.this.getParent(),
+							e.getLocalizedMessage(), "IOException", e);
+				}
+			}
+		}.execute();
 	}
 
 	/**
@@ -306,17 +338,14 @@ public class BookPopup extends JPopupMenu {
 	 * 
 	 * @return the item
 	 */
-	private JMenuItem createMenuItemMoveTo() {
+	private JMenuItem createMenuItemMoveTo(
+			Map<String, List<String>> groupedSources) {
+		if (groupedSources == null) {
+			groupedSources = new HashMap<String, List<String>>();
+		}
+
 		JMenu changeTo = new JMenu(trans(StringIdGui.MENU_FILE_MOVE_TO));
 		changeTo.setMnemonic(KeyEvent.VK_M);
-
-		Map<String, List<String>> groupedSources = new HashMap<String, List<String>>();
-		try {
-			groupedSources = lib.getSourcesGrouped();
-		} catch (IOException e) {
-			UiHelper.error(BookPopup.this.getParent(), e.getLocalizedMessage(),
-					"IOException", e);
-		}
 
 		JMenuItem item = new JMenuItem(
 				trans(StringIdGui.MENU_FILE_MOVE_TO_NEW_TYPE));
@@ -358,7 +387,12 @@ public class BookPopup extends JPopupMenu {
 	 * 
 	 * @return the item
 	 */
-	private JMenuItem createMenuItemSetAuthor() {
+	private JMenuItem createMenuItemSetAuthor(
+			Map<String, List<String>> groupedAuthors) {
+		if (groupedAuthors == null) {
+			groupedAuthors = new HashMap<String, List<String>>();
+		}
+
 		JMenu changeTo = new JMenu(trans(StringIdGui.MENU_FILE_SET_AUTHOR));
 		changeTo.setMnemonic(KeyEvent.VK_A);
 
@@ -370,17 +404,6 @@ public class BookPopup extends JPopupMenu {
 		newItem.addActionListener(createMoveAction(ChangeAction.AUTHOR, null));
 
 		// Existing authors
-		Map<String, List<String>> groupedAuthors;
-
-		try {
-			groupedAuthors = lib.getAuthorsGrouped();
-		} catch (IOException e) {
-			UiHelper.error(BookPopup.this.getParent(), e.getLocalizedMessage(),
-					"IOException", e);
-			groupedAuthors = new HashMap<String, List<String>>();
-
-		}
-
 		if (groupedAuthors.size() > 1) {
 			for (String key : groupedAuthors.keySet()) {
 				JMenu group = new JMenu(key);
@@ -480,6 +503,10 @@ public class BookPopup extends JPopupMenu {
 								// simple fireElementChanged is not
 								// enough, we need to clear the whole cache (for
 								// BrowserPanel for instance)
+								//
+								// Note:
+								// This will also reresh the authors/sources
+								// lists here
 								if (what != ChangeAction.TITLE) {
 									informer.invalidateCache();
 								}
@@ -489,9 +516,6 @@ public class BookPopup extends JPopupMenu {
 								for (BookInfo book : selected) {
 									informer.fireElementChanged(book);
 								}
-
-								// TODO: also refresh the
-								// Sources/Authors(/Tags?) list
 
 								// Even if problems occurred, still invalidate
 								// the cache above
@@ -727,5 +751,9 @@ public class BookPopup extends JPopupMenu {
 		});
 
 		return open;
+	}
+
+	static private String trans(StringIdGui id, Object... values) {
+		return Instance.getInstance().getTransGui().getString(id, values);
 	}
 }

@@ -51,6 +51,7 @@ public class BooksPanel extends ListenerPanel {
 
 	private Informer informer;
 	private BooksPanelActions actions;
+	private BookPopup popup;
 
 	private Object[] lastLoad = new Object[4];
 
@@ -146,6 +147,9 @@ public class BooksPanel extends ListenerPanel {
 			lastLoad = this.lastLoad.clone();
 		}
 
+		// Reset the popup menu items for for sources/author
+		popup.reloadData();
+
 		if (lastLoad[0] == null) {
 			return; // nothing was loaded yet
 		}
@@ -208,10 +212,10 @@ public class BooksPanel extends ListenerPanel {
 
 	private JList6<BookInfo> initList() {
 		informer = initInformer();
+		popup = new BookPopup(Instance.getInstance().getLibrary(), informer);
 		actions = new BooksPanelActions(this, informer);
 		final JList6<BookInfo> list = new JList6<BookInfo>();
-		data = new ListModel<BookInfo>(list,
-				new BookPopup(Instance.getInstance().getLibrary(), informer));
+		data = new ListModel<BookInfo>(list, popup);
 
 		list.addMouseListener(new MouseAdapter() {
 			@Override
@@ -283,8 +287,8 @@ public class BooksPanel extends ListenerPanel {
 
 			@Override
 			public void invalidateCache() {
-				// TODO: also reset the popup menu for sources/author
 				fireActionPerformed(INVALIDATE_CACHE);
+				reloadData();
 			}
 		};
 	}
