@@ -45,6 +45,7 @@ public class BookPopup extends JPopupMenu {
 		// not null
 		public List<BookInfo> getSelected();
 
+		// visual only!
 		public void setCached(BookInfo book, boolean cached);
 
 		public BookInfo getUniqueSelected();

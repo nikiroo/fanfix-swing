@@ -12,39 +12,17 @@ import be.nikiroo.utils.ui.UIUtils;
 
 public class Main {
 	public static void main(String[] args) {
-		UIUtils.setLookAndFeel();
-
-		final String forceLib = null;
-		// = "$HOME/Books/local";
-
-		if (forceLib == null) {
-			Instance.init();
-		} else {
-			Instance.init(new Instance() {
-				private DataLoader cache;
-				private BasicLibrary lib;
-
-				@Override
-				public DataLoader getCache() {
-					if (cache == null) {
-						cache = new DataLoader(getConfig()
-								.getString(Config.NETWORK_USER_AGENT));
-					}
-
-					return cache;
-				}
-
-				@Override
-				public BasicLibrary getLibrary() {
-					if (lib == null) {
-						lib = new LocalLibrary(getFile(forceLib), getConfig()) {
-						};
-					}
-
-					return lib;
-				}
-			});
+		// Defer to main application if parameters (we are only a UI)
+		// (though we could handle some of the parameters in the future,
+		// maybe importing via ImporterFrame? but that would require a
+		// unique instance of the UI to be usable...)
+		if (args != null && args.length > 0) {
+			be.nikiroo.fanfix.Main.main(args);
+			return;
 		}
+
+		UIUtils.setLookAndFeel();
+		Instance.init();
 
 		JFrame main = new MainFrame(true, true);
 		main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
