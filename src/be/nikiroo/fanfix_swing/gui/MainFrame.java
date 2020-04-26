@@ -147,7 +147,7 @@ public class MainFrame extends JFrame {
 	}
 
 	private JSplitPane split(JComponent leftTop, JComponent rightBottom,
-			boolean horizontal, double ratio, double weight) {
+			boolean horizontal, int dividerLocation, double weight) {
 		JSplitPane split = new JSplitPane(
 				horizontal ? JSplitPane.HORIZONTAL_SPLIT
 						: JSplitPane.VERTICAL_SPLIT,
@@ -155,7 +155,7 @@ public class MainFrame extends JFrame {
 		split.setOneTouchExpandable(true);
 		split.setResizeWeight(weight);
 		split.setContinuousLayout(true);
-		split.setDividerLocation(ratio);
+		split.setDividerLocation(dividerLocation);
 
 		return split;
 	}
@@ -287,13 +287,16 @@ public class MainFrame extends JFrame {
 		}
 		modeItems.clear();
 
+		int sidePanelWidth = 300;
+		int detailsPanelHeight = 100;
 		if (sidePanel && !detailsPanel) {
-			JSplitPane split = split(browser, books, true, 0.5, 0);
+			JSplitPane split = split(browser, books, true, sidePanelWidth, 0);
 			modeItems.add(split);
 			this.add(split);
 		} else if (sidePanel && detailsPanel) {
-			JSplitPane other = split(browser, details, false, 0.5, 1);
-			JSplitPane split = split(other, books, true, 0.5, 0);
+			JSplitPane other = split(browser, details, false, 0, 1);
+			other.setDividerLocation(other.getHeight() - detailsPanelHeight);
+			JSplitPane split = split(other, books, true, sidePanelWidth, 0);
 			modeItems.add(split);
 			this.add(split);
 		} else if (!sidePanel && !detailsPanel) {
@@ -305,16 +308,16 @@ public class MainFrame extends JFrame {
 			this.add(pane);
 		} else if (!sidePanel && detailsPanel) {
 			goBack.setVertical(true);
-			final JSplitPane other = split(goBack, details, false, 0.5, 0);
-			JSplitPane split = split(other, books, true, 0.5, 0);
+			final JSplitPane other = split(goBack, details, false,
+					goBack.getMinimumSize().height, 0);
+			JSplitPane split = split(other, books, true, sidePanelWidth, 0);
 			modeItems.add(split);
 			this.add(split);
 
 			onCrumbsbreadChange = new Runnable() {
 				@Override
 				public void run() {
-					other.setDividerLocation(
-							other.getTopComponent().getMinimumSize().height);
+					other.setDividerLocation(goBack.getMinimumSize().height);
 					other.revalidate();
 					other.repaint();
 				}
