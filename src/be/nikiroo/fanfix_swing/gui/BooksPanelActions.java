@@ -1,21 +1,46 @@
 package be.nikiroo.fanfix_swing.gui;
 
 import java.awt.Container;
+import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import be.nikiroo.fanfix.Instance;
 import be.nikiroo.fanfix.bundles.StringIdGui;
 import be.nikiroo.fanfix.data.MetaData;
+import be.nikiroo.fanfix.data.Story;
 import be.nikiroo.fanfix.library.BasicLibrary;
+import be.nikiroo.fanfix.output.BasicOutput.OutputType;
 import be.nikiroo.fanfix_swing.Actions;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.book.BookPopup.Informer;
+import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
+import be.nikiroo.utils.Progress;
 
 public class BooksPanelActions {
+	/**
+	 * The different modification actions you can use on {@link Story} items.
+	 * 
+	 * @author niki
+	 */
+	public enum ChangeAction {
+		/** Change the source/type, that is, move it to another source. */
+		SOURCE,
+		/** Change its name. */
+		TITLE,
+		/** Change its author. */
+		AUTHOR
+	}
+	
 	private Container owner;
 	private Informer informer;
 
@@ -113,7 +138,311 @@ public class BooksPanelActions {
 			MainFrame.getImporter().imprt(owner, book.getMeta().getUrl());
 		}
 	}
+	
+	public void export() {
+		// TODO: allow dir for multiple selection?
 
+		final JFileChooser fc = new JFileChooser();
+		fc.setAcceptAllFileFilterUsed(false);
+
+		// Add the "ALL" filters first, then the others
+		final Map<FileFilter, OutputType> otherFilters = new HashMap<FileFilter, OutputType>();
+		for (OutputType type : OutputType.values()) {
+			String ext = type.getDefaultExtension(false);
+			String desc = type.getDesc(false);
+
+			if (ext == null || ext.isEmpty()) {
+				fc.addChoosableFileFilter(createAllFilter(desc));
+			} else {
+				otherFilters.put(new FileNameExtensionFilter(desc, ext), type);
+			}
+		}
+
+		for (Entry<FileFilter, OutputType> entry : otherFilters.entrySet()) {
+			fc.addChoosableFileFilter(entry.getKey());
+		}
+		//
+
+		final BookInfo book = informer.getUniqueSelected();
+		if (book != null) {
+			fc.showDialog(owner, trans(StringIdGui.TITLE_SAVE));
+			if (fc.getSelectedFile() != null) {
+				final OutputType type = otherFilters.get(fc.getFileFilter());
+				final String path = fc.getSelectedFile().getAbsolutePath()
+						+ type.getDefaultExtension(false);
+				final Progress pg = new Progress();
+
+				new SwingWorker<Void, Void>() {
+					@Override
+					protected Void doInBackground() throws Exception {
+						BasicLibrary lib = Instance.getInstance().getLibrary();
+						lib.export(book.getMeta().getLuid(), type, path, pg);
+						return null;
+					}
+
+					@Override
+					protected void done() {
+						try {
+							get();
+						} catch (Exception e) {
+							UiHelper.error(owner, e.getLocalizedMessage(),
+									"IOException", e);
+						}
+					}
+				}.execute();
+			}
+		}
+	}
+	
+	/**
+	 * Create a {@link FileFilter} that accepts all files and return the given
+	 * description.
+	 * 
+	 * @param desc
+	 *            the description
+	 * 
+	 * @return the filter
+	 */
+	private FileFilter createAllFilter(final String desc) {
+		return new FileFilter() {
+			@Override
+			public String getDescription() {
+				return desc;
+			}
+
+			@Override
+			public boolean accept(File f) {
+				return true;
+			}
+		};
+	}
+	
+	public void clearCache() {
+		final List<BookInfo> selected = informer.getSelected();
+		if (!selected.isEmpty()) {
+			new SwingWorker<Void, Void>() {
+				@Override
+				protected Void doInBackground() throws Exception {
+					BasicLibrary lib = Instance.getInstance().getLibrary();
+					for (BookInfo book : selected) {
+						lib.clearFromCache(book.getMeta().getLuid());
+						CoverImager.clearIcon(book);
+					}
+					return null;
+				}
+
+				@Override
+				protected void done() {
+					try {
+						get();
+						for (BookInfo book : selected) {
+							informer.setCached(book, false);
+						}
+					} catch (Exception e) {
+						UiHelper.error(owner,
+								e.getLocalizedMessage(), "IOException",
+								e);
+					}
+				}
+			}.execute();
+		}
+	}
+
+	public void moveAction(final ChangeAction what, final String type) {
+		final List<BookInfo> selected = informer.getSelected();
+		if (!selected.isEmpty()) {
+			String changeTo = type;
+			if (type == null) {
+				String init = "";
+
+				if (selected.size() == 1) {
+					MetaData meta = selected.get(0).getMeta();
+					if (what == ChangeAction.SOURCE) {
+						init = meta.getSource();
+					} else if (what == ChangeAction.TITLE) {
+						init = meta.getTitle();
+					} else if (what == ChangeAction.AUTHOR) {
+						init = meta.getAuthor();
+					}
+				}
+
+				Object rep = JOptionPane.showInputDialog(
+						owner,
+						trans(StringIdGui.SUBTITLE_MOVE_TO),
+						trans(StringIdGui.TITLE_MOVE_TO),
+						JOptionPane.QUESTION_MESSAGE, null, null, init);
+
+				if (rep == null) {
+					return;
+				}
+
+				changeTo = rep.toString();
+			}
+
+			final String fChangeTo = changeTo;
+			new SwingWorker<Void, Void>() {
+				@Override
+				protected Void doInBackground() throws Exception {
+					BasicLibrary lib = Instance.getInstance().getLibrary();
+					for (BookInfo book : selected) {
+						String luid = book.getMeta().getLuid();
+						if (what == ChangeAction.SOURCE) {
+							lib.changeSource(luid, fChangeTo, null);
+						} else if (what == ChangeAction.TITLE) {
+							lib.changeTitle(luid, fChangeTo, null);
+						} else if (what == ChangeAction.AUTHOR) {
+							lib.changeAuthor(luid, fChangeTo, null);
+						}
+					}
+
+					return null;
+				}
+
+				@Override
+				protected void done() {
+					try {
+						// this can create new sources/authors, so a
+						// simple fireElementChanged is not
+						// enough, we need to clear the whole cache (for
+						// BrowserPanel for instance)
+						//
+						// Note:
+						// This will also reresh the authors/sources
+						// lists here
+						if (what != ChangeAction.TITLE) {
+							informer.invalidateCache();
+						}
+
+						// But we ALSO fire those, because they appear
+						// before the whole refresh...
+						for (BookInfo book : selected) {
+							informer.fireElementChanged(book);
+						}
+
+						// Even if problems occurred, still invalidate
+						// the cache above
+						get();
+					} catch (Exception e) {
+						UiHelper.error(owner,
+								e.getLocalizedMessage(), "IOException",
+								e);
+					}
+				}
+			}.execute();
+		}
+	}
+	
+	public void prefetch() {
+		final List<BookInfo> selected = informer.getSelected();
+
+		new SwingWorker<Void, BookInfo>() {
+			@Override
+			protected Void doInBackground() throws Exception {
+				BasicLibrary lib = Instance.getInstance().getLibrary();
+				String luid = null;
+				for (BookInfo book : selected) {
+					switch (book.getType()) {
+					case STORY:
+						luid = book.getMeta().getLuid();
+						break;
+					case SOURCE:
+						for (MetaData meta : lib.getList().filter(
+								book.getMainInfo(), null, null)) {
+							luid = meta.getLuid();
+						}
+						break;
+					case AUTHOR:
+						for (MetaData meta : lib.getList().filter(null,
+								book.getMainInfo(), null)) {
+							luid = meta.getLuid();
+						}
+						break;
+					case TAG:
+						for (MetaData meta : lib.getList().filter(null,
+								null, book.getMainInfo())) {
+							luid = meta.getLuid();
+						}
+						break;
+					}
+
+					if (luid != null) {
+						lib.getFile(luid, null);
+						publish(book);
+					}
+				}
+
+				return null;
+			}
+
+			@Override
+			protected void process(java.util.List<BookInfo> chunks) {
+				for (BookInfo book : chunks) {
+					informer.setCached(book, true);
+				}
+			}
+
+			@Override
+			protected void done() {
+				try {
+					get();
+				} catch (Exception e) {
+					UiHelper.error(owner,
+							e.getLocalizedMessage(), "IOException", e);
+				}
+			}
+		}.execute();
+	}
+	
+	public void properties() {
+		BasicLibrary lib = Instance.getInstance().getLibrary();
+		BookInfo selected = informer.getUniqueSelected();
+		if (selected != null) {
+			new PropertiesFrame(lib, selected.getMeta())
+					.setVisible(true);
+		}
+	}
+	
+	public void setCoverFor(ChangeAction what) {
+		// SOURCE:
+		
+		// final GuiReaderBook selectedBook =
+		// mainPanel.getSelectedBook();
+		// if (selectedBook != null) {
+		// BasicLibrary lib = lib;
+		// String luid = selectedBook.getInfo().getMeta().getLuid();
+		// String source = selectedBook.getInfo().getMeta().getSource();
+		//
+		// try {
+		// lib.setSourceCover(source, luid);
+		// } catch (IOException e) {
+		// error(e.getLocalizedMessage(), "IOException", e);
+		// }
+		//
+		// GuiReaderBookInfo sourceInfo =
+		// GuiReaderBookInfo.fromSource(lib, source);
+		// GuiReaderCoverImager.clearIcon(sourceInfo);
+		// }
+		
+		// AUTHOR:
+		
+		// final GuiReaderBook selectedBook =
+		// mainPanel.getSelectedBook();
+		// if (selectedBook != null) {
+		// String luid = selectedBook.getInfo().getMeta().getLuid();
+		// String author = selectedBook.getInfo().getMeta().getAuthor();
+		//
+		// try {
+		// lib.setAuthorCover(author, luid);
+		// } catch (IOException e) {
+		// error(e.getLocalizedMessage(), "IOException", e);
+		// }
+		//
+		// GuiReaderBookInfo authorInfo =
+		// GuiReaderBookInfo.fromAuthor(lib, author);
+		// GuiReaderCoverImager.clearIcon(authorInfo);
+		// }
+	}
+	
 	static private String trans(StringIdGui id, Object... values) {
 		return Instance.getInstance().getTransGui().getString(id, values);
 	}
