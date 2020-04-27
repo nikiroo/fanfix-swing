@@ -43,19 +43,26 @@ public class BookPopup extends JPopupMenu {
 
 	private BasicLibrary lib;
 	private Informer informer;
-	private JMenuItem moveTo; // to update later
-	private JMenuItem setAuthor; // to update later
+	private Map<String, List<String>> groupedSources;
+	private Map<String, List<String>> groupedAuthors;
 
 	public BookPopup(BasicLibrary lib, Informer informer) {
 		this.lib = lib;
 		this.informer = informer;
+
+		initMenus();
+		reloadData();
+	}
+
+	private void initMenus() {
+		removeAll();
 
 		Status status = lib.getStatus();
 		add(createMenuItemOpenBook());
 		addSeparator();
 		add(createMenuItemExport());
 		if (status.isWritable()) {
-			moveTo = add(createMenuItemMoveTo(null));
+			add(createMenuItemMoveTo(groupedSources));
 			add(createMenuItemSetCoverForSource());
 			add(createMenuItemSetCoverForAuthor());
 		}
@@ -65,21 +72,17 @@ public class BookPopup extends JPopupMenu {
 			add(createMenuItemRedownload());
 			addSeparator();
 			add(createMenuItemRename());
-			setAuthor = add(createMenuItemSetAuthor(null));
+			add(createMenuItemSetAuthor(groupedAuthors));
 			addSeparator();
 			add(createMenuItemDelete());
 		}
 		addSeparator();
 		add(createMenuItemProperties());
 
-		reloadMoveToSetAuthor();
+		revalidate();
 	}
 
 	public void reloadData() {
-		reloadMoveToSetAuthor();
-	}
-
-	private void reloadMoveToSetAuthor() {
 		new SwingWorker<MetaResultList, Void>() {
 			@Override
 			protected MetaResultList doInBackground() throws Exception {
@@ -90,18 +93,9 @@ public class BookPopup extends JPopupMenu {
 			protected void done() {
 				try {
 					MetaResultList list = get();
-
-					if (moveTo != null) {
-						remove(moveTo);
-					}
-					moveTo = add(createMenuItemMoveTo(list.getSourcesGrouped()));
-
-					if (setAuthor != null) {
-						remove(setAuthor);
-					}
-					setAuthor = add(createMenuItemSetAuthor(list
-							.getAuthorsGrouped()));
-
+					groupedSources = list.getSourcesGrouped();
+					groupedAuthors = list.getAuthorsGrouped();
+					initMenus();
 				} catch (Exception e) {
 					UiHelper.error(BookPopup.this.getParent(),
 							e.getLocalizedMessage(), "IOException", e);
@@ -170,8 +164,8 @@ public class BookPopup extends JPopupMenu {
 			List<String> list = groupedSources.get(type);
 			if (list.size() == 1 && list.get(0).isEmpty()) {
 				item = new JMenuItem(type);
-				item.addActionListener(createMoveAction(ChangeAction.SOURCE,
-						type));
+				item.addActionListener(
+						createMoveAction(ChangeAction.SOURCE, type));
 				changeTo.add(item);
 			} else {
 				JMenu dir = new JMenu(type);
@@ -184,8 +178,8 @@ public class BookPopup extends JPopupMenu {
 					}
 
 					item = new JMenuItem(itemName);
-					item.addActionListener(createMoveAction(
-							ChangeAction.SOURCE, actualType));
+					item.addActionListener(
+							createMoveAction(ChangeAction.SOURCE, actualType));
 					dir.add(item);
 				}
 				changeTo.add(dir);
@@ -221,22 +215,22 @@ public class BookPopup extends JPopupMenu {
 			for (String key : groupedAuthors.keySet()) {
 				JMenu group = new JMenu(key);
 				for (String value : groupedAuthors.get(key)) {
-					JMenuItem item = new JMenuItem(
-							value.isEmpty() ? trans(StringIdGui.MENU_AUTHORS_UNKNOWN)
-									: value);
-					item.addActionListener(createMoveAction(
-							ChangeAction.AUTHOR, value));
+					JMenuItem item = new JMenuItem(value.isEmpty()
+							? trans(StringIdGui.MENU_AUTHORS_UNKNOWN)
+							: value);
+					item.addActionListener(
+							createMoveAction(ChangeAction.AUTHOR, value));
 					group.add(item);
 				}
 				changeTo.add(group);
 			}
 		} else if (groupedAuthors.size() == 1) {
 			for (String value : groupedAuthors.values().iterator().next()) {
-				JMenuItem item = new JMenuItem(
-						value.isEmpty() ? trans(StringIdGui.MENU_AUTHORS_UNKNOWN)
-								: value);
-				item.addActionListener(createMoveAction(ChangeAction.AUTHOR,
-						value));
+				JMenuItem item = new JMenuItem(value.isEmpty()
+						? trans(StringIdGui.MENU_AUTHORS_UNKNOWN)
+						: value);
+				item.addActionListener(
+						createMoveAction(ChangeAction.AUTHOR, value));
 				changeTo.add(item);
 			}
 		}
