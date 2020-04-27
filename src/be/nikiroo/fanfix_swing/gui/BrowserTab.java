@@ -168,6 +168,21 @@ public class BrowserTab extends ListenerPanel {
 		return selectedElements;
 	}
 
+	/**
+	 * The first selected element if some are selected, NULL if none is
+	 * selected.
+	 * 
+	 * @return the first selected element or NULL
+	 */
+	public String getFirstSelectedElement() {
+		List<String> selectedElements = this.selectedElements;
+		if (selectedElements != null && !selectedElements.isEmpty()) {
+			return selectedElements.get(0);
+		}
+
+		return null;
+	}
+
 	public int getTotalCount() {
 		return totalCount;
 	}

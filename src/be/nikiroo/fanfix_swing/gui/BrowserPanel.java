@@ -1,7 +1,6 @@
 package be.nikiroo.fanfix_swing.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -164,28 +163,19 @@ public class BrowserPanel extends ListenerPanel {
 	 * @return the {@link BookInfo} to highlight, cannot be NULL
 	 */
 	public BookInfo getHighlight() {
-		String selected1 = null;
-		Component selectedTab = tabs.getSelectedComponent();
-		if (selectedTab instanceof BrowserTab) {
-			@SuppressWarnings({ "unchecked", "rawtypes" })
-			List<String> selectedAll = ((BrowserTab) selectedTab)
-					.getSelectedElements();
-			if (!selectedAll.isEmpty()) {
-				selected1 = selectedAll.get(0);
-			}
-		}
-
 		BasicLibrary lib = Instance.getInstance().getLibrary();
 		if (tabs.getSelectedComponent() == sourceTab) {
-			return BookInfo.fromSource(lib, selected1);
+			return BookInfo.fromSource(lib,
+					sourceTab.getFirstSelectedElement());
 		} else if (tabs.getSelectedComponent() == authorTab) {
-			return BookInfo.fromAuthor(lib, selected1);
+			return BookInfo.fromAuthor(lib,
+					authorTab.getFirstSelectedElement());
 		} else if (tabs.getSelectedComponent() == tagsTab) {
-			return BookInfo.fromTag(lib, selected1);
+			return BookInfo.fromTag(lib, tagsTab.getFirstSelectedElement());
 		}
 
 		// ...what?
-		return BookInfo.fromSource(lib, selected1);
+		return BookInfo.fromSource(lib, sourceTab.getFirstSelectedElement());
 	}
 
 	/**
