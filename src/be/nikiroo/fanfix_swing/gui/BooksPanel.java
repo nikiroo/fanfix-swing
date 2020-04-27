@@ -119,10 +119,6 @@ public class BooksPanel extends ListenerPanel {
 			lastLoad = new ReloadData(sources, authors, tags);
 		}
 
-		if(sources.size()==0) {
-			new Exception().printStackTrace();
-		}
-
 		new SwingWorker<List<BookInfo>, Void>() {
 			@Override
 			protected List<BookInfo> doInBackground() throws Exception {
