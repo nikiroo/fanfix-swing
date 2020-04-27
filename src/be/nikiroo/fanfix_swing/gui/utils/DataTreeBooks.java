@@ -239,11 +239,6 @@ public class DataTreeBooks {
 			}
 
 			DataNodeBook dnb = new DataNodeBook(type, value, "", hasChildren);
-			if (type == Type.AUTHOR && "*".equals(value)) {
-				System.out.println("we found " + value + ": "
-						+ subnodes.get(0).getUserData().getName() + "/"
-						+ subnodes.get(0).getUserData().getSubname());
-			}
 			nodes.add(new DataNode<DataNodeBook>(subnodes, dnb));
 		}
 
