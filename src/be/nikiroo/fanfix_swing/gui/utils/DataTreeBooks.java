@@ -231,7 +231,7 @@ public class DataTreeBooks {
 					DataNodeBook book = new DataNodeBook(type,
 							emptyLoneChild ? "" : value, subValue, false);
 					if (baseSubValue)
-						book.setDisplay("[*]");
+						book.setDisplay(" ");
 					if (emptyLoneChild)
 						book.setDisplay("[unknown]");
 					subnodes.add(new DataNode<DataNodeBook>(null, book));
