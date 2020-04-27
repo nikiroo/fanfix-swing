@@ -46,18 +46,19 @@ public class DataNodeBook {
 	}
 
 	public String getPath() {
-		if (type != type.SOURCE) {
-			return getSubnameOrName();
-		}
-
-		String slash = "";
-		if (!name.isEmpty()) {
-			if (children || !subname.isEmpty()) {
-				slash = "/";
+		if (type == Type.SOURCE) {
+			// Sources are more complex
+			String slash = "";
+			if (!name.isEmpty()) {
+				if (children || !subname.isEmpty()) {
+					slash = "/";
+				}
 			}
+
+			return name + slash + subname;
 		}
 
-		return name + slash + subname;
+		return getSubnameOrName();
 	}
 
 	public String getName() {

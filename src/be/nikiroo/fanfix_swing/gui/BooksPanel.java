@@ -88,7 +88,7 @@ public class BooksPanel extends ListenerPanel {
 			lastLoad[2] = authors;
 			lastLoad[3] = tags;
 		}
-
+		
 		new SwingWorker<List<BookInfo>, Void>() {
 			@Override
 			protected List<BookInfo> doInBackground() throws Exception {

@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import be.nikiroo.fanfix.Instance;
-import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix.library.MetaResultList;
-import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo.Type;
 import be.nikiroo.utils.ui.DataNode;
 import be.nikiroo.utils.ui.DataTree;
@@ -195,8 +193,11 @@ public class DataTreeBooks {
 		List<DataNode<DataNodeBook>> nodes = new ArrayList<DataNode<DataNodeBook>>();
 
 		for (String data : flatData) {
-			nodes.add(new DataNode<DataNodeBook>(null,
-					new DataNodeBook(type, data)));
+			DataNodeBook dnb = new DataNodeBook(type, data);
+			if (data == null || data.isEmpty()) {
+				dnb.setDisplay("[unknown]");
+			}
+			nodes.add(new DataNode<DataNodeBook>(null, dnb));
 		}
 
 		return new DataNode<DataNodeBook>(nodes,
@@ -204,35 +205,49 @@ public class DataTreeBooks {
 	}
 
 	private DataNode<DataNodeBook> getNodeGrouped(DataTreeSort tree,
-			Map<String, List<String>> sourcesGrouped, Type type) {
+			Map<String, List<String>> valuesGrouped, Type type) {
 		List<DataNode<DataNodeBook>> nodes = new ArrayList<DataNode<DataNodeBook>>();
 
-		List<String> sources = new ArrayList<String>(sourcesGrouped.keySet());
-		tree.sort(sources);
-		for (String source : sources) {
-			List<String> children = sourcesGrouped.get(source);
-			boolean hasChildren = (children.size() > 1) || (children.size() == 1
-					&& !children.get(0).trim().isEmpty());
+		List<String> values = new ArrayList<String>(valuesGrouped.keySet());
+		tree.sort(values);
+		for (String value : values) {
+			List<String> children = valuesGrouped.get(value);
+
+			boolean emptyLoneChild = children.size() == 1
+					&& children.get(0).trim().isEmpty();
+			boolean hasChildren = !children.isEmpty();
+
+			// Empty, lone children are special for SOURCES
+			if (type == Type.SOURCE && emptyLoneChild) {
+				hasChildren = false;
+			}
 
 			List<DataNode<DataNodeBook>> subnodes = new ArrayList<DataNode<DataNodeBook>>();
 			if (hasChildren) {
 				tree.sort(children);
-				for (String subSource : children) {
-					boolean baseSubSource = subSource.isEmpty()
+				for (String subValue : children) {
+					boolean baseSubValue = subValue.isEmpty()
 							&& children.size() > 1;
-					DataNodeBook book = new DataNodeBook(type, source,
-							subSource, false);
-					if (baseSubSource)
-						book.setDisplay("*");
+					DataNodeBook book = new DataNodeBook(type,
+							emptyLoneChild ? "" : value, subValue, false);
+					if (baseSubValue)
+						book.setDisplay("[*]");
+					if (emptyLoneChild)
+						book.setDisplay("[unknown]");
 					subnodes.add(new DataNode<DataNodeBook>(null, book));
 				}
 			}
 
-			nodes.add(new DataNode<DataNodeBook>(subnodes,
-					new DataNodeBook(type, source, "", hasChildren)));
+			DataNodeBook dnb = new DataNodeBook(type, value, "", hasChildren);
+			if (type == Type.AUTHOR && "*".equals(value)) {
+				System.out.println("we found " + value + ": "
+						+ subnodes.get(0).getUserData().getName() + "/"
+						+ subnodes.get(0).getUserData().getSubname());
+			}
+			nodes.add(new DataNode<DataNodeBook>(subnodes, dnb));
 		}
 
-		return new DataNode<DataNodeBook>(nodes,
-				new DataNodeBook(type, !nodes.isEmpty()));
+		DataNodeBook dnb = new DataNodeBook(type, !nodes.isEmpty());
+		return new DataNode<DataNodeBook>(nodes, dnb);
 	}
 }
