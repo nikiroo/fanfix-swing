@@ -3,6 +3,9 @@
 # Version WIP
 
 - new: option de re-téléchargement (sans supprimer l'ancien)
+- new: les options du menu contetuel fonctionnent
+- fix: plus stable, deadlock éliminé
+- fix: fix pour Java 11 qui cachait les menus sur le côté par défaut
 
 # Version 0.0.2
 

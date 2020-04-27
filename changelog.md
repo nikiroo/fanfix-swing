@@ -3,6 +3,9 @@
 # Version WIP
 
 - new: redownload (but do not delete original)
+- new: the right-click menu options now work
+- fix: more stable, deadlock removed
+- fix: fix for Java 11 which hided the side panels by default
 
 # Version 0.0.2
 
