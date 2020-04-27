@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -40,6 +41,7 @@ public class BrowserTab extends ListenerPanel {
 	private int index;
 
 	private JTree tree;
+	private TreeSelectionListener treeListener;
 	private DefaultMutableTreeNode root;
 	private DataTree<DataNodeBook> data;
 	private SearchBar searchBar;
@@ -58,14 +60,7 @@ public class BrowserTab extends ListenerPanel {
 		root = new DefaultMutableTreeNode();
 		tree = new JTree(root);
 
-		tree.setUI(new BasicTreeUI());
-		TreeCellSpanner spanner = new TreeCellSpanner(tree,
-				generateCellRenderer());
-		tree.setCellRenderer(spanner);
-		tree.setRootVisible(false);
-		tree.setShowsRootHandles(false);
-
-		tree.addTreeSelectionListener(new TreeSelectionListener() {
+		treeListener = new TreeSelectionListener() {
 			@Override
 			public void valueChanged(TreeSelectionEvent e) {
 				List<String> elements = new ArrayList<String>();
@@ -84,11 +79,36 @@ public class BrowserTab extends ListenerPanel {
 					}
 				}
 
-				BrowserTab.this.selectedElements = elements;
+				Collections.sort(elements);
 
-				fireActionPerformed(BrowserTab.this.listenerCommand);
+				boolean same = false;
+				if (BrowserTab.this.selectedElements.size() == elements
+						.size()) {
+					same = true;
+					for (int i = 0; i < elements.size(); i++) {
+						String newEl = elements.get(i);
+						String oldEl = BrowserTab.this.selectedElements.get(i);
+						if (!newEl.equals(oldEl)) {
+							same = false;
+							break;
+						}
+					}
+				}
+
+				if (!same) {
+					BrowserTab.this.selectedElements = elements;
+					fireActionPerformed(BrowserTab.this.listenerCommand);
+				}
 			}
-		});
+		};
+
+		tree.setUI(new BasicTreeUI());
+		TreeCellSpanner spanner = new TreeCellSpanner(tree,
+				generateCellRenderer());
+		tree.setCellRenderer(spanner);
+		tree.setRootVisible(false);
+		tree.setShowsRootHandles(false);
+		tree.addTreeSelectionListener(treeListener);
 
 		add(UIUtils.scroll(tree, false), BorderLayout.CENTER);
 
@@ -125,9 +145,14 @@ public class BrowserTab extends ListenerPanel {
 		node2node(root, filtered);
 		totalCount = filtered.count() - 1; // root is counted
 
+		tree.removeTreeSelectionListener(treeListener);
 		((DefaultTreeModel) tree.getModel()).reload();
-
 		snapshot.apply();
+		tree.addTreeSelectionListener(treeListener);
+
+		// Try to fire it (it will not do anything if no selection changed)
+		treeListener.valueChanged(
+				new TreeSelectionEvent(this, null, false, null, null));
 
 		if (fireActionPerformed) {
 			fireActionPerformed(listenerCommand);

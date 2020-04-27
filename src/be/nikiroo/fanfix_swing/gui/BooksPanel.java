@@ -24,6 +24,7 @@ import be.nikiroo.fanfix.data.MetaData;
 import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix_swing.gui.book.BookBlock;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
+import be.nikiroo.fanfix_swing.gui.book.BookInfo.Type;
 import be.nikiroo.fanfix_swing.gui.book.BookLine;
 import be.nikiroo.fanfix_swing.gui.book.BookPopup;
 import be.nikiroo.fanfix_swing.gui.book.BookPopup.Informer;
@@ -31,14 +32,46 @@ import be.nikiroo.utils.compat.JList6;
 import be.nikiroo.utils.compat.ListCellRenderer6;
 import be.nikiroo.utils.ui.DelayWorker;
 import be.nikiroo.utils.ui.ListModel;
-import be.nikiroo.utils.ui.ListSnapshot;
 import be.nikiroo.utils.ui.ListModel.Predicate;
+import be.nikiroo.utils.ui.ListSnapshot;
 import be.nikiroo.utils.ui.ListenerPanel;
-import be.nikiroo.utils.ui.TreeSnapshot;
 import be.nikiroo.utils.ui.UIUtils;
 
 public class BooksPanel extends ListenerPanel {
 	static public final String INVALIDATE_CACHE = "invalidate_cache";
+
+	private enum ReloadMode {
+		NONE, STA, TYPE_VALUE
+	}
+
+	private class ReloadData {
+		public ReloadMode mode;
+
+		public List<String> sources;
+		public List<String> authors;
+		public List<String> tags;
+
+		public Type type;
+		public String value;
+
+		public ReloadData() {
+			this.mode = ReloadMode.NONE;
+		}
+
+		public ReloadData(List<String> sources, List<String> authors,
+				List<String> tags) {
+			this.mode = ReloadMode.STA;
+			this.sources = sources;
+			this.authors = authors;
+			this.tags = tags;
+		}
+
+		public ReloadData(Type type, String value) {
+			this.mode = ReloadMode.TYPE_VALUE;
+			this.type = type;
+			this.value = value;
+		}
+	}
 
 	private Map<BookInfo, BookLine> books = new HashMap<BookInfo, BookLine>();
 	private boolean seeWordCount;
@@ -53,7 +86,7 @@ public class BooksPanel extends ListenerPanel {
 	private BooksPanelActions actions;
 	private BookPopup popup;
 
-	private Object[] lastLoad = new Object[4];
+	private ReloadData lastLoad = new ReloadData();
 
 	public BooksPanel(boolean listMode) {
 		setLayout(new BorderLayout());
@@ -83,12 +116,13 @@ public class BooksPanel extends ListenerPanel {
 	public void loadData(final List<String> sources, final List<String> authors,
 			final List<String> tags) {
 		synchronized (lastLoad) {
-			lastLoad[0] = "sources, authors, tags";
-			lastLoad[1] = sources;
-			lastLoad[2] = authors;
-			lastLoad[3] = tags;
+			lastLoad = new ReloadData(sources, authors, tags);
 		}
-		
+
+		if(sources.size()==0) {
+			new Exception().printStackTrace();
+		}
+
 		new SwingWorker<List<BookInfo>, Void>() {
 			@Override
 			protected List<BookInfo> doInBackground() throws Exception {
@@ -117,11 +151,9 @@ public class BooksPanel extends ListenerPanel {
 	}
 
 	// TODO
-	private void loadData(final BookInfo.Type type, final String value) {
+	private void loadData(final Type type, final String value) {
 		synchronized (lastLoad) {
-			lastLoad[0] = "type";
-			lastLoad[1] = type;
-			lastLoad[2] = value;
+			lastLoad = new ReloadData(type, value);
 		}
 
 		// TODO todo todo
@@ -142,30 +174,31 @@ public class BooksPanel extends ListenerPanel {
 	}
 
 	public void reloadData() {
-		Object[] lastLoad;
+		ReloadData lastLoad;
 		synchronized (this.lastLoad) {
-			lastLoad = this.lastLoad.clone();
+			lastLoad = this.lastLoad;
 		}
 
 		// Reset the popup menu items for for sources/author
 		popup.reloadData();
 
-		if (lastLoad[0] == null) {
+		if (lastLoad.mode == ReloadMode.NONE) {
 			return; // nothing was loaded yet
 		}
 
 		ListSnapshot snapshot = new ListSnapshot(list);
 
-		if (lastLoad[0].toString().equals("sources, authors, tags")) {
-			loadData((List<String>) lastLoad[1], (List<String>) lastLoad[2],
-					(List<String>) lastLoad[3]);
-		} else if (lastLoad[0].toString().equals("type")) {
-			loadData((BookInfo.Type) lastLoad[1], (String) lastLoad[2]);
-		} else if (lastLoad[0].toString().equals("bookInfos")) {
-			loadData((List<BookInfo>) lastLoad[1]);
-		} else {
+		switch (lastLoad.mode) {
+		case STA:
+			loadData(lastLoad.sources, lastLoad.authors, lastLoad.tags);
+			break;
+		case TYPE_VALUE:
+			loadData(lastLoad.type, lastLoad.value);
+			break;
+		default:
 			Instance.getInstance().getTraceHandler()
-					.error("Unknown last load type: " + lastLoad[0]);
+					.error("Unknown last load type: " + lastLoad.mode);
+			break;
 		}
 
 		snapshot.apply();
