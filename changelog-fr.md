@@ -4,6 +4,7 @@
 
 - new: option de re-téléchargement (sans supprimer l'ancien)
 - new: les options du menu contetuel fonctionnent
+- fix: quand les sources sont rechargées, les livres ne changent plus
 - fix: plus stable, deadlock éliminé
 - fix: fix pour Java 11 qui cachait les menus sur le côté par défaut
 

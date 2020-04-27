@@ -4,6 +4,7 @@
 
 - new: redownload (but do not delete original)
 - new: the right-click menu options now work
+- fix: when the sources are reloaded, the books don't change any more
 - fix: more stable, deadlock removed
 - fix: fix for Java 11 which hided the side panels by default
 
