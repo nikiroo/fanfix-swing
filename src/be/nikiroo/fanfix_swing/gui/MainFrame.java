@@ -8,7 +8,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.ImageIcon;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -25,9 +25,6 @@ import be.nikiroo.fanfix.bundles.StringIdGui;
 import be.nikiroo.fanfix.bundles.UiConfig;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.importer.ImporterFrame;
-import be.nikiroo.fanfix_swing.images.IconGenerator;
-import be.nikiroo.fanfix_swing.images.IconGenerator.Icon;
-import be.nikiroo.fanfix_swing.images.IconGenerator.Size;
 import be.nikiroo.utils.Version;
 import be.nikiroo.utils.ui.ConfigEditor;
 
@@ -161,10 +158,6 @@ public class MainFrame extends JFrame {
 	}
 
 	private JMenuBar createMenuBar() {
-		// TODO: use a correct checkmark image
-		final ImageIcon yesIcon = IconGenerator.get(Icon.clear, Size.x16);
-		final ImageIcon noIcon = IconGenerator.get(Icon.empty, Size.x16);
-
 		JMenuBar bar = new JMenuBar();
 
 		// FILE
@@ -227,36 +220,38 @@ public class MainFrame extends JFrame {
 		JMenu view = new JMenu("View");
 		view.setMnemonic(KeyEvent.VK_V);
 
-		final JMenuItem mnuListMode = new JMenuItem("Show thumbnails",
-				KeyEvent.VK_T);
-		mnuListMode.setIcon(books.isListMode() ? noIcon : yesIcon);
+		final JMenuItem mnuListMode = new JCheckBoxMenuItem("Show thumbnails");
+		mnuListMode.setMnemonic(KeyEvent.VK_T);
+		mnuListMode.setSelected(!books.isListMode());
 		mnuListMode.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				books.setListMode(!books.isListMode());
-				mnuListMode.setIcon(books.isListMode() ? noIcon : yesIcon);
+				mnuListMode.setSelected(!books.isListMode());
 			}
 		});
 
-		final JMenuItem mnuSidePane = new JMenuItem("Show story browser",
-				KeyEvent.VK_B);
-		mnuSidePane.setIcon(sidePanel ? yesIcon : noIcon);
+		final JMenuItem mnuSidePane = new JCheckBoxMenuItem(
+				"Show story browser");
+		mnuSidePane.setMnemonic(KeyEvent.VK_B);
+		mnuSidePane.setSelected(sidePanel);
 		mnuSidePane.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setSidePanel(!sidePanel);
-				mnuSidePane.setIcon(sidePanel ? yesIcon : noIcon);
+				mnuSidePane.setSelected(sidePanel);
 			}
 		});
 
-		final JMenuItem mnuDetailsPane = new JMenuItem("Show details panel",
-				KeyEvent.VK_D);
-		mnuDetailsPane.setIcon(detailsPanel ? yesIcon : noIcon);
+		final JMenuItem mnuDetailsPane = new JCheckBoxMenuItem(
+				"Show details panel");
+		mnuDetailsPane.setMnemonic(KeyEvent.VK_D);
+		mnuDetailsPane.setSelected(detailsPanel);
 		mnuDetailsPane.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				setDetailsPanel(!detailsPanel);
-				mnuDetailsPane.setIcon(detailsPanel ? yesIcon : noIcon);
+				mnuDetailsPane.setSelected(detailsPanel);
 			}
 		});
 
