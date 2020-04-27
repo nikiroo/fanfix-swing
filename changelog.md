@@ -1,7 +1,8 @@
 # Fanfix-swing
 
-# Version WIP
+# Version 1.0.0
 
+- new: if arguments are passed, they are forwarded to the CLI
 - new: redownload (but do not delete original)
 - new: the right-click menu options now work
 - fix: when the sources are reloaded, the books don't change any more

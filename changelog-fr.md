@@ -1,7 +1,8 @@
 # Fanfix-swing
 
-# Version WIP
+# Version 1.0.0
 
+- new: si des paramètres sont données, ils sont renvoyés au CLI
 - new: option de re-téléchargement (sans supprimer l'ancien)
 - new: les options du menu contetuel fonctionnent
 - fix: quand les sources sont rechargées, les livres ne changent plus
