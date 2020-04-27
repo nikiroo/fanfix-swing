@@ -10,15 +10,14 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingWorker;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import be.nikiroo.fanfix.Instance;
 import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
-import be.nikiroo.fanfix_swing.gui.utils.DataTreeAuthors;
-import be.nikiroo.fanfix_swing.gui.utils.DataTreeSources;
-import be.nikiroo.fanfix_swing.gui.utils.DataTreeTag;
+import be.nikiroo.fanfix_swing.gui.utils.DataTreeBooks;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
 import be.nikiroo.utils.ui.ListenerPanel;
 
@@ -60,6 +59,8 @@ public class BrowserPanel extends ListenerPanel {
 	 */
 	static public final String TAB_CHANGE = "tab_change";
 
+	private DataTreeBooks dataTreeBooks;
+
 	private JTabbedPane tabs;
 	private BrowserTab sourceTab;
 	private BrowserTab authorTab;
@@ -77,11 +78,12 @@ public class BrowserPanel extends ListenerPanel {
 		tabs = new JTabbedPane();
 
 		int index = 0;
-		tabs.add(sourceTab = new BrowserTab(new DataTreeSources(false), index++,
+		dataTreeBooks = new DataTreeBooks(false, true, true);
+		tabs.add(sourceTab = new BrowserTab(dataTreeBooks.getSources(), index++,
 				SOURCE_SELECTION));
-		tabs.add(authorTab = new BrowserTab(new DataTreeAuthors(true), index++,
+		tabs.add(authorTab = new BrowserTab(dataTreeBooks.getAuthors(), index++,
 				AUTHOR_SELECTION));
-		tabs.add(tagsTab = new BrowserTab(new DataTreeTag(true), index++,
+		tabs.add(tagsTab = new BrowserTab(dataTreeBooks.getTags(), index++,
 				TAGS_SELECTION));
 
 		configureTab(tabs, sourceTab, "Sources", "Tooltip for Sources");
@@ -120,6 +122,8 @@ public class BrowserPanel extends ListenerPanel {
 				fireActionPerformed(TAB_CHANGE);
 			}
 		});
+
+		reloadData(true);
 	}
 
 	private void unselect() {
@@ -215,8 +219,24 @@ public class BrowserPanel extends ListenerPanel {
 	 * Reload all the data from the 3 tabs (without firing an action).
 	 */
 	public void reloadData() {
-		sourceTab.reloadData();
-		authorTab.reloadData();
-		tagsTab.reloadData();
+		reloadData(false);
+	}
+
+	public void reloadData(final boolean fireActionPerformed) {
+		new SwingWorker<Void, Void>() {
+			@Override
+			protected Void doInBackground() throws Exception {
+				dataTreeBooks.loadData();
+				return null;
+			}
+
+			@Override
+			protected void done() {
+				sourceTab.filter(fireActionPerformed);
+				authorTab.filter(fireActionPerformed);
+				tagsTab.filter(fireActionPerformed);
+
+			}
+		}.execute();
 	}
 }

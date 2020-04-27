@@ -5,9 +5,11 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -95,19 +97,12 @@ public class BrowserTab extends ListenerPanel {
 		searchBar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				reloadData(true);
+				filter(true);
 			}
 		});
-
-		reloadData(true);
 	}
 
-	// does NOT send a change event
-	public void reloadData() {
-		reloadData(false);
-	}
-
-	private void reloadData(final boolean fireActionPerformed) {
+	public void filter(final boolean fireActionPerformed) {
 		final TreeSnapshot snapshot = new TreeSnapshot(tree) {
 			@Override
 			protected boolean isSamePath(TreePath oldPath, TreePath newPath) {
@@ -124,37 +119,19 @@ public class BrowserTab extends ListenerPanel {
 				return oldString.equals(newString);
 			}
 		};
-		SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
-			@Override
-			protected Void doInBackground() throws Exception {
-				data.loadData();
-				return null;
-			}
 
-			@Override
-			protected void done() {
-				try {
-					get();
+		DataNode<DataNodeBook> filtered = data.getRoot(searchBar.getText());
 
-					DataNode<DataNodeBook> filtered = data
-							.getRoot(searchBar.getText());
+		node2node(root, filtered);
+		totalCount = filtered.count() - 1; // root is counted
 
-					node2node(root, filtered);
-					totalCount = filtered.count() - 1; // root is counted
+		((DefaultTreeModel) tree.getModel()).reload();
 
-					((DefaultTreeModel) tree.getModel()).reload();
+		snapshot.apply();
 
-					snapshot.apply();
-
-					if (fireActionPerformed) {
-						fireActionPerformed(listenerCommand);
-					}
-				} catch (Exception e) {
-					// TODO: error
-				}
-			}
-		};
-		worker.execute();
+		if (fireActionPerformed) {
+			fireActionPerformed(listenerCommand);
+		}
 	}
 
 	/**
