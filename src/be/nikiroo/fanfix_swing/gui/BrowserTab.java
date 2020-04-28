@@ -6,12 +6,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.JTree;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
+import javax.swing.UIManager;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.plaf.basic.BasicTreeUI;
@@ -63,6 +61,10 @@ public class BrowserTab extends ListenerPanel {
 		treeListener = new TreeSelectionListener() {
 			@Override
 			public void valueChanged(TreeSelectionEvent e) {
+				tree.setBackground(UIManager.getColor("Tree.background"));
+				tree.setEnabled(true);
+				searchBar.setEnabled(true);
+
 				List<String> elements = new ArrayList<String>();
 				TreePath[] paths = tree.getSelectionPaths();
 				if (paths != null) {
@@ -120,6 +122,10 @@ public class BrowserTab extends ListenerPanel {
 				filter(true);
 			}
 		});
+
+		tree.setBackground(UIManager.getColor("Tree.disabled"));
+		tree.setEnabled(false);
+		searchBar.setEnabled(false);
 	}
 
 	public void filter(final boolean fireActionPerformed) {

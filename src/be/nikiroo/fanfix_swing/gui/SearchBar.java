@@ -37,7 +37,8 @@ public class SearchBar extends ListenerPanel {
 	public SearchBar() {
 		setLayout(new BorderLayout());
 
-		// TODO: option for this
+		// TODO: make an option to change the default setting here:
+		// (can already be manually toggled by the user)
 		realTime = true;
 
 		search = new JButton(IconGenerator.get(Icon.search, Size.x16));
@@ -111,5 +112,13 @@ public class SearchBar extends ListenerPanel {
 		// Should usually not be NULL, but not impossible
 		String text = this.text.getText();
 		return text == null ? "" : text;
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		search.setEnabled(enabled);
+		clear.setEnabled(enabled);
+		text.setEnabled(enabled);
+		super.setEnabled(enabled);
 	}
 }

@@ -77,12 +77,12 @@ public class CoverImager {
 	}
 
 	/**
-	 * Generate a cover icon based upon the given {@link GuiReaderBookInfo}.
+	 * Generate a cover icon based upon the given {@link BookInfo}.
 	 * 
 	 * @param lib
 	 *            the library the meta comes from (can be NULL)
 	 * @param info
-	 *            the {@link GuiReaderBookInfo}
+	 *            the {@link BookInfo}
 	 * 
 	 * @return the image
 	 */
@@ -167,8 +167,8 @@ public class CoverImager {
 	}
 
 	/**
-	 * Get a unique ID from this {@link GuiReaderBookInfo} (note that it can be
-	 * a story, a fake item for a source/type or a fake item for an author).
+	 * Get a unique ID from this {@link BookInfo} (note that it can be a story,
+	 * a fake item for a source/type or a fake item for an author).
 	 * 
 	 * @param info
 	 *            the info or NULL for a generic (non unique!) ID

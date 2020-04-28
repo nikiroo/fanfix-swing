@@ -25,6 +25,7 @@ import be.nikiroo.fanfix.bundles.StringIdGui;
 import be.nikiroo.fanfix.bundles.UiConfig;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.importer.ImporterFrame;
+import be.nikiroo.fanfix_swing.gui.search.SearchFrame;
 import be.nikiroo.utils.Version;
 import be.nikiroo.utils.ui.ConfigEditor;
 
@@ -181,8 +182,20 @@ public class MainFrame extends JFrame {
 			}
 		});
 
+		// TODO: un-beta it
+		JMenuItem mnuSearch = new JMenuItem("Find a book (EARLY BETA)",
+				KeyEvent.VK_F);
+		mnuSearch.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new SearchFrame(Instance.getInstance().getLibrary())
+						.setVisible(true);
+			}
+		});
+
 		file.add(mnuDownload);
 		file.add(mnuImprtFile);
+		file.add(mnuSearch);
 
 		// EDIT
 
@@ -335,5 +348,9 @@ public class MainFrame extends JFrame {
 				goBack.repaint();
 			}
 		});
+	}
+
+	static public String trans(StringIdGui id, Object... values) {
+		return Instance.getInstance().getTransGui().getString(id, values);
 	}
 }
