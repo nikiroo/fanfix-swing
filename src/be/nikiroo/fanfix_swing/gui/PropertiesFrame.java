@@ -1,12 +1,9 @@
 package be.nikiroo.fanfix_swing.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Point;
 
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 import be.nikiroo.fanfix.bundles.StringIdGui;
 import be.nikiroo.fanfix.data.MetaData;
