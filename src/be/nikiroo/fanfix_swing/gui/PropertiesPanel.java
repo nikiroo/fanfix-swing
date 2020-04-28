@@ -18,6 +18,7 @@ import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix.reader.BasicReader;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
+import be.nikiroo.utils.ui.UIUtils;
 
 /**
  * A panel displaying properties and other information of a {@link Story}.
@@ -26,7 +27,9 @@ import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
  */
 public class PropertiesPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
-	private final int space = 10;
+	private final int space = 10; // empty space for visual correctness
+	private final int hscroll = 10; // we reserve space at the bottom for a
+									// potential HScroll
 
 	/**
 	 * Create a new {@link PropertiesPanel}.
@@ -52,7 +55,8 @@ public class PropertiesPanel extends JPanel {
 				.setLayout(new BoxLayout(mainPanelValues, BoxLayout.Y_AXIS));
 
 		mainPanel.add(mainPanelKeys, BorderLayout.WEST);
-		mainPanel.add(mainPanelValues, BorderLayout.CENTER);
+		mainPanel.add(UIUtils.scroll(mainPanelValues, true, false),
+				BorderLayout.CENTER);
 
 		Map<String, String> desc = BasicReader.getMetaDesc(meta);
 
@@ -79,11 +83,12 @@ public class PropertiesPanel extends JPanel {
 		imgLabel.setVerticalAlignment(JLabel.TOP);
 
 		// Borders
-		mainPanelKeys.setBorder(
-				BorderFactory.createEmptyBorder(space, space, space, space));
-		mainPanelValues.setBorder(
-				BorderFactory.createEmptyBorder(space, space, space, space));
-		imgLabel.setBorder(BorderFactory.createEmptyBorder(0, space, space, 0));
+		mainPanelKeys.setBorder(BorderFactory.createEmptyBorder(space, space,
+				space + hscroll, space));
+		mainPanelValues.setBorder(BorderFactory.createEmptyBorder(space, space,
+				space + hscroll, space));
+		imgLabel.setBorder(
+				BorderFactory.createEmptyBorder(0, space, space + hscroll, 0));
 
 		// Add all
 		add(imgLabel, BorderLayout.WEST);

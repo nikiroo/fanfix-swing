@@ -1,10 +1,13 @@
 package be.nikiroo.fanfix_swing.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Point;
 
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
-import be.nikiroo.fanfix.Instance;
 import be.nikiroo.fanfix.bundles.StringIdGui;
 import be.nikiroo.fanfix.data.MetaData;
 import be.nikiroo.fanfix.data.Story;
@@ -15,8 +18,9 @@ import be.nikiroo.fanfix.library.BasicLibrary;
  * 
  * @author niki
  */
-public class PropertiesFrame extends JFrame {
+public class PropertiesFrame extends JDialog {
 	private static final long serialVersionUID = 1L;
+	private JPanel desc;
 
 	/**
 	 * Create a new {@link PropertiesFrame}.
@@ -27,14 +31,23 @@ public class PropertiesFrame extends JFrame {
 	 *            the meta to describe
 	 */
 	public PropertiesFrame(BasicLibrary lib, MetaData meta) {
-		setTitle(Instance.getInstance().getTransGui().getString(
-				StringIdGui.TITLE_STORY, meta.getLuid(), meta.getTitle()));
+		setTitle(MainFrame.trans(StringIdGui.TITLE_STORY, meta.getLuid(),
+				meta.getTitle()));
 
-		PropertiesPanel desc = new PropertiesPanel(lib, meta);
-		setSize(800, (int) desc.getPreferredSize().getHeight()
-				+ 2 * desc.getBorderThickness());
-
+		desc = new PropertiesPanel(lib, meta);
 		setLayout(new BorderLayout());
 		add(desc, BorderLayout.NORTH);
+
+		this.setSize(800, desc.getHeight() + 0);
+	}
+
+	@Override
+	public void setVisible(boolean b) {
+		super.setVisible(b);
+
+		int titleBarHeight = Math
+				.abs(getContentPane().getHeight() - getHeight());
+
+		this.setSize(800, desc.getHeight() + titleBarHeight);
 	}
 }
