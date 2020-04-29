@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -244,7 +245,22 @@ public class BooksPanel extends ListenerPanel {
 		popup = new BookPopup(Instance.getInstance().getLibrary(), informer);
 		actions = new BooksPanelActions(this, informer);
 		final JList6<BookInfo> list = new JList6<BookInfo>();
-		data = new ListModel<BookInfo>(list, popup);
+		data = new ListModel<BookInfo>(list, popup,
+				new ListModel.TooltipCreator<BookInfo>() {
+					@Override
+					public Window generateTooltip(BookInfo book,
+							boolean undecorated) {
+						if (book != null && book.getMeta() != null) {
+							PropertiesFrame tooltip = new PropertiesFrame(
+									Instance.getInstance().getLibrary(),
+									book.getMeta());
+							tooltip.setUndecorated(undecorated);
+							return tooltip;
+						}
+
+						return null;
+					}
+				});
 
 		list.addMouseListener(new MouseAdapter() {
 			@Override

@@ -1,6 +1,7 @@
 package be.nikiroo.fanfix_swing.gui;
 
 import java.awt.BorderLayout;
+import java.awt.event.MouseListener;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -45,6 +46,12 @@ public class PropertiesFrame extends JDialog {
 		int titleBarHeight = Math
 				.abs(getContentPane().getHeight() - getHeight());
 
-		this.setSize(800, desc.getHeight() + titleBarHeight);
+		this.setSize(600, desc.getHeight() + titleBarHeight);
+	}
+
+	@Override
+	public synchronized void addMouseListener(MouseListener l) {
+		super.addMouseListener(l);
+		desc.addMouseListener(l);
 	}
 }

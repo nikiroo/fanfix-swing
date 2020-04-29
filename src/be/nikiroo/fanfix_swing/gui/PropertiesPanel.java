@@ -2,7 +2,11 @@ package be.nikiroo.fanfix_swing.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -30,6 +34,7 @@ public class PropertiesPanel extends JPanel {
 	private final int space = 10; // empty space for visual correctness
 	private final int hscroll = 10; // we reserve space at the bottom for a
 									// potential HScroll
+	private List<Component> listenables;
 
 	/**
 	 * Create a new {@link PropertiesPanel}.
@@ -40,6 +45,8 @@ public class PropertiesPanel extends JPanel {
 	 *            the meta to describe
 	 */
 	public PropertiesPanel(BasicLibrary lib, MetaData meta) {
+		listenables = new ArrayList<Component>();
+
 		// Image
 		ImageIcon img = new ImageIcon(CoverImager.generateCoverImage(lib,
 				BookInfo.fromMeta(lib, meta)));
@@ -69,12 +76,14 @@ public class PropertiesPanel extends JPanel {
 			jKey.setEditable(false);
 			jKey.setLineWrap(false);
 			jKey.setBackground(trans);
+			listenables.add(jKey);
 			mainPanelKeys.add(jKey);
 
 			final JTextArea jValue = new JTextArea(desc.get(key));
 			jValue.setEditable(false);
 			jValue.setLineWrap(false);
 			jValue.setBackground(base);
+			listenables.add(jValue);
 			mainPanelValues.add(jValue);
 		}
 
@@ -93,15 +102,19 @@ public class PropertiesPanel extends JPanel {
 		// Add all
 		add(imgLabel, BorderLayout.WEST);
 		add(mainPanel, BorderLayout.CENTER);
+
+		listenables.add(imgLabel);
+		listenables.add(mainPanel);
+		listenables.add(mainPanelKeys);
+		listenables.add(mainPanelValues);
 	}
 
-	/**
-	 * The invisible border size (multiply by 2 if you need the total width or
-	 * the total height).
-	 * 
-	 * @return the invisible border thickness
-	 */
-	public int getBorderThickness() {
-		return space;
+	@Override
+	public synchronized void addMouseListener(MouseListener l) {
+		super.addMouseListener(l);
+
+		for (Component comp : listenables) {
+			comp.addMouseListener(l);
+		}
 	}
 }
