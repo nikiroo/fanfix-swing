@@ -1,5 +1,10 @@
 # Fanfix-swing
 
+# Version WIP
+
+- new: des tooltips dans le paneau des livres
+- fix: corrections UI
+
 # Version 1.0.0
 
 - new: si des paramètres sont données, ils sont renvoyés au CLI

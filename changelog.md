@@ -1,5 +1,10 @@
 # Fanfix-swing
 
+# Version WIP
+
+- new: tooltips in books panel
+- fix: UI fixes
+
 # Version 1.0.0
 
 - new: if arguments are passed, they are forwarded to the CLI
