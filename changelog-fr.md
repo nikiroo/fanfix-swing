@@ -4,6 +4,7 @@
 
 - new: des tooltips dans le paneau des livres
 - fix: corrections UI
+- fix: le nom des livres téléchargés dans la fenêtre de download
 
 # Version 1.0.0
 

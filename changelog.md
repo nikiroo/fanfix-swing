@@ -4,6 +4,7 @@
 
 - new: tooltips in books panel
 - fix: UI fixes
+- fix: names in the download frame
 
 # Version 1.0.0
 
