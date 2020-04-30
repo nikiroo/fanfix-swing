@@ -65,6 +65,7 @@ public class ImporterItem extends ListenerPanel implements Hoverable {
 		return selected;
 	}
 
+	@Override
 	public void setSelected(boolean selected) {
 		if (this.selected != selected) {
 			this.selected = selected;
@@ -77,6 +78,7 @@ public class ImporterItem extends ListenerPanel implements Hoverable {
 		return hovered;
 	}
 
+	@Override
 	public void setHovered(boolean hovered) {
 		if (this.hovered != hovered) {
 			this.hovered = hovered;
