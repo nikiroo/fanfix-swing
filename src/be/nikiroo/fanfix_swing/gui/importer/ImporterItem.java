@@ -9,6 +9,7 @@ import java.awt.Rectangle;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 
+import be.nikiroo.fanfix.data.MetaData;
 import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
 import be.nikiroo.utils.Progress;
 import be.nikiroo.utils.Progress.ProgressListener;
@@ -30,8 +31,9 @@ public class ImporterItem extends ListenerPanel implements Hoverable {
 	private JLabel labelName;
 	private JLabel labelAction;
 
-	public ImporterItem(Progress pg, String basename) {
+	public ImporterItem(Progress pg, String basename, String storyName) {
 		this.basename = basename == null ? "" : basename;
+		this.storyName = storyName == null ? "" : storyName;
 
 		labelName = new JLabel(getStoryName());
 		labelAction = new JLabel(getAction());
@@ -115,22 +117,21 @@ public class ImporterItem extends ListenerPanel implements Hoverable {
 		pg.addProgressListener(new ProgressListener() {
 			@Override
 			public void progress(Progress notUsed, String currentAction) {
-				// TODO: get/setSubject on Progress?
 				currentAction = currentAction == null ? "" : currentAction;
-
-				if (storyName.isEmpty()
-						&& !currentAction.equals("Initialising")) {
-					storyName = currentAction;
+				String currentStoryName = null;
+				
+				MetaData meta = (MetaData)pg.get("meta");
+				if (meta != null) {
+					currentStoryName = meta.getTitle();
 				}
-
-				if (storyName.equals(currentAction)) {
-					currentAction = "";
-				}
-
+				
 				if (pg.getRelativeProgress() != progress
-						|| !action.equals(currentAction)) {
+						|| !action.equals(currentAction)
+						|| !storyName.equals(currentStoryName)) {
 					progress = pg.getRelativeProgress();
 					action = currentAction;
+					storyName = currentStoryName == null ? ""
+							: currentStoryName;
 
 					// The rest must be done in the UI thread
 					SwingUtilities.invokeLater(new Runnable() {

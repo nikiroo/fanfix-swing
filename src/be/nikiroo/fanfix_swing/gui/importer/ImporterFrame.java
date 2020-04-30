@@ -145,7 +145,7 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 			Object url = fc.getSelectedFile().getAbsolutePath();
 			if (url != null && !url.toString().isEmpty()) {
 				Progress pg = new Progress();
-				add(pg, "File");
+				add(pg, "File", fc.getSelectedFile().getName());
 
 				Actions.imprt(parent, url.toString(), pg, new Runnable() {
 					@Override
@@ -184,7 +184,7 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 		}
 
 		if (url != null && !url.isEmpty()) {
-			add(pg, basename);
+			add(pg, basename, null);
 
 			Actions.imprt(parent, url, pg, new Runnable() {
 				@Override
@@ -197,8 +197,8 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 		}
 	}
 
-	private void add(Progress pg, final String basename) {
-		final ImporterItem item = new ImporterItem(pg, basename);
+	private void add(Progress pg, final String basename, String storyName) {
+		final ImporterItem item = new ImporterItem(pg, basename, storyName);
 		item.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -214,9 +214,21 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 		data.filter(new Predicate<ImporterItem>() {
 			@Override
 			public boolean test(ImporterItem item) {
-				String text = item.getStoryName() + " " + item.getAction();
-				return filter.isEmpty() || text.isEmpty()
-						|| text.toLowerCase().contains(filter.toLowerCase());
+				if (filter.isEmpty())
+					return true;
+
+				if (item.getStoryName().isEmpty() && item.getAction().isEmpty())
+					return true;
+
+				if (item.getStoryName().toLowerCase()
+						.contains(filter.toLowerCase()))
+					return true;
+
+				if (item.getAction().toLowerCase()
+						.contains(filter.toLowerCase()))
+					return true;
+
+				return false;
 			}
 		});
 	}
