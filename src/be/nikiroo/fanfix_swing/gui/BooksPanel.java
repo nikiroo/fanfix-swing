@@ -89,8 +89,9 @@ public class BooksPanel extends ListenerPanel {
 
 	private ReloadData lastLoad = new ReloadData();
 
-	public BooksPanel(boolean showThumbnails) {
+	public BooksPanel(boolean showThumbnails, boolean seeWordCount) {
 		setLayout(new BorderLayout());
+		this.seeWordCount = seeWordCount;
 
 		final SearchBar search = new SearchBar();
 		add(search, BorderLayout.NORTH);
@@ -230,6 +231,8 @@ public class BooksPanel extends ListenerPanel {
 	 */
 	public void setSeeWordCount(boolean seeWordCount) {
 		if (this.seeWordCount != seeWordCount) {
+			this.seeWordCount = seeWordCount;
+
 			if (books != null) {
 				for (BookLine book : books.values()) {
 					book.setSeeWordCount(seeWordCount);

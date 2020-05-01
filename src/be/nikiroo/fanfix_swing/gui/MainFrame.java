@@ -24,6 +24,7 @@ import be.nikiroo.fanfix.Instance;
 import be.nikiroo.fanfix.bundles.Config;
 import be.nikiroo.fanfix.bundles.StringIdGui;
 import be.nikiroo.fanfix.bundles.UiConfig;
+import be.nikiroo.fanfix.bundles.UiConfigBundle;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.importer.ImporterFrame;
 import be.nikiroo.fanfix_swing.gui.search.SearchFrame;
@@ -62,9 +63,12 @@ public class MainFrame extends JFrame {
 			}
 		});
 
+		UiConfigBundle bundle = Instance.getInstance().getUiConfig();
+
 		browser = new BrowserPanel();
-		books = new BooksPanel(Instance.getInstance().getUiConfig()
-				.getBoolean(UiConfig.SHOW_THUMBNAILS, false));
+		books = new BooksPanel(
+				bundle.getBoolean(UiConfig.SHOW_THUMBNAILS, false),
+				bundle.getBoolean(UiConfig.SHOW_WORDCOUNT, false));
 		details = new DetailsPanel();
 		goBack = new BreadCrumbsPanel();
 
@@ -241,20 +245,6 @@ public class MainFrame extends JFrame {
 		JMenu view = new JMenu("View");
 		view.setMnemonic(KeyEvent.VK_V);
 
-		final JMenuItem mnuListMode = new JCheckBoxMenuItem("Show thumbnails");
-		mnuListMode.setMnemonic(KeyEvent.VK_T);
-		mnuListMode.setSelected(books.isShowThumbnails());
-		mnuListMode.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				boolean newValue = !books.isShowThumbnails();
-				books.setShowThumbnails(newValue);
-				mnuListMode.setSelected(newValue);
-
-				saveConfig(UiConfig.SHOW_THUMBNAILS, newValue);
-			}
-		});
-
 		final JMenuItem mnuSidePane = new JCheckBoxMenuItem(
 				"Show story browser");
 		mnuSidePane.setMnemonic(KeyEvent.VK_B);
@@ -285,9 +275,40 @@ public class MainFrame extends JFrame {
 			}
 		});
 
+		final JMenuItem mnuThumbs = new JCheckBoxMenuItem("Show thumbnails");
+		mnuThumbs.setMnemonic(KeyEvent.VK_T);
+		mnuThumbs.setSelected(books.isShowThumbnails());
+		mnuThumbs.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				boolean newValue = !books.isShowThumbnails();
+				books.setShowThumbnails(newValue);
+				mnuThumbs.setSelected(newValue);
+
+				saveConfig(UiConfig.SHOW_THUMBNAILS, newValue);
+			}
+		});
+
+		final JMenuItem mnuWord = new JMenuItem(
+				books.isSeeWordCount() ? "Show author" : "Show word count");
+		mnuWord.setMnemonic(
+				books.isSeeWordCount() ? KeyEvent.VK_A : KeyEvent.VK_W);
+		mnuWord.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				boolean newValue = !books.isSeeWordCount();
+				books.setSeeWordCount(newValue);
+				mnuWord.setText(newValue ? "Show author" : "Show word count");
+				mnuWord.setMnemonic(newValue ? KeyEvent.VK_A : KeyEvent.VK_W);
+
+				saveConfig(UiConfig.SHOW_WORDCOUNT, newValue);
+			}
+		});
+
 		view.add(mnuSidePane);
 		view.add(mnuDetailsPane);
-		view.add(mnuListMode);
+		view.add(mnuThumbs);
+		view.add(mnuWord);
 
 		//
 
