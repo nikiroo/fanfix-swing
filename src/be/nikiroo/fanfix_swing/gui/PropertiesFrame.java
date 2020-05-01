@@ -43,10 +43,12 @@ public class PropertiesFrame extends JDialog {
 	public void setVisible(boolean b) {
 		super.setVisible(b);
 
-		int titleBarHeight = Math
-				.abs(getContentPane().getHeight() - getHeight());
+		if (b) {
+			int titleBarHeight = Math
+					.abs(getContentPane().getHeight() - getHeight());
 
-		this.setSize(600, desc.getHeight() + titleBarHeight);
+			this.setSize(600, desc.getHeight() + titleBarHeight);
+		}
 	}
 
 	@Override

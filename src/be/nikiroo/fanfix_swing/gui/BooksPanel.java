@@ -250,10 +250,10 @@ public class BooksPanel extends ListenerPanel {
 					@Override
 					public Window generateTooltip(BookInfo book,
 							boolean undecorated) {
-						if (book != null && book.getMeta() != null) {
+						MetaData meta = book == null ? null : book.getMeta();
+						if (meta != null) {
 							PropertiesFrame tooltip = new PropertiesFrame(
-									Instance.getInstance().getLibrary(),
-									book.getMeta());
+									Instance.getInstance().getLibrary(), meta);
 							tooltip.setUndecorated(undecorated);
 							return tooltip;
 						}
