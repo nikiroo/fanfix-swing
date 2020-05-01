@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class MainFrame extends JFrame {
 	private boolean detailsPanel;
 	private Runnable onCrumbsbreadChange;
 
-	public MainFrame(boolean sidePanel, boolean detailsPanel) {
+	public MainFrame() {
 		super("Fanfix " + Version.getCurrentVersion());
 
 		if (importer == null) {
@@ -62,7 +63,8 @@ public class MainFrame extends JFrame {
 		});
 
 		browser = new BrowserPanel();
-		books = new BooksPanel(true); // TODO: very slow here!!
+		books = new BooksPanel(Instance.getInstance().getUiConfig()
+				.getBoolean(UiConfig.SHOW_THUMBNAILS, false));
 		details = new DetailsPanel();
 		goBack = new BreadCrumbsPanel();
 
@@ -122,6 +124,12 @@ public class MainFrame extends JFrame {
 				}
 			}
 		});
+
+		// Check config
+		boolean sidePanel = Instance.getInstance().getUiConfig()
+				.getBoolean(UiConfig.SHOW_SIDE_PANEL, true);
+		boolean detailsPanel = Instance.getInstance().getUiConfig()
+				.getBoolean(UiConfig.SHOW_DETAILS_PANEL, true);
 
 		// To force an update
 		this.sidePanel = !sidePanel;
@@ -235,12 +243,15 @@ public class MainFrame extends JFrame {
 
 		final JMenuItem mnuListMode = new JCheckBoxMenuItem("Show thumbnails");
 		mnuListMode.setMnemonic(KeyEvent.VK_T);
-		mnuListMode.setSelected(!books.isListMode());
+		mnuListMode.setSelected(books.isShowThumbnails());
 		mnuListMode.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				books.setListMode(!books.isListMode());
-				mnuListMode.setSelected(!books.isListMode());
+				boolean newValue = !books.isShowThumbnails();
+				books.setShowThumbnails(newValue);
+				mnuListMode.setSelected(newValue);
+
+				saveConfig(UiConfig.SHOW_THUMBNAILS, newValue);
 			}
 		});
 
@@ -251,8 +262,11 @@ public class MainFrame extends JFrame {
 		mnuSidePane.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setSidePanel(!sidePanel);
-				mnuSidePane.setSelected(sidePanel);
+				boolean newValue = !sidePanel;
+				setSidePanel(newValue);
+				mnuSidePane.setSelected(newValue);
+
+				saveConfig(UiConfig.SHOW_SIDE_PANEL, newValue);
 			}
 		});
 
@@ -263,8 +277,11 @@ public class MainFrame extends JFrame {
 		mnuDetailsPane.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setDetailsPanel(!detailsPanel);
-				mnuDetailsPane.setSelected(detailsPanel);
+				boolean newValue = !detailsPanel;
+				setDetailsPanel(newValue);
+				mnuDetailsPane.setSelected(newValue);
+
+				saveConfig(UiConfig.SHOW_DETAILS_PANEL, newValue);
 			}
 		});
 
@@ -279,6 +296,16 @@ public class MainFrame extends JFrame {
 		bar.add(view);
 
 		return bar;
+	}
+
+	private void saveConfig(UiConfig option, boolean value) {
+		Instance.getInstance().getUiConfig().setBoolean(option, value);
+		try {
+			Instance.getInstance().getUiConfig().updateFile();
+		} catch (IOException ioe) {
+			Instance.getInstance().getTraceHandler().error(
+					new IOException("Cannot save configuration file", ioe));
+		}
 	}
 
 	private void setMode(boolean sidePanel, boolean detailsPanel) {

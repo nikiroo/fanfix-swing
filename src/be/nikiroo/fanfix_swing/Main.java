@@ -24,7 +24,7 @@ public class Main {
 		UIUtils.setLookAndFeel();
 		Instance.init();
 
-		JFrame main = new MainFrame(true, true);
+		JFrame main = new MainFrame();
 		main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		main.setVisible(true);
 	}

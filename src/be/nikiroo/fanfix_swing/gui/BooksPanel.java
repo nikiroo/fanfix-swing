@@ -76,7 +76,7 @@ public class BooksPanel extends ListenerPanel {
 
 	private Map<BookInfo, BookLine> books = new HashMap<BookInfo, BookLine>();
 	private boolean seeWordCount;
-	private boolean listMode;
+	private boolean showThumbnails;
 
 	private JList6<BookInfo> list;
 	private ListModel<BookInfo> data;
@@ -89,7 +89,7 @@ public class BooksPanel extends ListenerPanel {
 
 	private ReloadData lastLoad = new ReloadData();
 
-	public BooksPanel(boolean listMode) {
+	public BooksPanel(boolean showThumbnails) {
 		setLayout(new BorderLayout());
 
 		final SearchBar search = new SearchBar();
@@ -107,7 +107,7 @@ public class BooksPanel extends ListenerPanel {
 		bookCoverUpdater.start();
 
 		list = initList();
-		setListMode(listMode);
+		setShowThumbnails(showThumbnails);
 		add(UIUtils.scroll(list, false), BorderLayout.CENTER);
 	}
 
@@ -346,7 +346,7 @@ public class BooksPanel extends ListenerPanel {
 					boolean cellHasFocus) {
 				BookLine book = books.get(value);
 				if (book == null) {
-					if (listMode) {
+					if (!showThumbnails) {
 						book = new BookLine(value, seeWordCount);
 					} else {
 						book = new BookBlock(value, seeWordCount);
@@ -384,22 +384,22 @@ public class BooksPanel extends ListenerPanel {
 				});
 	}
 
-	public boolean isListMode() {
-		return listMode;
+	public boolean isShowThumbnails() {
+		return showThumbnails;
 	}
 
-	public void setListMode(boolean listMode) {
-		this.listMode = listMode;
+	public void setShowThumbnails(boolean showThumbnails) {
+		this.showThumbnails = showThumbnails;
 		books.clear();
 		list.setLayoutOrientation(
-				listMode ? JList6.VERTICAL : JList6.HORIZONTAL_WRAP);
+				showThumbnails ? JList6.HORIZONTAL_WRAP : JList6.VERTICAL);
 
 		StringBuilder longString = new StringBuilder();
 		for (int i = 0; i < 20; i++) {
 			longString.append(
 					"Some long string, which is 50 chars long itself...");
 		}
-		if (listMode) {
+		if (!showThumbnails) {
 			bookCoverUpdater.clear();
 			Dimension sz = new BookLine(
 					BookInfo.fromSource(null, longString.toString()), true)
