@@ -8,9 +8,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownHostException;
 
+import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.SwingWorker;
+
+import org.jsoup.helper.DataUtil;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import be.nikiroo.fanfix.Instance;
 import be.nikiroo.fanfix.bundles.StringIdGui;
@@ -20,6 +25,8 @@ import be.nikiroo.fanfix.data.Story;
 import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix.library.LocalLibrary;
 import be.nikiroo.fanfix.reader.BasicReader;
+import be.nikiroo.fanfix_swing.gui.book.BookInfo;
+import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
 import be.nikiroo.fanfix_swing.gui.viewer.Viewer;
 import be.nikiroo.utils.Progress;
@@ -34,10 +41,16 @@ public class Actions {
 
 		// TODO: UI
 		final JDialog wait = new JDialog((Window) parentWindow);
-		wait.setTitle("Opening story");
-		wait.setSize(400, 300);
+		wait.setTitle(meta.getTitle());
+		// Image
+		ImageIcon img = new ImageIcon(CoverImager.generateCoverImage(lib,
+				BookInfo.fromMeta(lib, meta)));
 		wait.setLayout(new BorderLayout());
-		wait.add(new JLabel("Waiting..."));
+		wait.add(new JLabel("Opening " + meta.getTitle() + "..."),
+				BorderLayout.NORTH);
+		wait.add(new JLabel(img), BorderLayout.CENTER);
+
+		wait.setSize(400, 300);
 
 		// TODO: pg?
 
