@@ -78,21 +78,17 @@ public class Actions {
 			protected void done() {
 				try {
 					get();
-					boolean internalImg = Instance
-							.getInstance()
-							.getUiConfig()
+					boolean internalImg = Instance.getInstance().getUiConfig()
 							.getBoolean(
 									UiConfig.IMAGES_DOCUMENT_USE_INTERNAL_READER,
 									true);
-					boolean internalNonImg = Instance
-							.getInstance()
-							.getUiConfig()
-							.getBoolean(
+					boolean internalNonImg = Instance.getInstance()
+							.getUiConfig().getBoolean(
 									UiConfig.NON_IMAGES_DOCUMENT_USE_INTERNAL_READER,
 									true);
 
-					if (isImageDocument && internalImg || !isImageDocument
-							&& internalNonImg) {
+					if (isImageDocument && internalImg
+							|| !isImageDocument && internalNonImg) {
 						openInternal(story);
 					} else {
 						openExternal(target, isImageDocument);
@@ -195,13 +191,14 @@ public class Actions {
 				}
 			}
 			if (!ok) {
-				throw new IOException("Cannot find a program to start the file");
+				throw new IOException(
+						"Cannot find a program to start the file");
 			}
 		} else {
 			Instance.getInstance().getTraceHandler()
 					.trace("starting external program: " + program);
-			proc = Runtime.getRuntime().exec(
-					new String[] { program, target.getAbsolutePath() });
+			proc = Runtime.getRuntime()
+					.exec(new String[] { program, target.getAbsolutePath() });
 		}
 
 		if (proc != null && sync) {
@@ -248,26 +245,21 @@ public class Actions {
 				} catch (IOException e) {
 					pg.done();
 					if (e instanceof UnknownHostException) {
-						UiHelper.error(
-								parent,
-								Instance.getInstance()
-										.getTransGui()
-										.getString(
-												StringIdGui.ERROR_URL_NOT_SUPPORTED,
-												url),
-								Instance.getInstance().getTransGui()
-										.getString(StringIdGui.TITLE_ERROR),
+						UiHelper.error(parent,
+								Instance.getInstance().getTransGui().getString(
+										StringIdGui.ERROR_URL_NOT_SUPPORTED,
+										url),
+								Instance.getInstance().getTransGui().getString(
+										StringIdGui.TITLE_ERROR),
 								null);
 					} else {
-						UiHelper.error(
-								parent,
-								Instance.getInstance()
-										.getTransGui()
-										.getString(
-												StringIdGui.ERROR_URL_IMPORT_FAILED,
-												url, e.getMessage()),
+						UiHelper.error(parent,
+								Instance.getInstance().getTransGui().getString(
+										StringIdGui.ERROR_URL_IMPORT_FAILED,
+										url, e.getMessage()),
 								Instance.getInstance().getTransGui()
-										.getString(StringIdGui.TITLE_ERROR), e);
+										.getString(StringIdGui.TITLE_ERROR),
+								e);
 					}
 				}
 
