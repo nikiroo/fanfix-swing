@@ -36,17 +36,16 @@ public class PropertiesFrame extends JDialog {
 		setLayout(new BorderLayout());
 		add(desc, BorderLayout.NORTH);
 
-		this.setSize(800, desc.getHeight() + 0);
+		this.setSize(600, desc.getHeight() + 0);
 	}
 
 	@Override
-	public void setVisible(boolean b) {
+	public void setVisible(final boolean b) {
 		super.setVisible(b);
 
 		if (b) {
 			int titleBarHeight = Math
 					.abs(getContentPane().getHeight() - getHeight());
-
 			this.setSize(600, desc.getHeight() + titleBarHeight);
 		}
 	}

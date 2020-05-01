@@ -68,7 +68,6 @@ public class PropertiesPanel extends JPanel {
 		Map<String, String> desc = BasicReader.getMetaDesc(meta);
 
 		Color trans = new Color(0, 0, 0, 1);
-		Color base = mainPanelValues.getBackground();
 		for (String key : desc.keySet()) {
 			JTextArea jKey = new JTextArea(key);
 			jKey.setFont(new Font(jKey.getFont().getFontName(), Font.BOLD,
@@ -82,9 +81,10 @@ public class PropertiesPanel extends JPanel {
 			final JTextArea jValue = new JTextArea(desc.get(key));
 			jValue.setEditable(false);
 			jValue.setLineWrap(false);
-			jValue.setBackground(base);
 			listenables.add(jValue);
 			mainPanelValues.add(jValue);
+
+			mainPanelValues.setBackground(jValue.getBackground());
 		}
 
 		// Image
