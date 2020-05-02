@@ -1,6 +1,6 @@
 # Fanfix-swing
 
-# Version WIP
+# Version 1.1.0
 
 - new: des tooltips dans le paneau des livres
 - new: recherche de lives (copié de fanfix, "early beta")

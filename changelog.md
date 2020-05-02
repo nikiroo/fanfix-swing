@@ -1,6 +1,6 @@
 # Fanfix-swing
 
-# Version WIP
+# Version 1.1.0
 
 - new: tooltips in books panel
 - new: books browsing (copied from fanfix, early beta)
