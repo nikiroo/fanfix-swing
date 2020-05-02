@@ -3,6 +3,7 @@
 # Version WIP
 
 - new: tooltips in books panel
+- new: books browsing (copied from fanfix, early beta)
 - fix: UI fixes
 - fix: names in the download frame
 - fix: publication/creation date formated

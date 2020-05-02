@@ -3,6 +3,7 @@
 # Version WIP
 
 - new: des tooltips dans le paneau des livres
+- new: recherche de lives (copié de fanfix, "early beta")
 - fix: corrections UI
 - fix: le nom des livres téléchargés dans la fenêtre de download
 - fix: date de publication/création formatée
