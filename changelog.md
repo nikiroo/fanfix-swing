@@ -5,6 +5,9 @@
 - new: tooltips in books panel
 - fix: UI fixes
 - fix: names in the download frame
+- fix: publication/creation date formated
+- fix: e621: option to use a Login/API key to evade blacklists
+- fix: e621: better metadata
 
 # Version 1.0.0
 
