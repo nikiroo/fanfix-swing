@@ -7,12 +7,13 @@ Fanfix-swing est un programme qui offre une interface graphique (en java Swing) 
 ## Synopsis
 
 - ```fanfix-swing```
+- ```fanfix-swing [...]``` (options [Fanfix](https://github.com/nikiroo/fanfix))
 
 ## Description
 
 (Si vous voulez juste voir les derniers changements, vous pouvez regarder le [Changelog](changelog-fr.md) -- remarquez que le programme affiche le changelog si une version plus récente est détectée depuis la version x.x.x.)
 
-![Main GUI](screenshots/fanfix-x.x.x.png?raw=true "Main GUI")
+![Main GUI](screenshots/fanfix-swing.png?raw=true "Fenêtre principale")
 
 Une gallerie de screenshots est disponible [ici](screenshots/README-fr.md).
 
