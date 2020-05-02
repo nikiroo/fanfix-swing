@@ -33,7 +33,7 @@ public class SearchAction extends JFrame {
 		setLayout(new BorderLayout());
 
 		JPanel main = new JPanel(new BorderLayout());
-		JPanel props = new PropertiesPanel(lib, info.getMeta());
+		JPanel props = new PropertiesPanel(lib, info.getMeta(), false);
 
 		main.add(props, BorderLayout.NORTH);
 		main.add(new ViewerPanel(info.getMeta(), info.getMeta()

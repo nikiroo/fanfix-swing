@@ -86,7 +86,7 @@ public class Viewer extends JFrame {
 		JPanel contentPane = new JPanel(new BorderLayout());
 		add(contentPane, BorderLayout.CENTER);
 
-		descPane = new PropertiesPanel(lib, meta);
+		descPane = new PropertiesPanel(lib, meta, false);
 		contentPane.add(descPane, BorderLayout.NORTH);
 
 		mainPanel = new ViewerPanel(story);
