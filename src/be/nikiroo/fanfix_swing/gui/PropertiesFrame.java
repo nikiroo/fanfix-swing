@@ -40,8 +40,8 @@ public class PropertiesFrame extends JDialog {
 		setLayout(new BorderLayout());
 		add(desc, BorderLayout.NORTH);
 
-		this.setUndecorated(undecorated);
 		this.setSize(600, desc.getHeight() + 0);
+		this.setUndecorated(undecorated);
 	}
 
 	@Override
