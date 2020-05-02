@@ -94,6 +94,7 @@ Nécessaires :
 - ```src/be/nikiroo/fanfix```: la librairie Fanfix sur laquelle tout le programme est basé, inclus en tant que subtree
 - [```libs/unbescape-sources.jar```](https://github.com/unbescape/unbescape): une librairie sympathique pour convertir du texte depuis/vers beaucoup de formats ; utilisée ici pour la partie HTML
 - [```libs/jsoup-sources.jar```](https://jsoup.org/): une libraririe pour parser du HTML
+- [```libs/JSON-java-20190722-sources.jar```](https://github.com/stleary/JSON-java): une libraririe pour parser du JSON
 
 Optionnelles :
 

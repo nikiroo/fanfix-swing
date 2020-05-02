@@ -94,6 +94,7 @@ Required:
 - ```src/be/nikiroo/fanfix```: the fanfix library upon which all the program is based, included as a subtree
 - [```libs/unbescape-sources.jar```](https://github.com/unbescape/unbescape): a nice library to escape/unescape a lot of text formats; used here for HTML
 - [```libs/jsoup-sources.jar```](https://jsoup.org/): a library to parse HTML
+- [```libs/JSON-java-20190722-sources.jar```](https://github.com/stleary/JSON-java): a library to parse JSON
 
 Optional:
 
