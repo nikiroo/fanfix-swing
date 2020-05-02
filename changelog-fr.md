@@ -6,8 +6,8 @@
 - fix: corrections UI
 - fix: le nom des livres téléchargés dans la fenêtre de download
 - fix: date de publication/création formatée
-- fix: e621: possibilité d'utiliser un Login/API key pour éviter les blacklists
-- fix: e621: meilleures meta-data
+- e621: possibilité d'utiliser un Login/API key pour éviter les blacklists
+- e621: meilleures meta-data
 
 # Version 1.0.0
 
