@@ -69,6 +69,8 @@ You can start the program without parameters:
 - ```java -jar fanfix-swing.jar```
 - ```fanfix-swing``` (if you used *make install*)
 
+You can also use the options supported by [Fanfix](https://github.com/nikiroo/fanfix).
+
 ### Environment
 
 Some environment variables are recognized by the program:

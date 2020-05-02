@@ -69,6 +69,8 @@ Vous pouvez démarrer le programme sans paramètres :
 - ```java -jar fanfix-swing.jar```
 - ```fanfix-swing``` (si vous avez utilisé *make install*)
 
+Vous pouvez aussi utiliser les options que [Fanfix](https://github.com/nikiroo/fanfix) supporte.
+
 ### Environnement
 
 Certaines variables d'environnement sont reconnues par le programme :
