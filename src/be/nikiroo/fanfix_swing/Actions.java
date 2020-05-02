@@ -5,17 +5,16 @@ import java.awt.Container;
 import java.awt.Window;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.SwingWorker;
-
-import org.jsoup.helper.DataUtil;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
 import be.nikiroo.fanfix.Instance;
 import be.nikiroo.fanfix.bundles.StringIdGui;
@@ -24,12 +23,12 @@ import be.nikiroo.fanfix.data.MetaData;
 import be.nikiroo.fanfix.data.Story;
 import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix.library.LocalLibrary;
-import be.nikiroo.fanfix.reader.BasicReader;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
 import be.nikiroo.fanfix_swing.gui.viewer.Viewer;
 import be.nikiroo.utils.Progress;
+import be.nikiroo.utils.StringUtils;
 
 public class Actions {
 	static public void openBook(final BasicLibrary lib, MetaData meta,
@@ -248,9 +247,7 @@ public class Actions {
 					pg = new Progress();
 
 				try {
-					Instance.getInstance().getLibrary()
-							.imprt(BasicReader.getUrl(url), pg);
-
+					Instance.getInstance().getLibrary().imprt(getUrl(url), pg);
 					pg.done();
 					if (onSuccess != null) {
 						onSuccess.run();
@@ -279,5 +276,78 @@ public class Actions {
 				return null;
 			}
 		}.execute();
+	}
+
+	/**
+	 * Return an {@link URL} from this {@link String}, be it a file path or an
+	 * actual {@link URL}.
+	 * 
+	 * @param sourceString
+	 *            the source
+	 * 
+	 * @return the corresponding {@link URL}
+	 * 
+	 * @throws MalformedURLException
+	 *             if this is neither a file nor a conventional {@link URL}
+	 */
+	static public URL getUrl(String sourceString) throws MalformedURLException {
+		if (sourceString == null || sourceString.isEmpty()) {
+			throw new MalformedURLException("Empty url");
+		}
+
+		URL source = null;
+		try {
+			source = new URL(sourceString);
+		} catch (MalformedURLException e) {
+			File sourceFile = new File(sourceString);
+			source = sourceFile.toURI().toURL();
+		}
+
+		return source;
+	}
+
+	/**
+	 * Describe a {@link Story} from its {@link MetaData} and return a list of
+	 * title/value that represent this {@link Story}.
+	 * 
+	 * @param meta
+	 *            the {@link MetaData} to represent
+	 * 
+	 * @return the information
+	 */
+	static public Map<String, String> getMetaDesc(MetaData meta) {
+		Map<String, String> metaDesc = new LinkedHashMap<String, String>();
+
+		// TODO: i18n
+
+		StringBuilder tags = new StringBuilder();
+		for (String tag : meta.getTags()) {
+			if (tags.length() > 0) {
+				tags.append(", ");
+			}
+			tags.append(tag);
+		}
+
+		// TODO: i18n
+		metaDesc.put("Author", meta.getAuthor());
+		metaDesc.put("Published on", meta.getPublisher());
+		metaDesc.put("Publication date", meta.getDate());
+		metaDesc.put("Creation date", meta.getCreationDate());
+		String count = "";
+		if (meta.getWords() > 0) {
+			count = StringUtils.formatNumber(meta.getWords());
+		}
+		if (meta.isImageDocument()) {
+			metaDesc.put("Number of images", count);
+		} else {
+			metaDesc.put("Number of words", count);
+		}
+		metaDesc.put("Source", meta.getSource());
+		metaDesc.put("Subject", meta.getSubject());
+		metaDesc.put("Language", meta.getLang());
+		metaDesc.put("Tags", tags.toString());
+		metaDesc.put("URL", meta.getUrl());
+
+		return metaDesc;
 	}
 }

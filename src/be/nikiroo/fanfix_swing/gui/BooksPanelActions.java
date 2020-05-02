@@ -40,7 +40,7 @@ public class BooksPanelActions {
 		/** Change its author. */
 		AUTHOR
 	}
-	
+
 	private Container owner;
 	private Informer informer;
 
@@ -138,7 +138,7 @@ public class BooksPanelActions {
 			MainFrame.getImporter().imprt(owner, book.getMeta().getUrl());
 		}
 	}
-	
+
 	public void export() {
 		// TODO: allow dir for multiple selection?
 
@@ -193,7 +193,7 @@ public class BooksPanelActions {
 			}
 		}
 	}
-	
+
 	/**
 	 * Create a {@link FileFilter} that accepts all files and return the given
 	 * description.
@@ -216,7 +216,7 @@ public class BooksPanelActions {
 			}
 		};
 	}
-	
+
 	public void clearCache() {
 		final List<BookInfo> selected = informer.getSelected();
 		if (!selected.isEmpty()) {
@@ -239,9 +239,8 @@ public class BooksPanelActions {
 							informer.setCached(book, false);
 						}
 					} catch (Exception e) {
-						UiHelper.error(owner,
-								e.getLocalizedMessage(), "IOException",
-								e);
+						UiHelper.error(owner, e.getLocalizedMessage(),
+								"IOException", e);
 					}
 				}
 			}.execute();
@@ -266,8 +265,7 @@ public class BooksPanelActions {
 					}
 				}
 
-				Object rep = JOptionPane.showInputDialog(
-						owner,
+				Object rep = JOptionPane.showInputDialog(owner,
 						trans(StringIdGui.SUBTITLE_MOVE_TO),
 						trans(StringIdGui.TITLE_MOVE_TO),
 						JOptionPane.QUESTION_MESSAGE, null, null, init);
@@ -323,15 +321,14 @@ public class BooksPanelActions {
 						// the cache above
 						get();
 					} catch (Exception e) {
-						UiHelper.error(owner,
-								e.getLocalizedMessage(), "IOException",
-								e);
+						UiHelper.error(owner, e.getLocalizedMessage(),
+								"IOException", e);
 					}
 				}
 			}.execute();
 		}
 	}
-	
+
 	public void prefetch() {
 		final List<BookInfo> selected = informer.getSelected();
 
@@ -346,8 +343,8 @@ public class BooksPanelActions {
 						luid = book.getMeta().getLuid();
 						break;
 					case SOURCE:
-						for (MetaData meta : lib.getList().filter(
-								book.getMainInfo(), null, null)) {
+						for (MetaData meta : lib.getList()
+								.filter(book.getMainInfo(), null, null)) {
 							luid = meta.getLuid();
 						}
 						break;
@@ -358,8 +355,8 @@ public class BooksPanelActions {
 						}
 						break;
 					case TAG:
-						for (MetaData meta : lib.getList().filter(null,
-								null, book.getMainInfo())) {
+						for (MetaData meta : lib.getList().filter(null, null,
+								book.getMainInfo())) {
 							luid = meta.getLuid();
 						}
 						break;
@@ -386,22 +383,22 @@ public class BooksPanelActions {
 				try {
 					get();
 				} catch (Exception e) {
-					UiHelper.error(owner,
-							e.getLocalizedMessage(), "IOException", e);
+					UiHelper.error(owner, e.getLocalizedMessage(),
+							"IOException", e);
 				}
 			}
 		}.execute();
 	}
-	
+
 	public void properties() {
 		BasicLibrary lib = Instance.getInstance().getLibrary();
 		BookInfo selected = informer.getUniqueSelected();
 		if (selected != null) {
-			new PropertiesFrame(lib, selected.getMeta())
+			new PropertiesFrame(lib, selected.getMeta(), false)
 					.setVisible(true);
 		}
 	}
-	
+
 	public void setCoverFor(final ChangeAction what) {
 		final BookInfo book = informer.getUniqueSelected();
 		if (book != null) {
@@ -441,7 +438,7 @@ public class BooksPanelActions {
 			}.execute();
 		}
 	}
-	
+
 	static private String trans(StringIdGui id, Object... values) {
 		return Instance.getInstance().getTransGui().getString(id, values);
 	}

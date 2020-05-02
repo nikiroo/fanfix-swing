@@ -256,8 +256,8 @@ public class BooksPanel extends ListenerPanel {
 						MetaData meta = book == null ? null : book.getMeta();
 						if (meta != null) {
 							PropertiesFrame tooltip = new PropertiesFrame(
-									Instance.getInstance().getLibrary(), meta);
-							tooltip.setUndecorated(undecorated);
+									Instance.getInstance().getLibrary(), meta,
+									undecorated);
 							return tooltip;
 						}
 

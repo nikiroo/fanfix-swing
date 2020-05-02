@@ -176,8 +176,7 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 		Progress pg = new Progress();
 		String basename = null;
 		try {
-			BasicSupport support = BasicSupport
-					.getSupport(BasicReader.getUrl(url));
+			BasicSupport support = BasicSupport.getSupport(Actions.getUrl(url));
 			basename = support.getType().getSourceName();
 		} catch (Exception e) {
 			basename = "unknown website";

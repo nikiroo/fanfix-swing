@@ -27,15 +27,20 @@ public class PropertiesFrame extends JDialog {
 	 *            the library to use for the cover image
 	 * @param meta
 	 *            the meta to describe
+	 * @param undecorated
+	 *            do not draw the usual window decorations
+	 *            (close/minimize/maximize)
 	 */
-	public PropertiesFrame(BasicLibrary lib, MetaData meta) {
+	public PropertiesFrame(BasicLibrary lib, MetaData meta,
+			boolean undecorated) {
 		setTitle(MainFrame.trans(StringIdGui.TITLE_STORY, meta.getLuid(),
 				meta.getTitle()));
 
-		desc = new PropertiesPanel(lib, meta);
+		desc = new PropertiesPanel(lib, meta, undecorated);
 		setLayout(new BorderLayout());
 		add(desc, BorderLayout.NORTH);
 
+		this.setUndecorated(undecorated);
 		this.setSize(600, desc.getHeight() + 0);
 	}
 

@@ -15,11 +15,13 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
 
 import be.nikiroo.fanfix.data.MetaData;
 import be.nikiroo.fanfix.data.Story;
 import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix.reader.BasicReader;
+import be.nikiroo.fanfix_swing.Actions;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
 import be.nikiroo.utils.ui.UIUtils;
@@ -43,15 +45,42 @@ public class PropertiesPanel extends JPanel {
 	 *            the library to use for the cover image
 	 * @param meta
 	 *            the meta to describe
+	 * @param includeTitle
+	 *            TRUE to include the title on top
 	 */
-	public PropertiesPanel(BasicLibrary lib, MetaData meta) {
+	public PropertiesPanel(BasicLibrary lib, MetaData meta,
+			boolean includeTitle) {
 		listenables = new ArrayList<Component>();
+
+		Color trans = new Color(0, 0, 0, 1);
 
 		// Image
 		ImageIcon img = new ImageIcon(CoverImager.generateCoverImage(lib,
 				BookInfo.fromMeta(lib, meta)));
 
 		setLayout(new BorderLayout());
+
+		// Title
+		JPanel title = null;
+		if (includeTitle) {
+			title = new JPanel(new BorderLayout());
+			JTextArea titleLabel = new JTextArea(
+					meta.getLuid() + ": " + meta.getTitle());
+			titleLabel.setEditable(false);
+			titleLabel.setLineWrap(true);
+			titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
+			titleLabel.setOpaque(false);
+			titleLabel.setFocusable(false);
+			titleLabel.setBorder(new EmptyBorder(3, 3, 3, 3));
+			titleLabel.setAlignmentY(JLabel.CENTER_ALIGNMENT);
+			title.add(titleLabel);
+			Color fg = new JLabel("dummy").getForeground();
+			Color bg = title.getBackground();
+			title.setForeground(bg);
+			title.setBackground(fg);
+			titleLabel.setForeground(bg);
+			titleLabel.setBackground(trans);
+		}
 
 		// Main panel
 		JPanel mainPanel = new JPanel(new BorderLayout());
@@ -65,9 +94,7 @@ public class PropertiesPanel extends JPanel {
 		mainPanel.add(UIUtils.scroll(mainPanelValues, true, false),
 				BorderLayout.CENTER);
 
-		Map<String, String> desc = BasicReader.getMetaDesc(meta);
-
-		Color trans = new Color(0, 0, 0, 1);
+		Map<String, String> desc = Actions.getMetaDesc(meta);
 		for (String key : desc.keySet()) {
 			JTextArea jKey = new JTextArea(key);
 			jKey.setFont(new Font(jKey.getFont().getFontName(), Font.BOLD,
@@ -100,6 +127,8 @@ public class PropertiesPanel extends JPanel {
 				BorderFactory.createEmptyBorder(0, space, space + hscroll, 0));
 
 		// Add all
+		if (includeTitle)
+			add(title, BorderLayout.NORTH);
 		add(imgLabel, BorderLayout.WEST);
 		add(mainPanel, BorderLayout.CENTER);
 
