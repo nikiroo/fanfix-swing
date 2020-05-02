@@ -230,8 +230,8 @@ public class MainFrame extends JFrame {
 				// TODO: Very bad UI...
 				JFrame frame = new JFrame("Preferences");
 				JTabbedPane tabs = new JTabbedPane();
-				tabs.add(ed, "Core preferences");
 				tabs.add(edUi, "Graphical preferences");
+				tabs.add(ed, "Core preferences");
 				frame.add(tabs);
 				frame.setSize(900, 600);
 				frame.setVisible(true);
