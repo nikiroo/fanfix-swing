@@ -6,37 +6,48 @@ Cette gallerie reprend des screenshots de plusieurs versions de Fanfix, mais les
 
 ### Version 1.1.0
 
+La fenêtre principale du programme:
 ![Fenêtre principale](fanfix-swing-1.1.0.png)
 
-La fenêtre principale du programme.
+---
 
+Un nouveau système de popups affiche les informations relatives à l'histoire sous le curseur de la souris :
 ![Popup](fanfix-swing-1.1.0-popup.png)
 
-Un nouveau système de popups affiche les informations relatives à l'histoire sous le curseur de la souris.
+---
 
+Il est maintenant possible d'afficher le nombre de mots (ou d'images) d'une histoire à la place de son auteur :
 ![Nombre de mots](fanfix-swing-1.1.0-wordcount.png)
 
-Il est maintenant possible d'afficher le nombre de mots (ou d'images) d'une histoire à la place de son auteur.
+---
+
+Le mode liste est toujours là, juste un screenshot en plus :
+![Mode liste](fanfix-swing-1.1.0-list-mode.png)
+
 
 ### Version 1.0.0
 
+La fenêtre principale du programme :
 ![Fenêtre principale](fanfix-swing-1.0.0.png)
 
-La fenêtre principale du programme.
+---
 
+Le menu contextuel qui apparaît avec le bouton droit de la souris :
 ![Menu contextuel](fanfix-swing-1.0.0-menu.png)
 
-Le menu contextuel qui apparaît avec le bouton droit de la souris.
 
+---
+
+Il est possible d'afficher les livres sous forme de liste au lieu d'afficher des vignettes, ce qui est plus facile à lire quand il y a beaucoup de livres :
 ![Mode liste](fanfix-swing-1.0.0-list-mode.png)
 
-Il est possible d'afficher les livres sous forme de liste au lieu d'afficher des vignettes, ce qui est plus facile à lire quand il y a beaucoup de livres.
+---
 
+La fenêtre de propriétés d'un live :
 ![Propriétés d'un livre](fanfix-swing-1.0.0-properties-page.png)
 
-La fenêtre de propriétés d'un live.
+---
 
+On peut filtrer les livres affichés ou les sources/auteurs/tags affichés en temps réél :
 ![Filtre](fanfix-swing-1.0.0-filter.png)
-
-On peut filtrer les livres affichés ou les sources/auteurs/tags affichés en temps réél.
 
