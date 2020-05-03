@@ -27,7 +27,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.SwingWorker;
 
@@ -116,7 +115,6 @@ public class ViewerImages extends JFrame {
 	private NavBar navbar;
 	private JLabel area;
 	private JScrollPane scroll;
-	private JTextField page;
 	private DefaultComboBoxModel<ZoomLevel> zoomBoxModel;
 
 	private DelayWorker worker;

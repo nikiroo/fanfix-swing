@@ -15,14 +15,15 @@ import be.nikiroo.fanfix.output.BasicOutput;
  * 
  * @author niki
  */
-public class ViewerTextOutput {
+class ViewerTextOutput {
 	private StringBuilder builder;
 	private BasicOutput output;
 	private Story fakeStory;
+	private boolean chapterName;
 
 	/**
-	 * Create a new {@link ViewerTextOutput} that will convert a
-	 * {@link Chapter} into HTML3 suited for Java Swing.
+	 * Create a new {@link ViewerTextOutput} that will convert a {@link Chapter}
+	 * into HTML3 suited for Java Swing.
 	 */
 	public ViewerTextOutput() {
 		builder = new StringBuilder();
@@ -33,14 +34,19 @@ public class ViewerTextOutput {
 
 			@Override
 			protected void writeChapterHeader(Chapter chap) throws IOException {
-				builder.append("<HTML>");
+				builder.append("<HTML style='line-height: normal;'>");
 
-				builder.append("<H1>");
-				builder.append("Chapter ");
-				builder.append(chap.getNumber());
-				builder.append(": ");
-				builder.append(chap.getName());
-				builder.append("</H1>");
+				if (chapterName) {
+					builder.append("<H1>");
+					builder.append("Chapter ");
+					builder.append(chap.getNumber());
+					if (chap.getName() != null
+							&& !chap.getName().trim().isEmpty()) {
+						builder.append(": ");
+						builder.append(chap.getName());
+					}
+					builder.append("</H1>");
+				}
 
 				builder.append("<DIV align='justify'>");
 			}
@@ -111,11 +117,14 @@ public class ViewerTextOutput {
 	 * Convert the chapter into HTML3 code.
 	 * 
 	 * @param chap
-	 *            the {@link Chapter} to convert.
+	 *            the {@link Chapter} to convert
+	 * @param chapterName
+	 *            display the chapter name
 	 * 
 	 * @return HTML3 code tested with Java Swing
 	 */
-	public String convert(Chapter chap) {
+	public String convert(Chapter chap, boolean chapterName) {
+		this.chapterName = chapterName;
 		builder.setLength(0);
 		try {
 			fakeStory.setChapters(Arrays.asList(chap));

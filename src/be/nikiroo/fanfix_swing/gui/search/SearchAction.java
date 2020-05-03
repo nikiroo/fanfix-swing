@@ -16,7 +16,7 @@ import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix_swing.gui.PropertiesPanel;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
-import be.nikiroo.fanfix_swing.gui.viewer.ViewerPanel;
+import be.nikiroo.fanfix_swing.gui.viewer.TODEL_ViewerPanel;
 import be.nikiroo.utils.Progress;
 import be.nikiroo.utils.ui.ProgressBar;
 
@@ -37,7 +37,7 @@ public class SearchAction extends JFrame {
 		JPanel props = new PropertiesPanel(lib, info.getMeta(), false);
 
 		main.add(props, BorderLayout.NORTH);
-		main.add(new ViewerPanel(info.getMeta(), info.getMeta()
+		main.add(new TODEL_ViewerPanel(info.getMeta(), info.getMeta()
 				.isImageDocument()), BorderLayout.CENTER);
 		main.add(createImportButton(lib), BorderLayout.SOUTH);
 

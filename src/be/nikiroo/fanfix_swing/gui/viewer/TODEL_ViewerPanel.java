@@ -30,7 +30,7 @@ import be.nikiroo.utils.ui.ImageUtilsAwt;
  * 
  * @author niki
  */
-public class ViewerPanel extends JPanel {
+public class TODEL_ViewerPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	private boolean imageDocument;
@@ -54,7 +54,7 @@ public class ViewerPanel extends JPanel {
 	 * @param story
 	 *            the {@link Story} to work on
 	 */
-	public ViewerPanel(Story story) {
+	public TODEL_ViewerPanel(Story story) {
 		this(story.getMeta(), story.getMeta().isImageDocument());
 	}
 
@@ -66,7 +66,7 @@ public class ViewerPanel extends JPanel {
 	 * @param isImageDocument
 	 *            TRUE if it is an image document, FALSE if not
 	 */
-	public ViewerPanel(MetaData meta, boolean isImageDocument) {
+	public TODEL_ViewerPanel(MetaData meta, boolean isImageDocument) {
 		super(new BorderLayout());
 
 		this.imageDocument = isImageDocument;
@@ -164,7 +164,7 @@ public class ViewerPanel extends JPanel {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				final String content = htmlOutput.convert(chap);
+				final String content = htmlOutput.convert(chap, true);
 				// Wait until size computations are correct
 				while (!scroll.isValid()) {
 					try {

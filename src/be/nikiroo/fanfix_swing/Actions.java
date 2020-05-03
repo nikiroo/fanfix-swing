@@ -27,7 +27,7 @@ import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
 import be.nikiroo.fanfix_swing.gui.viewer.ViewerImages;
-import be.nikiroo.fanfix_swing.gui.viewer.Viewer;
+import be.nikiroo.fanfix_swing.gui.viewer.ViewerNonImages;
 import be.nikiroo.utils.Progress;
 import be.nikiroo.utils.StringUtils;
 
@@ -141,8 +141,8 @@ public class Actions {
 			ViewerImages viewer = new ViewerImages(story);
 			viewer.setVisible(true);
 		} else {
-			Viewer viewer = new Viewer(Instance.getInstance().getLibrary(),
-					story);
+			ViewerNonImages viewer = new ViewerNonImages(
+					Instance.getInstance().getLibrary(), story);
 			viewer.setVisible(true);
 		}
 
