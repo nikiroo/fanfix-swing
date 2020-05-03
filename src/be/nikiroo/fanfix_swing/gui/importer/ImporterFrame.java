@@ -29,18 +29,20 @@ import be.nikiroo.utils.ui.ListModel;
 import be.nikiroo.utils.ui.ListModel.Predicate;
 import be.nikiroo.utils.ui.ListenerItem;
 import be.nikiroo.utils.ui.ListenerPanel;
+import be.nikiroo.utils.ui.UIUtils;
 
 public class ImporterFrame extends JFrame implements ListenerItem {
 	static public final String IMPORTED = "imported";
 
-	private ListenerPanel root = new ListenerPanel();
+	private ListenerPanel root;
 	private ListModel<ImporterItem> data;
 	private String filter = "";
 
 	public ImporterFrame() {
+		root = new ListenerPanel();
 		setLayout(new BorderLayout());
 		root.setLayout(new BorderLayout());
-		this.add(root);
+		this.add(UIUtils.scroll(root, false));
 
 		JList6<ImporterItem> list = new JList6<ImporterItem>();
 		data = new ListModel<ImporterItem>(list);
@@ -75,7 +77,7 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 						.removeItemIf(new Predicate<ImporterItem>() {
 							@Override
 							public boolean test(ImporterItem item) {
-								return item.isDone();
+								return item.isDone(false);
 							}
 						});
 
@@ -140,16 +142,24 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 	 */
 
 	public void imprtFile(final Container parent) {
+		Progress pg = new Progress();
 		JFileChooser fc = new JFileChooser();
 		if (fc.showOpenDialog(parent) != JFileChooser.CANCEL_OPTION) {
 			Object url = fc.getSelectedFile().getAbsolutePath();
 			if (url != null && !url.toString().isEmpty()) {
-				Progress pg = new Progress();
-				add(pg, "File", fc.getSelectedFile().getName());
-
+				final ImporterItem item = add(pg, "File",
+						fc.getSelectedFile().getName());
 				Actions.imprt(parent, url.toString(), pg, new Runnable() {
 					@Override
 					public void run() {
+						item.setDone(true);
+						fireActionPerformed(IMPORTED);
+					}
+				}, new Runnable() {
+					@Override
+					public void run() {
+						item.setFailed(true);
+						item.setDone(true);
 						fireActionPerformed(IMPORTED);
 					}
 				});
@@ -183,11 +193,18 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 		}
 
 		if (url != null && !url.isEmpty()) {
-			add(pg, basename, null);
-
+			final ImporterItem item = add(pg, basename, null);
 			Actions.imprt(parent, url, pg, new Runnable() {
 				@Override
 				public void run() {
+					item.setDone(true);
+					fireActionPerformed(IMPORTED);
+				}
+			}, new Runnable() {
+				@Override
+				public void run() {
+					item.setFailed(true);
+					item.setDone(true);
 					fireActionPerformed(IMPORTED);
 				}
 			});
@@ -196,7 +213,8 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 		}
 	}
 
-	private void add(Progress pg, final String basename, String storyName) {
+	private ImporterItem add(Progress pg, final String basename,
+			String storyName) {
 		final ImporterItem item = new ImporterItem(pg, basename, storyName);
 		item.addActionListener(new ActionListener() {
 			@Override
@@ -207,6 +225,8 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 
 		data.addItem(item);
 		filter();
+
+		return item;
 	}
 
 	private void filter() {

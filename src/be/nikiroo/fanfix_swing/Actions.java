@@ -235,9 +235,11 @@ public class Actions {
 	 *            the optional progress reporter
 	 * @param onSuccess
 	 *            Action to execute on success
+	 * @param onFailure
+	 *            Action to execute on failure
 	 */
 	static public void imprt(final Container parent, final String url,
-			Progress pg, final Runnable onSuccess) {
+			Progress pg, final Runnable onSuccess, final Runnable onFailure) {
 		final Progress fpg = pg;
 		new SwingWorker<Void, Void>() {
 			@Override

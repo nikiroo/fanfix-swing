@@ -27,6 +27,7 @@ public class ImporterItem extends ListenerPanel implements Hoverable {
 	private boolean hovered;
 	private boolean selected;
 	private boolean done;
+	private boolean failed;
 
 	private JLabel labelName;
 	private JLabel labelAction;
@@ -96,22 +97,42 @@ public class ImporterItem extends ListenerPanel implements Hoverable {
 		}
 	}
 
-	public boolean isDone() {
-		return done;
+	public boolean isDone(boolean acceptFailure) {
+		return done && (acceptFailure || !failed);
 	}
 
 	public void setDone(boolean done) {
 		if (this.done != done) {
 			this.done = done;
-			if (done) {
-				labelAction.setForeground(Color.green.darker());
-				labelAction
-						.setFont(labelAction.getFont().deriveFont(Font.BOLD));
-			} else {
-				labelAction.setForeground(Color.gray);
-				labelAction
-						.setFont(labelAction.getFont().deriveFont(Font.PLAIN));
-			}
+			setHighlight();
+		}
+	}
+
+	public boolean isFailed() {
+		return failed;
+	}
+
+	public void setFailed(boolean failed) {
+		if (this.failed != failed) {
+			this.failed = failed;
+			setHighlight();
+		}
+	}
+
+	private void setHighlight() {
+		Color highlight = null;
+		if (failed) {
+			highlight = Color.red.darker();
+		} else if (done) {
+			highlight = Color.green.darker();
+		}
+
+		if (highlight != null) {
+			labelAction.setForeground(highlight);
+			labelAction.setFont(labelAction.getFont().deriveFont(Font.BOLD));
+		} else {
+			labelAction.setForeground(Color.gray);
+			labelAction.setFont(labelAction.getFont().deriveFont(Font.PLAIN));
 		}
 	}
 
@@ -121,12 +142,12 @@ public class ImporterItem extends ListenerPanel implements Hoverable {
 			public void progress(Progress notUsed, String currentAction) {
 				currentAction = currentAction == null ? "" : currentAction;
 				String currentStoryName = null;
-				
-				MetaData meta = (MetaData)pg.get("meta");
+
+				MetaData meta = (MetaData) pg.get("meta");
 				if (meta != null) {
 					currentStoryName = meta.getTitle();
 				}
-				
+
 				if (pg.getRelativeProgress() != progress
 						|| !action.equals(currentAction)
 						|| !storyName.equals(currentStoryName)) {
