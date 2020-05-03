@@ -113,6 +113,7 @@ public class ViewerImages extends JFrame {
 	private boolean zoomSnapWidth = true;
 	private Rotation rotation = Rotation.NONE;
 
+	private NavBar navbar;
 	private JLabel area;
 	private JScrollPane scroll;
 	private JTextField page;
@@ -177,62 +178,7 @@ public class ViewerImages extends JFrame {
 		JToolBar toolBar = new JToolBar();
 
 		// Page navigation
-		JButton first = new JButton(
-				IconGenerator.get(Icon.arrow_double_left, Size.x32));
-		first.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				first();
-			}
-		});
-
-		JButton previous = new JButton(
-				IconGenerator.get(Icon.arrow_left, Size.x32));
-		previous.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				previous();
-			}
-		});
-
-		page = new JTextField("1");
-		page.setPreferredSize(new Dimension(page.getPreferredSize().width * 2,
-				page.getPreferredSize().height));
-		page.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					int pageNb = Integer.parseInt(page.getText());
-					pageNb--;
-					if (pageNb < 0 || pageNb >= images.size()) {
-						throw new NumberFormatException("invalid");
-					}
-					display(pageNb, rotation, true);
-				} catch (NumberFormatException nfe) {
-					page.setText(Integer.toString(index + 1));
-				}
-			}
-		});
-
-		JLabel maxPage = new JLabel(" of " + images.size());
-
-		JButton next = new JButton(
-				IconGenerator.get(Icon.arrow_right, Size.x32));
-		next.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				next();
-			}
-		});
-
-		JButton last = new JButton(
-				IconGenerator.get(Icon.arrow_double_right, Size.x32));
-		last.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				last();
-			}
-		});
+		navbar = new NavBar(1, images.size());
 
 		// Rotate
 		JButton left = new JButton(IconGenerator.get(Icon.turn_left, Size.x32));
@@ -356,12 +302,7 @@ public class ViewerImages extends JFrame {
 
 		// Add to toolbar
 
-		toolBar.add(first);
-		toolBar.add(previous);
-		toolBar.add(page);
-		toolBar.add(maxPage);
-		toolBar.add(next);
-		toolBar.add(last);
+		toolBar.add(navbar);
 
 		toolBar.add(sep());
 
@@ -463,6 +404,13 @@ public class ViewerImages extends JFrame {
 	}
 
 	private void listen() {
+		navbar.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				index = navbar.getIndex() - 1;
+				display(index, Rotation.NONE, true);
+			}
+		});
 		area.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -472,43 +420,43 @@ public class ViewerImages extends JFrame {
 				case KeyEvent.VK_DOWN:
 					if (!scroll(0,
 							scroll.getViewport().getViewRect().height / 2)) {
-						next();
+						navbar.next();
 					}
 					break;
 				case KeyEvent.VK_PAGE_DOWN:
 					if (!scroll(0, scroll.getViewport().getViewRect().height)) {
-						next();
+						navbar.next();
 					}
 					break;
 				case KeyEvent.VK_RIGHT:
 					if (!scroll(scroll.getViewport().getViewRect().width / 2,
 							0)) {
-						next();
+						navbar.next();
 					}
 					break;
 				case KeyEvent.VK_LEFT:
 					if (!scroll(-scroll.getViewport().getViewRect().width / 2,
 							0)) {
-						previous();
+						navbar.previous();
 					}
 					break;
 				case KeyEvent.VK_BACK_SPACE:
 				case KeyEvent.VK_UP:
 					if (!scroll(0,
 							-scroll.getViewport().getViewRect().width / 2)) {
-						previous();
+						navbar.previous();
 					}
 					break;
 				case KeyEvent.VK_PAGE_UP:
 					if (!scroll(0, -scroll.getViewport().getViewRect().width)) {
-						previous();
+						navbar.previous();
 					}
 					break;
 				case KeyEvent.VK_HOME:
-					first();
+					navbar.first();
 					break;
 				case KeyEvent.VK_END:
-					last();
+					navbar.last();
 					break;
 				default:
 					consume = false;
@@ -539,9 +487,9 @@ public class ViewerImages extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				super.mouseReleased(e);
 				if (e.getButton() == MouseEvent.BUTTON1) {
-					next();
+					navbar.next();
 				} else {
-					previous();
+					navbar.previous();
 				}
 			}
 		});
@@ -574,41 +522,5 @@ public class ViewerImages extends JFrame {
 		area.scrollRectToVisible(target);
 
 		return !scroll.getViewport().getViewRect().equals(before);
-	}
-
-	private synchronized void next() {
-		index++;
-		if (index >= images.size()) {
-			index = images.size() - 1;
-		} else {
-			updatePage();
-			display(index, Rotation.NONE, true);
-		}
-	}
-
-	private synchronized void previous() {
-		index--;
-		if (index < 0) {
-			index = 0;
-		} else {
-			updatePage();
-			display(index, Rotation.NONE, true);
-		}
-	}
-
-	private synchronized void first() {
-		index = 0;
-		updatePage();
-		display(index, Rotation.NONE, true);
-	}
-
-	private synchronized void last() {
-		index = images.size() - 1;
-		updatePage();
-		display(index, Rotation.NONE, true);
-	}
-
-	private void updatePage() {
-		page.setText(Integer.toString(index + 1));
 	}
 }

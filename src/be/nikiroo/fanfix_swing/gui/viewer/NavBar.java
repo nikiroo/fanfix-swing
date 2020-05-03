@@ -1,18 +1,19 @@
 package be.nikiroo.fanfix_swing.gui.viewer;
 
-import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.JTextField;
 
-import be.nikiroo.fanfix.Instance;
+import be.nikiroo.fanfix_swing.images.IconGenerator;
+import be.nikiroo.fanfix_swing.images.IconGenerator.Icon;
+import be.nikiroo.fanfix_swing.images.IconGenerator.Size;
+import be.nikiroo.utils.ui.ListenerPanel;
 
 /**
  * A Swing-based navigation bar, that displays first/previous/next/last page
@@ -20,17 +21,25 @@ import be.nikiroo.fanfix.Instance;
  * 
  * @author niki
  */
-public class NavBar extends JPanel {
+public class NavBar extends ListenerPanel {
 	private static final long serialVersionUID = 1L;
 
+	/** The event that is fired on page change. */
+	public static final String PAGE_CHANGED = "page changed";
+
+	private JTextField page;
+	private JLabel maxPage;
 	private JLabel label;
+
 	private int index = 0;
 	private int min = 0;
 	private int max = 0;
-	private JButton[] navButtons;
-	String extraLabel = null;
+	private String extraLabel = null;
 
-	private List<ActionListener> listeners = new ArrayList<ActionListener>();
+	private JButton first;
+	private JButton previous;
+	private JButton next;
+	private JButton last;
 
 	/**
 	 * Create a new navigation bar.
@@ -50,54 +59,79 @@ public class NavBar extends JPanel {
 	 */
 	public NavBar(int min, int max) {
 		if (min > max && max != -1) {
-			throw new IndexOutOfBoundsException(String.format(
-					"min (%d) > max (%d)", min, max));
+			throw new IndexOutOfBoundsException(
+					String.format("min (%d) > max (%d)", min, max));
 		}
 
 		LayoutManager layout = new BoxLayout(this, BoxLayout.X_AXIS);
 		setLayout(layout);
 
-		// TODO:
-		// JButton up = new BasicArrowButton(BasicArrowButton.NORTH);
-		// JButton down = new BasicArrowButton(BasicArrowButton.SOUTH);
-
-		navButtons = new JButton[4];
-
-		navButtons[0] = createNavButton("<<", new ActionListener() {
+		// Page navigation
+		first = new JButton(
+				IconGenerator.get(Icon.arrow_double_left, Size.x32));
+		first.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				setIndex(NavBar.this.min);
-				fireEvent();
-			}
-		});
-		navButtons[1] = createNavButton(" < ", new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				setIndex(index - 1);
-				fireEvent();
-			}
-		});
-		navButtons[2] = createNavButton(" > ", new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				setIndex(index + 1);
-				fireEvent();
-			}
-		});
-		navButtons[3] = createNavButton(">>", new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				setIndex(NavBar.this.max);
-				fireEvent();
+				first();
 			}
 		});
 
-		for (JButton navButton : navButtons) {
-			add(navButton);
-		}
+		previous = new JButton(IconGenerator.get(Icon.arrow_left, Size.x32));
+		previous.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				previous();
+			}
+		});
+
+		page = new JTextField("1");
+		page.setPreferredSize(new Dimension(page.getPreferredSize().width * 2,
+				page.getPreferredSize().height));
+		page.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					int pageNb = Integer.parseInt(page.getText());
+					if (pageNb < NavBar.this.min || pageNb > NavBar.this.max) {
+						throw new NumberFormatException("invalid");
+					}
+
+					if (setIndex(pageNb))
+						fireActionPerformed(PAGE_CHANGED);
+				} catch (NumberFormatException nfe) {
+					page.setText(Integer.toString(index + 1));
+				}
+			}
+		});
+
+		maxPage = new JLabel(" of " + max);
+
+		next = new JButton(IconGenerator.get(Icon.arrow_right, Size.x32));
+		next.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				next();
+			}
+		});
+
+		last = new JButton(
+				IconGenerator.get(Icon.arrow_double_right, Size.x32));
+		last.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				last();
+			}
+		});
+
+		this.add(first);
+		this.add(previous);
+		this.add(page);
+		this.add(maxPage);
+		this.add(next);
+		this.add(last);
 
 		label = new JLabel("");
-		add(label);
+		this.add(label);
 
 		this.min = min;
 		this.max = max;
@@ -105,7 +139,7 @@ public class NavBar extends JPanel {
 
 		updateEnabled();
 		updateLabel();
-		fireEvent();
+		fireActionPerformed(PAGE_CHANGED);
 	}
 
 	/**
@@ -124,8 +158,14 @@ public class NavBar extends JPanel {
 	 * 
 	 * @param index
 	 *            the new index
+	 * 
+	 * @return TRUE if the index changed
+	 * 
+	 * @throws IndexOutOfBoundsException
+	 *             if the index is out of bounds according to
+	 *             {@link NavBar#getMin()} and {@link NavBar#getMax()}.
 	 */
-	public void setIndex(int index) {
+	public boolean setIndex(int index) {
 		if (index != this.index) {
 			if (index < min || (index > max && max != -1)) {
 				throw new IndexOutOfBoundsException(String.format(
@@ -134,9 +174,12 @@ public class NavBar extends JPanel {
 
 			this.index = index;
 			updateLabel();
+			updateEnabled();
+
+			return true;
 		}
 
-		updateEnabled();
+		return false;
 	}
 
 	/**
@@ -164,9 +207,9 @@ public class NavBar extends JPanel {
 		if (index < min) {
 			index = min;
 		}
+
 		updateEnabled();
 		updateLabel();
-
 	}
 
 	/**
@@ -196,13 +239,14 @@ public class NavBar extends JPanel {
 		if (index > max && max != -1) {
 			index = max;
 		}
+
+		maxPage.setText(" of " + max);
 		updateEnabled();
 		updateLabel();
 	}
 
 	/**
-	 * The current extra label to display with the default
-	 * {@link NavBar#computeLabel(int, int, int)} implementation.
+	 * The current extra label to display.
 	 * 
 	 * @return the current label
 	 */
@@ -211,8 +255,7 @@ public class NavBar extends JPanel {
 	}
 
 	/**
-	 * The current extra label to display with the default
-	 * {@link NavBar#computeLabel(int, int, int)} implementation.
+	 * The current extra label to display.
 	 * 
 	 * @param currentLabel
 	 *            the new current label
@@ -223,68 +266,67 @@ public class NavBar extends JPanel {
 	}
 
 	/**
-	 * Add a listener that will be called on each page change.
+	 * Change the page to the next one.
 	 * 
-	 * @param listener
-	 *            the new listener
+	 * @return TRUE if it changed
 	 */
-	public void addActionListener(ActionListener listener) {
-		listeners.add(listener);
-	}
-
-	/**
-	 * Remove the given listener if possible.
-	 * 
-	 * @param listener
-	 *            the listener to remove
-	 * @return TRUE if it was removed, FALSE if it was not found
-	 */
-	public boolean removeActionListener(ActionListener listener) {
-		return listeners.remove(listener);
-	}
-
-	/**
-	 * Remove all the listeners.
-	 */
-	public void clearActionsListeners() {
-		listeners.clear();
-	}
-
-	/**
-	 * Notify a change of page.
-	 */
-	public void fireEvent() {
-		for (ActionListener listener : listeners) {
-			try {
-				listener.actionPerformed(new ActionEvent(this,
-						ActionEvent.ACTION_FIRST, "page changed"));
-			} catch (Exception e) {
-				Instance.getInstance().getTraceHandler().error(e);
-			}
+	public boolean next() {
+		if (setIndex(index + 1)) {
+			fireActionPerformed(PAGE_CHANGED);
+			return true;
 		}
+
+		return false;
 	}
 
 	/**
-	 * Create a single navigation button.
+	 * Change the page to the previous one.
 	 * 
-	 * @param text
-	 *            the text to display
-	 * @param action
-	 *            the action to take on click
-	 * @return the button
+	 * @return TRUE if it changed
 	 */
-	private JButton createNavButton(String text, ActionListener action) {
-		JButton navButton = new JButton(text);
-		navButton.addActionListener(action);
-		navButton.setForeground(Color.BLUE);
-		return navButton;
+	public boolean previous() {
+		if (setIndex(index - 1)) {
+			fireActionPerformed(PAGE_CHANGED);
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Change the page to the first one.
+	 * 
+	 * @return TRUE if it changed
+	 */
+	public boolean first() {
+		if (setIndex(min)) {
+			fireActionPerformed(PAGE_CHANGED);
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Change the page to the last one.
+	 * 
+	 * @return TRUE if it changed
+	 */
+	public boolean last() {
+		if (setIndex(max)) {
+			fireActionPerformed(PAGE_CHANGED);
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
 	 * Update the label displayed in the UI.
 	 */
 	private void updateLabel() {
-		label.setText(computeLabel(index, min, max));
+		label.setText(getExtraLabel());
+		page.setText(Integer.toString(index));
 	}
 
 	/**
@@ -292,52 +334,9 @@ public class NavBar extends JPanel {
 	 * index value.
 	 */
 	private void updateEnabled() {
-		navButtons[0].setEnabled(index > min);
-		navButtons[1].setEnabled(index > min);
-		navButtons[2].setEnabled(index < max || max == -1);
-		navButtons[3].setEnabled(index < max || max == -1);
-	}
-
-	/**
-	 * Return the label to display for the given index.
-	 * <p>
-	 * Swing HTML (HTML3) is supported if surrounded by &lt;HTML&gt; and
-	 * &lt;/HTML&gt;.
-	 * <p>
-	 * By default, return "Page 1/5: current_label" (with the current index and
-	 * {@link NavBar#getCurrentLabel()}).
-	 * 
-	 * @param index
-	 *            the new index number
-	 * @param mix
-	 *            the minimum index (inclusive)
-	 * @param max
-	 *            the maximum index (inclusive)
-	 * @return the label
-	 */
-	protected String computeLabel(int index,
-			@SuppressWarnings("unused") int min, int max) {
-
-		String base = "&nbsp;&nbsp;<B>Page <SPAN COLOR='#444466'>%d</SPAN>&nbsp;";
-		if (max >= 0) {
-			base += "/&nbsp;%d";
-		}
-		base += "</B>";
-
-		String ifLabel = ": %s";
-
-		String display = base;
-		String label = getExtraLabel();
-		if (label != null && !label.trim().isEmpty()) {
-			display += ifLabel;
-		}
-
-		display = "<HTML>" + display + "</HTML>";
-
-		if (max >= 0) {
-			return String.format(display, index, max, label);
-		}
-
-		return String.format(display, index, label);
+		first.setEnabled(index > min);
+		previous.setEnabled(index > min);
+		next.setEnabled(index < max || max == -1);
+		last.setEnabled(index < max || max == -1);
 	}
 }

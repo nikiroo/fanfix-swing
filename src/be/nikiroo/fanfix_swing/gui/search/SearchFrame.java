@@ -149,11 +149,12 @@ public class SearchFrame extends JFrame {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			protected String computeLabel(int index, int min, int max) {
-				if (index <= 0) {
+			public String getExtraLabel() {
+				if (getIndex() <= 0) {
 					return "";
 				}
-				return super.computeLabel(index, min, max);
+				
+				return super.getExtraLabel();
 			}
 		};
 

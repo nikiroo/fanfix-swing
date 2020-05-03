@@ -105,8 +105,8 @@ public class Viewer extends JFrame {
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			protected String computeLabel(int index, int min, int max) {
-				int chapter = index;
+			public String getExtraLabel() {
+				int chapter = getIndex();
 				Chapter chap;
 				if (chapter < 0) {
 					chap = meta.getResume();
