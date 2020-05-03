@@ -115,7 +115,9 @@ public class ViewerImages extends JFrame {
 	private NavBar navbar;
 	private JLabel area;
 	private JScrollPane scroll;
-	private DefaultComboBoxModel<ZoomLevel> zoomBoxModel;
+
+	@SuppressWarnings("rawtypes") // JComboBox<?> not compatible java 1.6
+	private DefaultComboBoxModel zoomBoxModel;
 
 	private DelayWorker worker;
 
@@ -172,6 +174,8 @@ public class ViewerImages extends JFrame {
 		listen();
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" }) // JComboBox<?> not
+													// compatible java 1.6
 	private JToolBar createToolBar() {
 		JToolBar toolBar = new JToolBar();
 
@@ -238,9 +242,8 @@ public class ViewerImages extends JFrame {
 			}
 		});
 
-		zoomBoxModel = new DefaultComboBoxModel<ZoomLevel>(
-				ZoomLevel.values(true));
-		JComboBox<ZoomLevel> zoomBox = new JComboBox<ZoomLevel>(zoomBoxModel);
+		zoomBoxModel = new DefaultComboBoxModel(ZoomLevel.values(true));
+		JComboBox zoomBox = new JComboBox(zoomBoxModel);
 		zoomBox.setEditable(true);
 		zoomBox.addActionListener(new ActionListener() {
 			@Override
