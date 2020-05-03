@@ -251,11 +251,13 @@ public class Actions {
 				try {
 					Instance.getInstance().getLibrary().imprt(getUrl(url), pg);
 					pg.done();
+					
 					if (onSuccess != null) {
 						onSuccess.run();
 					}
 				} catch (IOException e) {
 					pg.done();
+					
 					if (e instanceof UnknownHostException) {
 						UiHelper.error(parent,
 								Instance.getInstance().getTransGui().getString(
@@ -272,6 +274,10 @@ public class Actions {
 								Instance.getInstance().getTransGui()
 										.getString(StringIdGui.TITLE_ERROR),
 								e);
+					}
+
+					if (onFailure != null) {
+						onFailure.run();
 					}
 				}
 
