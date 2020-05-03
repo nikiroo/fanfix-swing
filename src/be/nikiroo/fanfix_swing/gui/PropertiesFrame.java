@@ -10,6 +10,7 @@ import be.nikiroo.fanfix.bundles.StringIdGui;
 import be.nikiroo.fanfix.data.MetaData;
 import be.nikiroo.fanfix.data.Story;
 import be.nikiroo.fanfix.library.BasicLibrary;
+import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
 
 /**
  * A frame displaying properties and other information of a {@link Story}.
@@ -42,6 +43,10 @@ public class PropertiesFrame extends JDialog {
 
 		this.setSize(600, desc.getHeight() + 0);
 		this.setUndecorated(undecorated);
+
+		if (!undecorated) {
+			UiHelper.setFrameIcon(this, lib, meta);
+		}
 	}
 
 	@Override

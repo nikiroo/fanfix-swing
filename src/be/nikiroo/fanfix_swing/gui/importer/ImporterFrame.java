@@ -23,6 +23,7 @@ import be.nikiroo.fanfix.reader.BasicReader;
 import be.nikiroo.fanfix.supported.BasicSupport;
 import be.nikiroo.fanfix_swing.Actions;
 import be.nikiroo.fanfix_swing.gui.SearchBar;
+import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
 import be.nikiroo.utils.Progress;
 import be.nikiroo.utils.compat.JList6;
 import be.nikiroo.utils.ui.ListModel;
@@ -90,6 +91,7 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 		root.add(top, BorderLayout.NORTH);
 
 		setSize(800, 600);
+		UiHelper.setFrameIcon(this);
 	}
 
 	/**

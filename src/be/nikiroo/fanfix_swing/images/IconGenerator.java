@@ -37,6 +37,16 @@ public class IconGenerator {
 		arrow_down,
 		/** An empty (transparent) icon */
 		empty,
+		/** An icon for the program */
+		icon_default,
+		/** An icon for the program */
+		icon_alternate,
+		/** An icon for the program */
+		icon_magic_book,
+		/** An icon for the program */
+		icon_pony_book,
+		/** An icon for the program */
+		icon_pony_library,
 	}
 
 	/**
@@ -56,7 +66,9 @@ public class IconGenerator {
 		/** 32x32 pixels */
 		x32(32),
 		/** 64x64 pixels */
-		x64(64);
+		x64(64),
+		/** the original size */
+		original(-1);
 
 		private int size;
 
@@ -88,8 +100,14 @@ public class IconGenerator {
 	 *         size
 	 */
 	static public ImageIcon get(Icon name, Size size) {
-		String key = String.format("%s-%dx%d.png", name.name(), size.getSize(),
-				size.getSize());
+		String key;
+		if (size.getSize() > 0) {
+			key = String.format("%s-%dx%d.png", name.name(), size.getSize(),
+					size.getSize());
+		} else {
+			key = name.name() + ".png";
+		}
+
 		if (!map.containsKey(key)) {
 			map.put(key, generate(key));
 		}

@@ -20,7 +20,6 @@ import javax.swing.border.EmptyBorder;
 import be.nikiroo.fanfix.data.MetaData;
 import be.nikiroo.fanfix.data.Story;
 import be.nikiroo.fanfix.library.BasicLibrary;
-import be.nikiroo.fanfix.reader.BasicReader;
 import be.nikiroo.fanfix_swing.Actions;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
@@ -80,6 +79,9 @@ public class PropertiesPanel extends JPanel {
 			title.setBackground(fg);
 			titleLabel.setForeground(bg);
 			titleLabel.setBackground(trans);
+
+			listenables.add(title);
+			listenables.add(titleLabel);
 		}
 
 		// Main panel

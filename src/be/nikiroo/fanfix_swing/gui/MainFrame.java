@@ -2,6 +2,7 @@
 package be.nikiroo.fanfix_swing.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -19,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
 import be.nikiroo.fanfix.Instance;
 import be.nikiroo.fanfix.bundles.Config;
@@ -28,8 +30,13 @@ import be.nikiroo.fanfix.bundles.UiConfigBundle;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.importer.ImporterFrame;
 import be.nikiroo.fanfix_swing.gui.search.SearchFrame;
+import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
+import be.nikiroo.fanfix_swing.images.IconGenerator;
+import be.nikiroo.fanfix_swing.images.IconGenerator.Icon;
+import be.nikiroo.fanfix_swing.images.IconGenerator.Size;
 import be.nikiroo.utils.Version;
 import be.nikiroo.utils.ui.ConfigEditor;
+import be.nikiroo.utils.ui.UIUtils;
 
 public class MainFrame extends JFrame {
 	static private ImporterFrame importer;
@@ -142,6 +149,7 @@ public class MainFrame extends JFrame {
 
 		setJMenuBar(createMenuBar());
 		setSize(800, 600);
+		UiHelper.setFrameIcon(this);
 	}
 
 	static public ImporterFrame getImporter() {

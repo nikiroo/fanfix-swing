@@ -20,6 +20,7 @@ import be.nikiroo.fanfix.data.MetaData;
 import be.nikiroo.fanfix.data.Story;
 import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix_swing.gui.PropertiesPanel;
+import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
 
 /**
  * An internal, Swing-based {@link Story} viewer.
@@ -63,6 +64,8 @@ public class Viewer extends JFrame {
 		initGuiNavButtons();
 
 		setChapter(-1);
+		
+		UiHelper.setFrameIcon(this);
 	}
 
 	/**
