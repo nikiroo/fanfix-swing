@@ -54,7 +54,7 @@ import be.nikiroo.utils.ui.UIUtils;
  * 
  * @author niki
  */
-public class NewViewerImages extends JFrame {
+public class ViewerImages extends JFrame {
 	private enum ZoomLevel {
 		FIT_TO_WIDTH(-1, true), //
 		FIT_TO_HEIGHT(-1, false), //
@@ -126,7 +126,7 @@ public class NewViewerImages extends JFrame {
 	 * @param story
 	 *            the {@link Story} to display
 	 */
-	public NewViewerImages(Story story) {
+	public ViewerImages(Story story) {
 		setTitle(MainFrame.trans(StringIdGui.TITLE_STORY,
 				story.getMeta().getLuid(), story.getMeta().getTitle()));
 
