@@ -1,5 +1,9 @@
 # Fanfix-swing
 
+# Version WIP
+
+- fix: récupère maintenant correctement les hitsoires sans chaptitres
+
 # Version 1.1.0
 
 - new: des tooltips dans le paneau des livres

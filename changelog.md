@@ -1,5 +1,9 @@
 # Fanfix-swing
 
+# Version WIP
+
+- fix: now correctly retrieve stories without chapters
+
 # Version 1.1.0
 
 - new: tooltips in books panel
