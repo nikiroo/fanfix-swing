@@ -2,6 +2,8 @@
 
 # Version WIP
 
+# Version 1.1.1
+
 - fix: now correctly retrieve stories without chapters
 - new: the internal viewer is now up to par
 

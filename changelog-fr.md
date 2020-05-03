@@ -2,6 +2,8 @@
 
 # Version WIP
 
+# Version 1.1.1
+
 - fix: récupère maintenant correctement les hitsoires sans chaptitres
 - new: l'afficheur de livres interne est maintenant correctement refait
 
