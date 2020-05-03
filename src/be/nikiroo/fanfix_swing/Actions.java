@@ -26,6 +26,7 @@ import be.nikiroo.fanfix.library.LocalLibrary;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
+import be.nikiroo.fanfix_swing.gui.viewer.NewViewerImages;
 import be.nikiroo.fanfix_swing.gui.viewer.Viewer;
 import be.nikiroo.utils.Progress;
 import be.nikiroo.utils.StringUtils;
@@ -136,8 +137,15 @@ public class Actions {
 	 *            the story to open
 	 */
 	static private void openInternal(Story story) {
-		Viewer viewer = new Viewer(Instance.getInstance().getLibrary(), story);
-		viewer.setVisible(true);
+		if (story.getMeta().isImageDocument()) {
+			NewViewerImages viewer = new NewViewerImages(story);
+			viewer.setVisible(true);
+		} else {
+			Viewer viewer = new Viewer(Instance.getInstance().getLibrary(),
+					story);
+			viewer.setVisible(true);
+		}
+
 	}
 
 	/**
@@ -251,13 +259,13 @@ public class Actions {
 				try {
 					Instance.getInstance().getLibrary().imprt(getUrl(url), pg);
 					pg.done();
-					
+
 					if (onSuccess != null) {
 						onSuccess.run();
 					}
 				} catch (IOException e) {
 					pg.done();
-					
+
 					if (e instanceof UnknownHostException) {
 						UiHelper.error(parent,
 								Instance.getInstance().getTransGui().getString(
