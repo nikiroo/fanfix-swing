@@ -2,6 +2,8 @@ package be.nikiroo.fanfix_swing.gui.viewer;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
@@ -18,7 +20,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingWorker;
-import javax.swing.UIManager;
 
 import be.nikiroo.fanfix.Instance;
 import be.nikiroo.fanfix.bundles.StringIdGui;
@@ -55,8 +56,6 @@ public class NewViewerImages extends JFrame {
 	private JLabel area;
 	private JScrollPane scroll;
 
-	private int ss; // ScrollSize
-
 	private DelayWorker worker;
 
 	/**
@@ -88,19 +87,17 @@ public class NewViewerImages extends JFrame {
 		worker.start();
 
 		initGui();
-		display(index, Rotation.NONE);
-		
+		display(index, Rotation.NONE, true);
+
 		if (!images.isEmpty()) {
 			UiHelper.setFrameIcon(this, images.get(0));
 		}
 	}
 
 	private void initGui() {
-		// TODO: menu + bar
+		// TODO: menu + bar with all the options
 
 		this.setLayout(new BorderLayout());
-
-		ss = ((Integer) UIManager.get("ScrollBar.width")).intValue();
 
 		area = new JLabel();
 		area.setOpaque(false);
@@ -113,95 +110,143 @@ public class NewViewerImages extends JFrame {
 		listen();
 	}
 
-	private synchronized void display(int index, final Rotation rotation) {
+	private synchronized void display(int index, final Rotation rotation,
+			final boolean resetScroll) {
 		if (images.isEmpty()) {
 			return;
 		}
 
 		this.rotation = rotation;
 
-		int addW = 0;
-		if (scroll.getVerticalScrollBar().isVisible()) {
-			addW = ss;
-		}
-
-		int addH = 0;
-		if (scroll.getHorizontalScrollBar().isVisible()) {
-			addH = ss;
-		}
-
 		final Image img = images.get(index);
 		final Dimension areaSize = new Dimension( //
-				scroll.getViewport().getWidth() + addW, //
-				scroll.getViewport().getHeight() + addH//
+				scroll.getViewport().getWidth(), //
+				scroll.getViewport().getHeight()//
 		);
 
-		worker.delay("display", new SwingWorker<ImageIcon, Void>() {
-			@Override
-			protected ImageIcon doInBackground() throws Exception {
-				BufferedImage image = ImageUtilsAwt.fromImage(img, rotation);
-				BufferedImage resizedImage = ImageUtilsAwt.scaleImage(areaSize,
-						image, zoom, zoomSnapWidth);
+		worker.delay("display:" + resetScroll,
+				new SwingWorker<ImageIcon, Void>() {
+					@Override
+					protected ImageIcon doInBackground() throws Exception {
+						BufferedImage image = ImageUtilsAwt.fromImage(img,
+								rotation);
+						BufferedImage resizedImage = ImageUtilsAwt.scaleImage(
+								areaSize, image, zoom, zoomSnapWidth);
 
-				return new ImageIcon(resizedImage);
-			}
-
-			@Override
-			protected void done() {
-				try {
-					ImageIcon img = get();
-
-					if (zoom > 0) {
-						scroll.setHorizontalScrollBarPolicy(
-								JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-						scroll.setVerticalScrollBarPolicy(
-								JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-					} else if (zoomSnapWidth) {
-						scroll.setHorizontalScrollBarPolicy(
-								JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-						scroll.setVerticalScrollBarPolicy(
-								JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-					} else {
-						scroll.setHorizontalScrollBarPolicy(
-								JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-						scroll.setVerticalScrollBarPolicy(
-								JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+						return new ImageIcon(resizedImage);
 					}
 
-					area.setSize(scroll.getViewport().getSize());
-					area.setIcon(img);
-				} catch (InterruptedException e) {
-					Instance.getInstance().getTraceHandler().error(e);
-				} catch (ExecutionException e) {
-					Instance.getInstance().getTraceHandler().error(e);
-				}
-			}
-		});
+					@Override
+					protected void done() {
+						try {
+							ImageIcon img = get();
+
+							if (zoom > 0) {
+								scroll.setHorizontalScrollBarPolicy(
+										JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+								scroll.setVerticalScrollBarPolicy(
+										JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+							} else if (zoomSnapWidth) {
+								scroll.setHorizontalScrollBarPolicy(
+										JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+								scroll.setVerticalScrollBarPolicy(
+										JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+							} else {
+								scroll.setHorizontalScrollBarPolicy(
+										JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+								scroll.setVerticalScrollBarPolicy(
+										JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+							}
+
+							area.setSize(scroll.getViewport().getSize());
+							area.setIcon(img);
+							if (resetScroll) {
+								area.scrollRectToVisible(new Rectangle());
+							}
+						} catch (InterruptedException e) {
+							Instance.getInstance().getTraceHandler().error(e);
+						} catch (ExecutionException e) {
+							Instance.getInstance().getTraceHandler().error(e);
+						}
+					}
+				});
 	}
 
 	private void listen() {
-		// TODO: mousewheel = move
-		// TODO: keys = move if possible, next/prev if not
 		area.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_SPACE
-						|| e.getKeyCode() == KeyEvent.VK_ENTER) {
-					next();
-				} else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE
-						|| e.getKeyCode() == KeyEvent.VK_LEFT
-						|| e.getKeyCode() == KeyEvent.VK_UP) {
-					previous();
-				} else if (e.getKeyCode() == KeyEvent.VK_HOME) {
+				boolean consume = true;
+				switch (e.getKeyCode()) {
+				case KeyEvent.VK_SPACE:
+				case KeyEvent.VK_DOWN:
+					if (!scroll(0,
+							scroll.getViewport().getViewRect().height / 2)) {
+						next();
+					}
+					break;
+				case KeyEvent.VK_PAGE_DOWN:
+					if (!scroll(0, scroll.getViewport().getViewRect().height)) {
+						next();
+					}
+					break;
+				case KeyEvent.VK_RIGHT:
+					if (!scroll(scroll.getViewport().getViewRect().width / 2,
+							0)) {
+						next();
+					}
+					break;
+				case KeyEvent.VK_LEFT:
+					if (!scroll(-scroll.getViewport().getViewRect().width / 2,
+							0)) {
+						previous();
+					}
+					break;
+				case KeyEvent.VK_BACK_SPACE:
+				case KeyEvent.VK_UP:
+					if (!scroll(0,
+							-scroll.getViewport().getViewRect().width / 2)) {
+						previous();
+					}
+					break;
+				case KeyEvent.VK_PAGE_UP:
+					if (!scroll(0, -scroll.getViewport().getViewRect().width)) {
+						previous();
+					}
+					break;
+				case KeyEvent.VK_HOME:
 					first();
-				} else if (e.getKeyCode() == KeyEvent.VK_END) {
+					break;
+				case KeyEvent.VK_END:
 					last();
+					break;
+				default:
+					consume = false;
+					break;
+				}
+
+				if (consume) {
+					e.consume();
 				}
 			}
 		});
+		final Point origin[] = new Point[1];
 		area.addMouseListener(new MouseAdapter() {
 			@Override
+			public void mousePressed(MouseEvent e) {
+				super.mousePressed(e);
+				origin[0] = e.getPoint();
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				super.mouseReleased(e);
+				origin[0] = null;
+			}
+
+			@Override
 			public void mouseClicked(MouseEvent e) {
+				super.mouseReleased(e);
 				if (e.getButton() == MouseEvent.BUTTON1) {
 					next();
 				} else {
@@ -209,39 +254,62 @@ public class NewViewerImages extends JFrame {
 				}
 			}
 		});
+		area.addMouseMotionListener(new MouseAdapter() {
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				Point from = origin[0];
+				if (from != null) {
+					int deltaX = from.x - e.getX();
+					int deltaY = from.y - e.getY();
+
+					scroll(deltaX, deltaY);
+				}
+			}
+		});
 		area.addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
-				display(index, rotation);
+				display(index, rotation, false);
 			}
 		});
+	}
+
+	private boolean scroll(int deltaX, int deltaY) {
+		Rectangle before = scroll.getViewport().getViewRect();
+		Rectangle target = (Rectangle) before.clone();
+		target.x += deltaX;
+		target.y += deltaY;
+
+		area.scrollRectToVisible(target);
+
+		return !scroll.getViewport().getViewRect().equals(before);
 	}
 
 	private synchronized void next() {
 		index++;
 		if (index >= images.size()) {
-			index = images.size();
+			index = images.size() - 1;
+		} else {
+			display(index, Rotation.NONE, true);
 		}
-
-		display(index, Rotation.NONE);
 	}
 
 	private synchronized void previous() {
 		index--;
 		if (index < 0) {
 			index = 0;
+		} else {
+			display(index, Rotation.NONE, true);
 		}
-
-		display(index, Rotation.NONE);
 	}
 
 	private synchronized void first() {
 		index = 0;
-		display(index, Rotation.NONE);
+		display(index, Rotation.NONE, true);
 	}
 
 	private synchronized void last() {
-		index = images.size();
-		display(index, Rotation.NONE);
+		index = images.size() - 1;
+		display(index, Rotation.NONE, true);
 	}
 }
