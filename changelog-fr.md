@@ -2,6 +2,8 @@
 
 # Version WIP
 
+- new: l'afficheur d'images peut zoomer avec la molette de la souris et control
+
 # Version 1.1.1
 
 - fix: récupère maintenant correctement les hitsoires sans chaptitres

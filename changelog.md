@@ -2,6 +2,8 @@
 
 # Version WIP
 
+- new: ithe image viewer now zooms on mousewheel + control
+
 # Version 1.1.1
 
 - fix: now correctly retrieve stories without chapters

@@ -12,6 +12,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
@@ -467,6 +469,21 @@ public class ViewerImages extends JFrame {
 				if (consume) {
 					e.consume();
 				}
+			}
+		});
+		final MouseWheelListener wheeling = scroll.getMouseWheelListeners()[0];
+		scroll.removeMouseWheelListener(wheeling);
+		area.addMouseWheelListener(new MouseAdapter() {
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				if (e.isControlDown()) {
+					double diff = -0.1 * e.getWheelRotation();
+					setZoom(currentZoom + diff, zoomSnapWidth);
+					e.consume();
+				} else {
+					wheeling.mouseWheelMoved(e);
+				}
+				super.mouseWheelMoved(e);
 			}
 		});
 		final Point origin[] = new Point[1];
