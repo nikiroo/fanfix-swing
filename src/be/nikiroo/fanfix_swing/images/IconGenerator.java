@@ -29,12 +29,24 @@ public class IconGenerator {
 		unknown,
 		/** A small, left-pointed arrow */
 		arrow_left,
+		/** A small, double left-pointed arrow */
+		arrow_double_left,
 		/** A small, right-pointed arrow */
 		arrow_right,
+		/** A small, double right-pointed arrow */
+		arrow_double_right,
 		/** A small, up-pointed arrow */
 		arrow_up,
 		/** A small, down-pointed arrow */
 		arrow_down,
+		/** A "turn left" icon */
+		turn_left,
+		/** A "turn right" icon */
+		turn_right,
+		/** A zoom in icon */
+		zoom_in,
+		/** A zoom out icon */
+		zoom_out,
 		/** An empty (transparent) icon */
 		empty,
 		/** An icon for the program */
