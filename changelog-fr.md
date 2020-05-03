@@ -3,6 +3,7 @@
 # Version WIP
 
 - fix: récupère maintenant correctement les hitsoires sans chaptitres
+- new: les visualisateur d'images est maintenant refait
 
 # Version 1.1.0
 
