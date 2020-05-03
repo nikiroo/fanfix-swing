@@ -3,7 +3,7 @@
 # Version WIP
 
 - fix: now correctly retrieve stories without chapters
-- new: the internal images viewer is now up to par
+- new: the internal viewer is now up to par
 
 # Version 1.1.0
 
