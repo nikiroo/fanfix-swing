@@ -93,6 +93,7 @@ public class PropertiesPanel extends JPanel {
 		JPanel mainPanelValues = new JPanel();
 		mainPanelValues
 				.setLayout(new BoxLayout(mainPanelValues, BoxLayout.Y_AXIS));
+		mainPanelValues.setBackground(UIManager.getColor("List.background"));
 
 		mainPanel.add(mainPanelKeys, BorderLayout.WEST);
 		mainPanel.add(UIUtils.scroll(mainPanelValues, true, false),
@@ -105,6 +106,7 @@ public class PropertiesPanel extends JPanel {
 					jKey.getFont().getSize()));
 			jKey.setEditable(false);
 			jKey.setLineWrap(false);
+			jKey.setOpaque(false);
 			jKey.setBackground(trans);
 			listenables.add(jKey);
 			mainPanelKeys.add(jKey);
@@ -112,10 +114,10 @@ public class PropertiesPanel extends JPanel {
 			final JTextArea jValue = new JTextArea(desc.get(key));
 			jValue.setEditable(false);
 			jValue.setLineWrap(false);
+			jValue.setOpaque(false);
+			jValue.setBackground(trans);
 			listenables.add(jValue);
 			mainPanelValues.add(jValue);
-
-			mainPanelValues.setBackground(jValue.getBackground());
 		}
 
 		// Image

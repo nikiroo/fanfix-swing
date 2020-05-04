@@ -196,6 +196,12 @@ public class ViewerNonImages extends JFrame {
 					area.setCaretPosition(0);
 					area.scrollRectToVisible(new Rectangle());
 
+					// To work around the fact that sometimes the space of the
+					// descpane is kept and the title bar has to take it
+					Rectangle pos = getBounds();
+					pack();
+					setBounds(pos);
+
 					// So we can use the keyboard navigation even after a
 					// toolbar click
 					area.requestFocus();
