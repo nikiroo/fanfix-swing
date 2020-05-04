@@ -83,7 +83,6 @@ public class TODEL_ViewerPanel extends JPanel {
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.getVerticalScrollBar().setUnitIncrement(16);
 
-		// TODO:
 		// JButton up = new BasicArrowButton(BasicArrowButton.NORTH);
 		// JButton down = new BasicArrowButton(BasicArrowButton.SOUTH);
 

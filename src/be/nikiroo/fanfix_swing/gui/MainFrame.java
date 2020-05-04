@@ -2,7 +2,6 @@
 package be.nikiroo.fanfix_swing.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -20,7 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 
 import be.nikiroo.fanfix.Instance;
 import be.nikiroo.fanfix.bundles.Config;
@@ -31,14 +29,18 @@ import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.importer.ImporterFrame;
 import be.nikiroo.fanfix_swing.gui.search.SearchFrame;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
-import be.nikiroo.fanfix_swing.images.IconGenerator;
-import be.nikiroo.fanfix_swing.images.IconGenerator.Icon;
-import be.nikiroo.fanfix_swing.images.IconGenerator.Size;
 import be.nikiroo.utils.Version;
+import be.nikiroo.utils.ui.BreadCrumbsBar;
 import be.nikiroo.utils.ui.ConfigEditor;
-import be.nikiroo.utils.ui.UIUtils;
 
+/**
+ * The main frame of this application, where everything should start.
+ * 
+ * @author niki
+ */
 public class MainFrame extends JFrame {
+	static private final long serialVersionUID = 1L;
+
 	static private ImporterFrame importer;
 
 	private BooksPanel books;
@@ -51,6 +53,11 @@ public class MainFrame extends JFrame {
 	private boolean detailsPanel;
 	private Runnable onCrumbsbreadChange;
 
+	/**
+	 * Create a new main frame.
+	 * <p>
+	 * You should probably only use one for the life of the application.
+	 */
 	public MainFrame() {
 		super("Fanfix " + Version.getCurrentVersion());
 
@@ -61,7 +68,7 @@ public class MainFrame extends JFrame {
 		importer.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (e != null && ImporterFrame.IMPORTED
+				if (e != null && ImporterFrame.IMPORTED_SUCCESS
 						.equals(e.getActionCommand())) {
 					browser.reloadData();
 					books.reloadData();
@@ -152,18 +159,57 @@ public class MainFrame extends JFrame {
 		UiHelper.setFrameIcon(this);
 	}
 
-	static public ImporterFrame getImporter() {
-		return importer;
-	}
-
+	/**
+	 * Change the side panel mode.
+	 * <p>
+	 * The side panel contains an author/source/tag/... browser.
+	 * <p>
+	 * If we have no side panel, a {@link BreadCrumbsBar} will be used instead.
+	 * 
+	 * @param sidePanel
+	 *            TRUE to have a side panel (if FALSE, only a
+	 *            {@link BreadCrumbsBar} will be used)
+	 */
 	public void setSidePanel(boolean sidePanel) {
 		setMode(sidePanel, detailsPanel);
 	}
 
+	/**
+	 * Change the details panel mode.
+	 * <p>
+	 * The details panel is a side panel with some details about the current
+	 * item selected by the browser side panel or the {@link BreadCrumbsBar}.
+	 * 
+	 * @param detailsPanel
+	 *            TRUE for a details panel, FALSE for no details panel
+	 * 
+	 */
 	public void setDetailsPanel(boolean detailsPanel) {
 		setMode(sidePanel, detailsPanel);
 	}
 
+	/**
+	 * Split the two component via a {@link JSplitPane}.
+	 * 
+	 * @param leftTop
+	 *            the first component, that will go on top or on the left
+	 * @param rightBottom
+	 *            the second component, that will go on the bottom or on the
+	 *            right
+	 * @param horizontal
+	 *            TRUE for horisontal layout (left/right), FALSE for vertical
+	 *            (top/bottom)
+	 * @param dividerLocation
+	 *            the location o the divider, usually in pixels (0 means
+	 *            "default to preferred sizes")
+	 * @param weight
+	 *            the way to divide newly created space on this panel between
+	 *            the two component (1 = everything goes to the left/top
+	 *            component, 0 means everything to the other component, 0.5
+	 *            means equally shared)
+	 * 
+	 * @return the newly created {@link JSplitPane}
+	 */
 	private JSplitPane split(JComponent leftTop, JComponent rightBottom,
 			boolean horizontal, int dividerLocation, double weight) {
 		JSplitPane split = new JSplitPane(
@@ -178,6 +224,11 @@ public class MainFrame extends JFrame {
 		return split;
 	}
 
+	/**
+	 * Create the menu bar for the main frame.
+	 * 
+	 * @return the new menu bar
+	 */
 	private JMenuBar createMenuBar() {
 		JMenuBar bar = new JMenuBar();
 
@@ -327,6 +378,15 @@ public class MainFrame extends JFrame {
 		return bar;
 	}
 
+	/**
+	 * Save the given option into the config file (as in, save back to disk,
+	 * now).
+	 * 
+	 * @param option
+	 *            the option to change
+	 * @param value
+	 *            the new value
+	 */
 	private void saveConfig(UiConfig option, boolean value) {
 		Instance.getInstance().getUiConfig().setBoolean(option, value);
 		try {
@@ -337,6 +397,16 @@ public class MainFrame extends JFrame {
 		}
 	}
 
+	/**
+	 * Change the side panels mode.
+	 * 
+	 * @param sidePanel
+	 *            a side panel with an author/source/tag/... browser (if not,
+	 *            only a {@link BreadCrumbsBar} will be used)
+	 * @param detailsPanel
+	 *            a side panel with some details about the current item selected
+	 *            by the browser side panel or the {@link BreadCrumbsBar}
+	 */
 	private void setMode(boolean sidePanel, boolean detailsPanel) {
 		if (this.sidePanel == sidePanel && this.detailsPanel == detailsPanel) {
 			return;
@@ -406,6 +476,27 @@ public class MainFrame extends JFrame {
 		});
 	}
 
+	/**
+	 * The (unique) {@link ImporterFrame} used by Fanfix-Swing.
+	 * 
+	 * @return the importer
+	 */
+	static public ImporterFrame getImporter() {
+		return importer;
+	}
+
+	/**
+	 * Translate the given id into user text.
+	 * 
+	 * @param id
+	 *            the ID to translate
+	 * @param values
+	 *            the values to insert instead of the place holders in the
+	 *            translation
+	 * 
+	 * @return the translated text with the given value where required or NULL
+	 *         if not found (not present in the resource file)
+	 */
 	static public String trans(StringIdGui id, Object... values) {
 		return Instance.getInstance().getTransGui().getString(id, values);
 	}

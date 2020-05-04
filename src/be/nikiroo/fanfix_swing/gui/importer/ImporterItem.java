@@ -27,9 +27,8 @@ public class ImporterItem extends ListenerPanel implements Hoverable {
 
 	/**
 	 * The {@link ActionEvent} you receive from
-	 * {@link ImporterItem#addActionListener(ActionListener)} can return this as
-	 * a command (see {@link ActionEvent#getActionCommand()}) for change event
-	 * on this {@link ImporterItem}.
+	 * {@link ImporterItem#addActionListener(ActionListener)} (see
+	 * {@link ActionEvent#getActionCommand()}) when an item changed.
 	 */
 	static public final String CHANGE = "change";
 

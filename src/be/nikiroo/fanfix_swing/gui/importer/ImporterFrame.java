@@ -19,7 +19,6 @@ import javax.swing.ListSelectionModel;
 import be.nikiroo.fanfix.Instance;
 import be.nikiroo.fanfix.bundles.StringIdGui;
 import be.nikiroo.fanfix.library.LocalLibrary;
-import be.nikiroo.fanfix.reader.BasicReader;
 import be.nikiroo.fanfix.supported.BasicSupport;
 import be.nikiroo.fanfix_swing.Actions;
 import be.nikiroo.fanfix_swing.gui.SearchBar;
@@ -32,13 +31,44 @@ import be.nikiroo.utils.ui.ListenerItem;
 import be.nikiroo.utils.ui.ListenerPanel;
 import be.nikiroo.utils.ui.UIUtils;
 
+/**
+ * A window showing the items currently being processed (downloaded,
+ * converted...).
+ * <p>
+ * You can keep it in memory and let the user close it, it will unhide itself on
+ * import.
+ * 
+ * @author niki
+ */
 public class ImporterFrame extends JFrame implements ListenerItem {
-	static public final String IMPORTED = "imported";
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * The {@link ActionEvent} you receive from
+	 * {@link ImporterFrame#addActionListener(ActionListener)} (see
+	 * {@link ActionEvent#getActionCommand()}) when an item is imported
+	 * successfully.
+	 */
+	static public final String IMPORTED_SUCCESS = "imported_success";
+
+	/**
+	 * The {@link ActionEvent} you receive from
+	 * {@link ImporterFrame#addActionListener(ActionListener)} (see
+	 * {@link ActionEvent#getActionCommand()}) when an item failed to be
+	 * imported.
+	 */
+	static public final String IMPORTED_FAIL = "imported_fail";
 
 	private ListenerPanel root;
 	private ListModel<ImporterItem> data;
 	private String filter = "";
 
+	/**
+	 * Create a new {@link ImporterFrame}.
+	 * <p>
+	 * You can keep it in memory and let the user close it, it will unhode
+	 * itself on import.
+	 */
 	public ImporterFrame() {
 		root = new ListenerPanel();
 		setLayout(new BorderLayout());
@@ -99,7 +129,8 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 	 * <p>
 	 * Should be called inside the UI thread.
 	 * <p>
-	 * Will fire {@link ImporterFrame#IMPORTED} if/when successful.
+	 * Will fire {@link ImporterFrame#IMPORTED_SUCCESS} or
+	 * {@link ImporterFrame#IMPORTED_SUCCESS} when done.
 	 * 
 	 * @param parent
 	 *            a container we can use to display the {@link URL} chooser and
@@ -136,7 +167,8 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 	 * <p>
 	 * Should be called inside the UI thread.
 	 * <p>
-	 * Will fire {@link ImporterFrame#IMPORTED} if/when successful.
+	 * Will fire {@link ImporterFrame#IMPORTED_SUCCESS} or
+	 * {@link ImporterFrame#IMPORTED_SUCCESS} when done.
 	 * 
 	 * @param parent
 	 *            a container we can use to display the {@link File} chooser and
@@ -155,14 +187,14 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 					@Override
 					public void run() {
 						item.setDone(true);
-						fireActionPerformed(IMPORTED);
+						fireActionPerformed(IMPORTED_SUCCESS);
 					}
 				}, new Runnable() {
 					@Override
 					public void run() {
 						item.setFailed(true);
 						item.setDone(true);
-						fireActionPerformed(IMPORTED);
+						fireActionPerformed(IMPORTED_FAIL);
 					}
 				});
 
@@ -176,7 +208,8 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 	 * <p>
 	 * Should be called inside the UI thread.
 	 * <p>
-	 * Will fire {@link ImporterFrame#IMPORTED} if/when successful.
+	 * Will fire {@link ImporterFrame#IMPORTED_SUCCESS} or
+	 * {@link ImporterFrame#IMPORTED_SUCCESS} when done.
 	 * 
 	 * @param parent
 	 *            a container we can use to display the {@link URL} chooser and
@@ -200,14 +233,14 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 				@Override
 				public void run() {
 					item.setDone(true);
-					fireActionPerformed(IMPORTED);
+					fireActionPerformed(IMPORTED_SUCCESS);
 				}
 			}, new Runnable() {
 				@Override
 				public void run() {
 					item.setFailed(true);
 					item.setDone(true);
-					fireActionPerformed(IMPORTED);
+					fireActionPerformed(IMPORTED_FAIL);
 				}
 			});
 
@@ -215,6 +248,20 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 		}
 	}
 
+	/**
+	 * Add a new {@link ImporterItem} linked to the given {@link Progress}.
+	 * 
+	 * @param pg
+	 *            the {@link Progress} to link, must not be NULL
+	 * @param basename
+	 *            the base name given to the {@link ImporterItem} (should be the
+	 *            name of the web site you download/convert from)
+	 * @param storyName
+	 *            the name of the story, if already known
+	 * 
+	 * @return the new item, already linked (you still need to flag it Done or
+	 *         Failed as needed)
+	 */
 	private ImporterItem add(Progress pg, final String basename,
 			String storyName) {
 		final ImporterItem item = new ImporterItem(pg, basename, storyName);
@@ -231,6 +278,10 @@ public class ImporterFrame extends JFrame implements ListenerItem {
 		return item;
 	}
 
+	/**
+	 * Filter the {@link ImporterItem} and keep only those that conform to
+	 * {@link ImporterFrame#filter}.
+	 */
 	private void filter() {
 		data.filter(new Predicate<ImporterItem>() {
 			@Override

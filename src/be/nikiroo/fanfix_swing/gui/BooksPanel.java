@@ -29,6 +29,7 @@ import be.nikiroo.fanfix_swing.gui.book.BookInfo.Type;
 import be.nikiroo.fanfix_swing.gui.book.BookLine;
 import be.nikiroo.fanfix_swing.gui.book.BookPopup;
 import be.nikiroo.fanfix_swing.gui.book.BookPopup.Informer;
+import be.nikiroo.fanfix_swing.gui.importer.ImporterFrame;
 import be.nikiroo.utils.compat.JList6;
 import be.nikiroo.utils.compat.ListCellRenderer6;
 import be.nikiroo.utils.ui.DelayWorker;
@@ -39,6 +40,12 @@ import be.nikiroo.utils.ui.ListenerPanel;
 import be.nikiroo.utils.ui.UIUtils;
 
 public class BooksPanel extends ListenerPanel {
+	/**
+	 * The {@link ActionEvent} you receive from
+	 * {@link BooksPanel#addActionListener(ActionListener)} (see
+	 * {@link ActionEvent#getActionCommand()}) when the cache should be
+	 * invalidated.
+	 */
 	static public final String INVALIDATE_CACHE = "invalidate_cache";
 
 	private enum ReloadMode {
@@ -148,16 +155,16 @@ public class BooksPanel extends ListenerPanel {
 		}.execute();
 	}
 
-	// TODO
+	// TODO loadData by Book.Type + value
 	private void loadData(final Type type, final String value) {
 		synchronized (lastLoad) {
 			lastLoad = new ReloadData(type, value);
 		}
 
-		// TODO todo todo
+		// TODO loadData todo todo
 	}
 
-	// TODO
+	// TODO loadData by Book.Type + value
 	private void loadData(List<BookInfo> bookInfos) {
 		// synchronized (lastLoad) {
 		// lastLoad[0] = "bookInfos";
