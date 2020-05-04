@@ -2,8 +2,9 @@
 
 # Version WIP
 
-- new: ithe image viewer now zooms on mousewheel + control
+- new: the image viewer now zooms on mousewheel + control
 - fix: the image viewer now displayes turned images on rotation, instead of rotating the pixels but in the same height/width
+- fix: the image viewer scrolls correctly when we zoom
 
 # Version 1.1.1
 

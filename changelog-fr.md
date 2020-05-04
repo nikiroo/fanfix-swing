@@ -4,6 +4,7 @@
 
 - new: l'afficheur d'images peut zoomer avec la molette de la souris et control
 - fix: l'afficheur d'images affiche maintenant l'image retournée quand on fait une rotation, au lieu de retourner les pixels mais dans la même hauteur / lageur
+- fix: l'afficheur d'images scroll correctement quand on zoom
 
 # Version 1.1.1
 
