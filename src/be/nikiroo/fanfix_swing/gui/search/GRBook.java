@@ -334,8 +334,8 @@ class GRBook extends JPanel {
 		title.setText(String.format("<html>"
 				+ "<body style='width: %d px; height: %d px; text-align: center'>"
 				+ "%s" + "<br>" + "<span style='color: %s;'>" + "%s" + "</span>"
-				+ "</body>" + "</html>", CoverImager.TEXT_WIDTH,
-				CoverImager.TEXT_HEIGHT, info.getMainInfo(), AUTHOR_COLOR,
+				+ "</body>" + "</html>", COPY_OF_BookCoverImager.TEXT_WIDTH,
+				COPY_OF_BookCoverImager.TEXT_HEIGHT, info.getMainInfo(), AUTHOR_COLOR,
 				optSecondary));
 	}
 }

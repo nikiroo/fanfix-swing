@@ -1,10 +1,7 @@
 package be.nikiroo.fanfix_swing.gui.utils;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
-import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -19,7 +16,6 @@ import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.utils.Image;
 import be.nikiroo.utils.ui.ImageUtilsAwt;
-import be.nikiroo.utils.ui.UIUtils;
 
 /**
  * This class can create a cover icon ready to use for the graphical
@@ -29,20 +25,25 @@ import be.nikiroo.utils.ui.UIUtils;
  */
 public class CoverImager {
 	// TODO: export some of the configuration options?
-	static final int COVER_WIDTH = 100;
-	static final int COVER_HEIGHT = 150;
-	static final int SPINE_WIDTH = 5;
-	static final int SPINE_HEIGHT = 5;
-	static final int HOFFSET = 20;
-	static final Color SPINE_COLOR_BOTTOM = new Color(180, 180, 180);
-	static final Color SPINE_COLOR_RIGHT = new Color(100, 100, 100);
-	static final Color BORDER = Color.black;
-
-	public static final int TEXT_HEIGHT = 50;
-	public static final int TEXT_WIDTH = COVER_WIDTH + 40;
-
+	static private final int COVER_WIDTH = 100;
+	static private final int COVER_HEIGHT = 150;
+	static private final int SPINE_WIDTH = 5;
+	static private final int SPINE_HEIGHT = 5;
+	static private final int HOFFSET = 20;
 	//
 
+	/**
+	 * Get the background colour to use according to the given state.
+	 * 
+	 * @param enabled
+	 *            the item is enabled
+	 * @param selected
+	 *            the item is selected
+	 * @param hovered
+	 *            the mouse cursor currently hovers over the item
+	 * 
+	 * @return the correct background colour to use
+	 */
 	static public Color getBackground(boolean enabled, boolean selected,
 			boolean hovered) {
 		Color color = new Color(255, 255, 255, 0);
