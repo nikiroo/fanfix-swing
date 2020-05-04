@@ -81,7 +81,7 @@ public class NavBar extends ListenerPanel {
 			}
 		});
 
-		page = new JTextField("1");
+		page = new JTextField(Integer.toString(min));
 		page.setPreferredSize(new Dimension(page.getPreferredSize().width * 2,
 				page.getPreferredSize().height));
 		page.addActionListener(new ActionListener() {
