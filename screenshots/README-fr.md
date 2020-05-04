@@ -4,9 +4,39 @@
 
 Cette gallerie reprend des screenshots de plusieurs versions de Fanfix, mais les versions les plus récentes sont affichées en premier.
 
+### Version 1.1.1
+
+La fenêtre principale du programme :
+![Fenêtre principale](fanfix-swing-1.1.0.png)
+
+---
+
+L'afficheur de texte, page "0" :
+![Afficheur de texte](fanfix-swing-1.1.1-text-viewer-1.png)
+
+---
+
+L'afficheur de texte, un chaptire au hasard :
+![Afficheur de texte](fanfix-swing-1.1.1-text-viewer-2.png)
+
+---
+
+L'afficheur d'images (il peut supporter beaucoup d'images sans problèmes) :
+![Afficheur d'images](fanfix-swing-1.1.1-image-viewer-1.png)
+
+---
+
+L'afficheur d'images (les options d'afichage) :
+![Afficheur d'images](fanfix-swing-1.1.1-image-viewer-2.png)
+
+---
+
+L'afficheur d'images (zoom manuel) :
+![Afficheur d'images](fanfix-swing-1.1.1-image-viewer-3.png)
+
 ### Version 1.1.0
 
-La fenêtre principale du programme:
+La fenêtre principale du programme :
 ![Fenêtre principale](fanfix-swing-1.1.0.png)
 
 ---
