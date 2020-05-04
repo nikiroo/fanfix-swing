@@ -2,6 +2,7 @@ package be.nikiroo.fanfix_swing.gui.viewer;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -131,6 +132,7 @@ public class ViewerNonImages extends JFrame {
 		descPane.add(descLabel, BorderLayout.SOUTH);
 
 		area.setSize(scroll.getViewport().getSize());
+		area.setPreferredSize(this.getSize()); // make it as big as possible
 		area.requestFocus();
 
 		this.add(toolbarTitle);
