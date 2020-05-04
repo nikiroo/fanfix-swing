@@ -45,6 +45,7 @@ import be.nikiroo.fanfix_swing.images.IconGenerator.Size;
 import be.nikiroo.utils.Image;
 import be.nikiroo.utils.ui.DelayWorker;
 import be.nikiroo.utils.ui.ImageUtilsAwt;
+import be.nikiroo.utils.ui.NavBar;
 import be.nikiroo.utils.ui.ImageUtilsAwt.Rotation;
 import be.nikiroo.utils.ui.UIUtils;
 

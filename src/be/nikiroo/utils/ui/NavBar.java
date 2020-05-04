@@ -1,4 +1,4 @@
-package be.nikiroo.fanfix_swing.gui.viewer;
+package be.nikiroo.utils.ui;
 
 import java.awt.Dimension;
 import java.awt.LayoutManager;
@@ -10,8 +10,6 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
-
-import be.nikiroo.utils.ui.ListenerPanel;
 
 /**
  * A Swing-based navigation bar, that displays first/previous/next/last page

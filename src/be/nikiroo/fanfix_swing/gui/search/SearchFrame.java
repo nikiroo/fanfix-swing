@@ -23,7 +23,7 @@ import be.nikiroo.fanfix.supported.SupportType;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.search.GRBook.BookActionListener;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
-import be.nikiroo.fanfix_swing.gui.viewer.NavBar;
+import be.nikiroo.utils.ui.NavBar;
 import be.nikiroo.utils.ui.UIUtils;
 
 /**
