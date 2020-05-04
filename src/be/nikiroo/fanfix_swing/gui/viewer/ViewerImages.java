@@ -30,6 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import be.nikiroo.fanfix.Instance;
@@ -154,11 +155,17 @@ public class ViewerImages extends JFrame {
 		worker.start();
 
 		initGui();
-		display(index, Rotation.NONE, true);
 
-		if (!images.isEmpty()) {
-			UiHelper.setFrameIcon(this, images.get(0));
-		}
+		// The first part of display() needs the scroll to be positioned
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				// ...now it is
+				display(index, Rotation.NONE, true);
+			}
+		});
+
+		UiHelper.setFrameIcon(this, images.isEmpty() ? null : images.get(0));
 	}
 
 	private void initGui() {

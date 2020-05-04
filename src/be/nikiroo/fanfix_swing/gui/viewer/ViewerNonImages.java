@@ -2,7 +2,6 @@ package be.nikiroo.fanfix_swing.gui.viewer;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -51,7 +50,6 @@ public class ViewerNonImages extends JFrame {
 	private NavBar navbar;
 	private JLabel title;
 	private JScrollPane scroll;
-	private JPanel mainPane;
 	private JEditorPane area;
 	private JPanel descPane;
 
@@ -82,7 +80,7 @@ public class ViewerNonImages extends JFrame {
 		initGui(lib);
 		setChapter(0);
 
-		UiHelper.setFrameIcon(this);
+		UiHelper.setFrameIcon(this, lib, story.getMeta());
 	}
 
 	/**

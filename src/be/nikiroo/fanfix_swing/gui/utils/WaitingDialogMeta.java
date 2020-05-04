@@ -7,6 +7,7 @@ import java.awt.Window;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.SwingWorker;
+import javax.swing.border.EmptyBorder;
 
 import be.nikiroo.fanfix.data.MetaData;
 import be.nikiroo.fanfix.library.BasicLibrary;
@@ -61,11 +62,14 @@ public class WaitingDialogMeta extends WaitingDialog {
 
 		this.setLayout(new BorderLayout());
 		this.setTitle(meta.getTitle());
-		this.add(new JLabel("Waiting for " + meta.getTitle() + "..."),
-				BorderLayout.NORTH);
+		JLabel waitingTextLabel = new JLabel("Waiting for " + meta.getTitle() + "...");
+		waitingTextLabel.setHorizontalAlignment(JLabel.CENTER);
+		waitingTextLabel.setBorder(new EmptyBorder(30, 10, 10, 10));
+		this.add(waitingTextLabel, BorderLayout.NORTH);
 		imgLabel = new JLabel();
 		imgLabel.setPreferredSize(new Dimension(CoverImager.getCoverWidth(),
 				CoverImager.getCoverHeight()));
+		imgLabel.setHorizontalAlignment(JLabel.CENTER);
 		this.add(imgLabel, BorderLayout.CENTER);
 
 		// Image
@@ -85,6 +89,7 @@ public class WaitingDialogMeta extends WaitingDialog {
 			}
 		}.execute();
 
+		UiHelper.setFrameIcon(this, lib, meta);
 		this.setSize(400, 300);
 	}
 }
