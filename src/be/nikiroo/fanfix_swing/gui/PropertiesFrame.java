@@ -34,16 +34,16 @@ public class PropertiesFrame extends JDialog {
 	 */
 	public PropertiesFrame(BasicLibrary lib, MetaData meta,
 			boolean undecorated) {
-		setTitle(MainFrame.trans(StringIdGui.TITLE_STORY, meta.getLuid(),
+		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		this.setUndecorated(undecorated);
+		this.setLayout(new BorderLayout());
+		this.setTitle(MainFrame.trans(StringIdGui.TITLE_STORY, meta.getLuid(),
 				meta.getTitle()));
 
 		desc = new PropertiesPanel(lib, meta, undecorated);
-		setLayout(new BorderLayout());
-		add(desc, BorderLayout.NORTH);
+		this.add(desc, BorderLayout.NORTH);
 
-		this.setUndecorated(undecorated);
-
-		pack();
+		this.pack();
 		this.setSize(600, getHeight());
 
 		if (!undecorated) {
