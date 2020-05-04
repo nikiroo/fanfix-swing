@@ -17,12 +17,12 @@ import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
  * 
  * @author niki
  */
-public class PropertiesFrame extends JDialog {
+public class PropertiesDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private JPanel desc;
 
 	/**
-	 * Create a new {@link PropertiesFrame}.
+	 * Create a new {@link PropertiesDialog}.
 	 * 
 	 * @param lib
 	 *            the library to use for the cover image
@@ -32,7 +32,7 @@ public class PropertiesFrame extends JDialog {
 	 *            do not draw the usual window decorations
 	 *            (close/minimize/maximize)
 	 */
-	public PropertiesFrame(BasicLibrary lib, MetaData meta,
+	public PropertiesDialog(BasicLibrary lib, MetaData meta,
 			boolean undecorated) {
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		this.setUndecorated(undecorated);

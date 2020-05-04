@@ -394,7 +394,7 @@ public class BooksPanelActions {
 		BasicLibrary lib = Instance.getInstance().getLibrary();
 		BookInfo selected = informer.getUniqueSelected();
 		if (selected != null) {
-			new PropertiesFrame(lib, selected.getMeta(), false)
+			new PropertiesDialog(lib, selected.getMeta(), false)
 					.setVisible(true);
 		}
 	}
