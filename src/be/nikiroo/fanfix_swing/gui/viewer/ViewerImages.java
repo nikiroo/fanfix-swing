@@ -45,8 +45,8 @@ import be.nikiroo.fanfix_swing.images.IconGenerator.Size;
 import be.nikiroo.utils.Image;
 import be.nikiroo.utils.ui.DelayWorker;
 import be.nikiroo.utils.ui.ImageUtilsAwt;
-import be.nikiroo.utils.ui.NavBar;
 import be.nikiroo.utils.ui.ImageUtilsAwt.Rotation;
+import be.nikiroo.utils.ui.NavBar;
 import be.nikiroo.utils.ui.UIUtils;
 
 /**
@@ -112,6 +112,7 @@ public class ViewerImages extends JFrame {
 
 	private double zoom = -1; // -1 = snap to width or height
 	private double currentZoom = 1; // used to go from snap to + or -
+	private Dimension currentImageSize;
 	private boolean zoomSnapWidth = true;
 	private Rotation rotation = Rotation.NONE;
 
@@ -247,7 +248,7 @@ public class ViewerImages extends JFrame {
 				} else {
 					newZoom = Math.round(newZoom * 100.0) / 100.0; // snap to 1%
 				}
-				setZoom(newZoom, zoomSnapWidth);
+				setZoom(newZoom, zoomSnapWidth, null);
 			}
 		});
 
@@ -266,7 +267,7 @@ public class ViewerImages extends JFrame {
 				if (selected instanceof ZoomLevel) {
 					ZoomLevel selectedZoomLevel = (ZoomLevel) selected;
 					setZoom(selectedZoomLevel.zoom,
-							selectedZoomLevel.zoomSnapWidth);
+							selectedZoomLevel.zoomSnapWidth, null);
 					return;
 				}
 
@@ -284,7 +285,7 @@ public class ViewerImages extends JFrame {
 						throw new NumberFormatException("invalid");
 					}
 
-					setZoom(pc / 100.0, newZoomSnapWidth);
+					setZoom(pc / 100.0, newZoomSnapWidth, null);
 				} catch (NumberFormatException nfe) {
 				}
 			}
@@ -305,7 +306,7 @@ public class ViewerImages extends JFrame {
 				} else {
 					newZoom = Math.round(newZoom * 100.0) / 100.0; // snap to 1%
 				}
-				setZoom(newZoom, zoomSnapWidth);
+				setZoom(newZoom, zoomSnapWidth, null);
 			}
 
 		});
@@ -334,7 +335,8 @@ public class ViewerImages extends JFrame {
 		return sep;
 	}
 
-	private void setZoom(double newZoom, boolean newZoomSnapWidth) {
+	private void setZoom(double newZoom, boolean newZoomSnapWidth,
+			Point zoomCenterOffset) {
 		if (newZoom > 0) {
 			zoomBoxModel.setSelectedItem(
 					Integer.toString((int) Math.round(newZoom * 100)) + " %");
@@ -342,11 +344,16 @@ public class ViewerImages extends JFrame {
 
 		zoom = newZoom;
 		zoomSnapWidth = newZoomSnapWidth;
-		display(index, rotation, true);
+		display(index, rotation, false, zoomCenterOffset);
+	}
+
+	private synchronized void display(int index, Rotation rotation,
+			boolean resetScroll) {
+		display(index, rotation, resetScroll, null);
 	}
 
 	private synchronized void display(int index, final Rotation rotation,
-			final boolean resetScroll) {
+			final boolean resetScroll, final Point zoomCenterOffset) {
 		if (images.isEmpty()) {
 			return;
 		}
@@ -364,6 +371,9 @@ public class ViewerImages extends JFrame {
 
 		worker.delay("display:" + resetScroll,
 				new SwingWorker<ImageIcon, Void>() {
+					private double previousZoom;
+					private Rectangle scrollTo;
+
 					@Override
 					protected ImageIcon doInBackground() throws Exception {
 						Rotation rotation = ViewerImages.this.rotation;
@@ -375,12 +385,49 @@ public class ViewerImages extends JFrame {
 						BufferedImage resizedImage = ImageUtilsAwt.scaleImage(
 								areaSize, image, zoom, zoomSnapWidth);
 
+						Dimension previousImageSize = currentImageSize;
+						currentImageSize = new Dimension(
+								resizedImage.getWidth(),
+								resizedImage.getHeight());
+
+						previousZoom = currentZoom;
 						if (!turn) {
 							currentZoom = (1.0 * resizedImage.getWidth())
 									/ image.getWidth();
 						} else {
 							currentZoom = (1.0 * resizedImage.getHeight())
 									/ image.getWidth();
+						}
+
+						if (previousZoom != currentZoom
+								&& previousImageSize != null) {
+							Rectangle view = scroll.getViewport().getViewRect();
+
+							double ratioW = view.getCenterX()
+									/ previousImageSize.width;
+							double ratioH = view.getCenterY()
+									/ previousImageSize.height;
+
+							if (turn) {
+								double tmp = ratioW;
+								ratioW = ratioH;
+								ratioH = tmp;
+							}
+
+							double centerX = ratioW * currentImageSize.width;
+							double centerY = ratioH * currentImageSize.height;
+							int x = (int) Math
+									.round(centerX - (view.width / 2.0));
+							int y = (int) Math
+									.round(centerY - (view.height / 2.0));
+
+							if (zoomCenterOffset != null) {
+								x += zoomCenterOffset.x;
+								y += zoomCenterOffset.y;
+							}
+
+							scrollTo = new Rectangle(x, y, //
+									view.width, view.height);
 						}
 
 						return new ImageIcon(resizedImage);
@@ -412,6 +459,8 @@ public class ViewerImages extends JFrame {
 							area.setIcon(img);
 							if (resetScroll) {
 								area.scrollRectToVisible(new Rectangle());
+							} else if (scrollTo != null) {
+								area.scrollRectToVisible(scrollTo);
 							}
 						} catch (InterruptedException e) {
 							Instance.getInstance().getTraceHandler().error(e);
@@ -493,8 +542,13 @@ public class ViewerImages extends JFrame {
 			@Override
 			public void mouseWheelMoved(MouseWheelEvent e) {
 				if (e.isControlDown()) {
+					Rectangle view = new Rectangle(scroll.getLocationOnScreen(),
+							scroll.getViewport().getViewRect().getSize());
+					int x = e.getLocationOnScreen().x - (int) view.getCenterX();
+					int y = e.getLocationOnScreen().y - (int) view.getCenterY();
+
 					double diff = -0.1 * e.getWheelRotation();
-					setZoom(currentZoom + diff, zoomSnapWidth);
+					setZoom(currentZoom + diff, zoomSnapWidth, new Point(x, y));
 					e.consume();
 				} else {
 					wheeling.mouseWheelMoved(e);
