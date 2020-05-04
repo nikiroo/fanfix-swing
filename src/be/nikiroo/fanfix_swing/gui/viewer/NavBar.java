@@ -6,13 +6,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import be.nikiroo.fanfix_swing.images.IconGenerator;
-import be.nikiroo.fanfix_swing.images.IconGenerator.Icon;
-import be.nikiroo.fanfix_swing.images.IconGenerator.Size;
 import be.nikiroo.utils.ui.ListenerPanel;
 
 /**
@@ -67,8 +65,7 @@ public class NavBar extends ListenerPanel {
 		setLayout(layout);
 
 		// Page navigation
-		first = new JButton(
-				IconGenerator.get(Icon.arrow_double_left, Size.x32));
+		first = new JButton();
 		first.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -76,7 +73,7 @@ public class NavBar extends ListenerPanel {
 			}
 		});
 
-		previous = new JButton(IconGenerator.get(Icon.arrow_left, Size.x32));
+		previous = new JButton();
 		previous.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -106,7 +103,7 @@ public class NavBar extends ListenerPanel {
 
 		maxPage = new JLabel(" of " + max);
 
-		next = new JButton(IconGenerator.get(Icon.arrow_right, Size.x32));
+		next = new JButton();
 		next.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -114,14 +111,16 @@ public class NavBar extends ListenerPanel {
 			}
 		});
 
-		last = new JButton(
-				IconGenerator.get(Icon.arrow_double_right, Size.x32));
+		last = new JButton();
 		last.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				last();
 			}
 		});
+
+		// Set the << < > >> "icons"
+		setIcons(null, null, null, null);
 
 		this.add(first);
 		this.add(previous);
@@ -319,6 +318,31 @@ public class NavBar extends ListenerPanel {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Set icons for the buttons instead of square brackets.
+	 * <p>
+	 * Any NULL value will make the button use square brackets again.
+	 * 
+	 * @param first
+	 *            the icon of the button "go to first page"
+	 * @param previous
+	 *            the icon of the button "go to previous page"
+	 * @param next
+	 *            the icon of the button "go to next page"
+	 * @param last
+	 *            the icon of the button "go to last page"
+	 */
+	public void setIcons(Icon first, Icon previous, Icon next, Icon last) {
+		this.first.setIcon(first);
+		this.first.setText(first == null ? "<<" : "");
+		this.previous.setIcon(previous);
+		this.previous.setText(previous == null ? "<" : "");
+		this.next.setIcon(next);
+		this.next.setText(next == null ? ">" : "");
+		this.last.setIcon(last);
+		this.last.setText(last == null ? ">>" : "");
 	}
 
 	/**

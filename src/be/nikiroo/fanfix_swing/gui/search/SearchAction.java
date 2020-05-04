@@ -16,7 +16,6 @@ import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix_swing.gui.PropertiesPanel;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
-import be.nikiroo.fanfix_swing.gui.viewer.TODEL_ViewerPanel;
 import be.nikiroo.utils.Progress;
 import be.nikiroo.utils.ui.ProgressBar;
 

@@ -26,6 +26,9 @@ import be.nikiroo.fanfix.data.Story;
 import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix_swing.gui.PropertiesPanel;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
+import be.nikiroo.fanfix_swing.images.IconGenerator;
+import be.nikiroo.fanfix_swing.images.IconGenerator.Icon;
+import be.nikiroo.fanfix_swing.images.IconGenerator.Size;
 import be.nikiroo.utils.ui.DelayWorker;
 import be.nikiroo.utils.ui.UIUtils;
 
@@ -148,6 +151,12 @@ public class ViewerNonImages extends JFrame {
 	private JToolBar createToolBar() {
 		JToolBar toolbar = new JToolBar();
 		navbar = new NavBar(0, story.getChapters().size());
+		navbar.setIcons( //
+				IconGenerator.get(Icon.arrow_double_left, Size.x32), //
+				IconGenerator.get(Icon.arrow_left, Size.x32), //
+				IconGenerator.get(Icon.arrow_right, Size.x32), //
+				IconGenerator.get(Icon.arrow_double_right, Size.x32) //
+		);
 		toolbar.add(navbar);
 		return toolbar;
 	}

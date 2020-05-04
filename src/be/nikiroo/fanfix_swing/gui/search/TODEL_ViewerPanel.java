@@ -1,4 +1,4 @@
-package be.nikiroo.fanfix_swing.gui.viewer;
+package be.nikiroo.fanfix_swing.gui.search;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
@@ -36,7 +36,7 @@ public class TODEL_ViewerPanel extends JPanel {
 	private boolean imageDocument;
 	private Chapter chap;
 	private JScrollPane scroll;
-	private ViewerTextOutput htmlOutput;
+	private COPY_OF_ViewerTextOutput htmlOutput;
 
 	// text only:
 	private JEditorPane text;
@@ -74,7 +74,7 @@ public class TODEL_ViewerPanel extends JPanel {
 		this.text = new JEditorPane("text/html", "");
 		text.setEditable(false);
 		text.setAlignmentY(TOP_ALIGNMENT);
-		htmlOutput = new ViewerTextOutput();
+		htmlOutput = new COPY_OF_ViewerTextOutput();
 
 		image = new JLabel();
 		image.setHorizontalAlignment(SwingConstants.CENTER);
