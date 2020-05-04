@@ -34,7 +34,7 @@ class ViewerTextOutput {
 
 			@Override
 			protected void writeChapterHeader(Chapter chap) throws IOException {
-				builder.append("<HTML style='line-height: normal;'>");
+				builder.append("<HTML style='line-height: 5px;'>");
 
 				if (chapterName) {
 					builder.append("<H1>");
@@ -82,12 +82,14 @@ class ViewerTextOutput {
 					builder.append("<BR>");
 					break;
 				case BLANK:
-					builder.append("<BR><BR>");
+					builder.append("<FONT SIZE='1'><BR></FONT>");
 					break;
 				case BREAK:
-					builder.append("<BR><P COLOR='#7777DD' ALIGN='CENTER'><B>");
-					builder.append("* * *");
-					builder.append("</B></P><BR><BR>");
+					// Used to be 7777DD
+					builder.append("<P COLOR='#AAAAAA' ALIGN='CENTER'>");
+					builder.append("<FONT SIZE='5'>* * *</FONT>");
+					builder.append("</P>");
+					builder.append("<BR>");
 					break;
 				case QUOTE:
 					builder.append("<DIV>");
@@ -103,7 +105,8 @@ class ViewerTextOutput {
 
 			@Override
 			protected String enbold(String word) {
-				return "<B COLOR='#7777DD'>" + word + "</B>";
+				// Used to be COLOR='#7777DD'
+				return "<B>" + word + "</B>";
 			}
 
 			@Override
