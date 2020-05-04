@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -25,10 +26,27 @@ import be.nikiroo.utils.Image;
 import be.nikiroo.utils.ui.ImageUtilsAwt;
 import be.nikiroo.utils.ui.ImageUtilsAwt.Rotation;
 
+/**
+ * Some UI helper functions dedicated to Fanfix-Swing.
+ * 
+ * @author niki
+ */
 public class UiHelper {
 	static private Color buttonNormal;
 	static private Color buttonPressed;
 
+	/**
+	 * Set the given {@link JButton} as "pressed" (selected, but with more UI
+	 * visibility).
+	 * <p>
+	 * The {@link JButton} will answer {@link JButton#isSelected()} if it is
+	 * pressed.
+	 * 
+	 * @param button
+	 *            the button to select/press
+	 * @param pressed
+	 *            the new "pressed" state
+	 */
 	static public void setButtonPressed(JButton button, boolean pressed) {
 		if (buttonNormal == null) {
 			JButton defButton = new JButton(" ");
@@ -78,8 +96,30 @@ public class UiHelper {
 		});
 	}
 
+	/**
+	 * Set the default icon for Fanfix on the provided {@link Window}.
+	 * 
+	 * @param win
+	 *            the window to use
+	 */
+	static public void setFrameIcon(final Window win) {
+		setFrameIcon(win, null, null);
+	}
+
+	/**
+	 * Set the given icon on the provided {@link Window}.
+	 * <p>
+	 * If no icon found, the default one for Fanfix will be used.
+	 * 
+	 * @param win
+	 *            the window to use
+	 * @param img
+	 *            the icon (can be NULL)
+	 */
 	static public void setFrameIcon(final Window win, final Image img) {
 		setFrameIcon(win, null, new MetaData() {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public Image getCover() {
 				return img;
@@ -87,25 +127,51 @@ public class UiHelper {
 		});
 	}
 
+	/**
+	 * Set the given icon on the provided {@link Window}.
+	 * <p>
+	 * If no icon found, the default one for Fanfix will be used.
+	 * 
+	 * @param win
+	 *            the window to use
+	 * @param lib
+	 *            the {@link BasicLibrary} used to retrieve the image if the
+	 *            meta doesn't already have it cached (can be null, requires a
+	 *            meta with a valid LUID to find something)
+	 * @param meta
+	 *            the meta in which to look for the image first (can be null)
+	 */
 	static public void setFrameIcon(final Window win, final BasicLibrary lib,
 			final MetaData meta) {
-		new SwingWorker<List<BufferedImage>, Void>() {
+		new SwingWorker<List<java.awt.Image>, Void>() {
 			@Override
-			protected List<BufferedImage> doInBackground() throws Exception {
+			protected List<java.awt.Image> doInBackground() throws Exception {
 				Image img = meta == null ? null : meta.getCover();
 				if (img == null && meta != null && lib != null) {
 					img = lib.getCover(meta.getLuid());
 				}
 
+				// If no image given, use the default one for Fanfix
 				if (img == null) {
-					return null;
+					String iconName = Instance.getInstance().getUiConfig()
+							.getString(UiConfig.PROGRAM_ICON);
+					Icon icon = Icon
+							.valueOf("icon_" + iconName.replace("-", "_"));
+
+					return Arrays.asList(
+							IconGenerator.get(icon, Size.x16).getImage(),
+							IconGenerator.get(icon, Size.x24).getImage(),
+							IconGenerator.get(icon, Size.x32).getImage(),
+							IconGenerator.get(icon, Size.x64).getImage(),
+							IconGenerator.get(icon, Size.original).getImage());
 				}
 
+				// Resize the provided image
 				BufferedImage image = ImageUtilsAwt.fromImage(img,
 						Rotation.NONE);
 				boolean zoomSnapWidth = image.getWidth() >= image.getHeight();
 
-				List<BufferedImage> resizedImages = new ArrayList<BufferedImage>();
+				List<java.awt.Image> resizedImages = new ArrayList<java.awt.Image>();
 				for (int size : new Integer[] { 16, 20, 64, 400 }) {
 					resizedImages.add(
 							ImageUtilsAwt.scaleImage(new Dimension(size, size),
@@ -118,31 +184,11 @@ public class UiHelper {
 			@Override
 			protected void done() {
 				try {
-					List<BufferedImage> imgs = get();
+					List<java.awt.Image> imgs = get();
 					if (imgs != null)
 						win.setIconImages(imgs);
 				} catch (InterruptedException e) {
 				} catch (ExecutionException e) {
-				}
-			}
-		}.execute();
-	}
-
-	static public void setFrameIcon(final Window win) {
-		new SwingWorker<java.awt.Image, Void>() {
-			@Override
-			protected java.awt.Image doInBackground() throws Exception {
-				String iconName = Instance.getInstance().getUiConfig()
-						.getString(UiConfig.PROGRAM_ICON);
-				Icon icon = Icon.valueOf("icon_" + iconName.replace("-", "_"));
-				return IconGenerator.get(icon, Size.original).getImage();
-			}
-
-			@Override
-			protected void done() {
-				try {
-					win.setIconImage(get());
-				} catch (Exception e) {
 				}
 			}
 		}.execute();
