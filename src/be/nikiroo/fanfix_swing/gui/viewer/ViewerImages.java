@@ -184,6 +184,12 @@ public class ViewerImages extends JFrame {
 
 		// Page navigation
 		navbar = new NavBar(1, images.size());
+		navbar.setIcons( //
+				IconGenerator.get(Icon.arrow_double_left, Size.x32), //
+				IconGenerator.get(Icon.arrow_left, Size.x32), //
+				IconGenerator.get(Icon.arrow_right, Size.x32), //
+				IconGenerator.get(Icon.arrow_double_right, Size.x32) //
+		);
 
 		// Rotate
 		JButton left = new JButton(IconGenerator.get(Icon.turn_left, Size.x32));
