@@ -1,6 +1,5 @@
 package be.nikiroo.fanfix_swing;
 
-import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Window;
 import java.io.File;
@@ -11,9 +10,6 @@ import java.net.UnknownHostException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.SwingWorker;
 
 import be.nikiroo.fanfix.Instance;
@@ -23,13 +19,13 @@ import be.nikiroo.fanfix.data.MetaData;
 import be.nikiroo.fanfix.data.Story;
 import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix.library.LocalLibrary;
-import be.nikiroo.fanfix_swing.gui.book.BookInfo;
-import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
+import be.nikiroo.fanfix_swing.gui.utils.WaitingDialogMeta;
 import be.nikiroo.fanfix_swing.gui.viewer.ViewerImages;
 import be.nikiroo.fanfix_swing.gui.viewer.ViewerNonImages;
 import be.nikiroo.utils.Progress;
 import be.nikiroo.utils.StringUtils;
+import be.nikiroo.utils.ui.WaitingDialog;
 
 public class Actions {
 	static public void openBook(final BasicLibrary lib, MetaData meta,
@@ -39,44 +35,21 @@ public class Actions {
 			parentWindow = parentWindow.getParent();
 		}
 
-		// TODO: UI
-		final JDialog wait = new JDialog((Window) parentWindow);
-		wait.setTitle(meta.getTitle());
-		// Image
-		ImageIcon img = new ImageIcon(CoverImager.generateCoverImage(lib,
-				BookInfo.fromMeta(lib, meta)));
-		wait.setLayout(new BorderLayout());
-		wait.add(new JLabel("Opening " + meta.getTitle() + "..."),
-				BorderLayout.NORTH);
-		wait.add(new JLabel(img), BorderLayout.CENTER);
+		final WaitingDialog wait = new WaitingDialogMeta((Window) parentWindow,
+				lib, meta);
 
-		wait.setSize(400, 300);
+		boolean internalImg = Instance.getInstance().getUiConfig()
+				.getBoolean(UiConfig.IMAGES_DOCUMENT_USE_INTERNAL_READER, true);
+		boolean internalNonImg = Instance.getInstance().getUiConfig()
+				.getBoolean(UiConfig.NON_IMAGES_DOCUMENT_USE_INTERNAL_READER,
+						true);
 
-		// TODO: pg?
-
-		final Object waitLock = new Object();
-		final Boolean[] waitScreen = new Boolean[] { false };
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(200);
-				} catch (InterruptedException e) {
-				}
-
-				synchronized (waitLock) {
-					if (!waitScreen[0]) {
-						waitScreen[0] = true;
-						wait.setVisible(true);
-					}
-				}
-			}
-		}).start();
-
-		final String luid = meta.getLuid();
 		final boolean isImageDocument = meta.isImageDocument();
+		final boolean internalReader = (isImageDocument && internalImg
+				|| !isImageDocument && internalNonImg);
+		final String luid = meta.getLuid();
 
-		final SwingWorker<File, Void> worker = new SwingWorker<File, Void>() {
+		new SwingWorker<File, Void>() {
 			private File target;
 			private Story story;
 
@@ -91,17 +64,7 @@ public class Actions {
 			protected void done() {
 				try {
 					get();
-					boolean internalImg = Instance.getInstance().getUiConfig()
-							.getBoolean(
-									UiConfig.IMAGES_DOCUMENT_USE_INTERNAL_READER,
-									true);
-					boolean internalNonImg = Instance.getInstance()
-							.getUiConfig().getBoolean(
-									UiConfig.NON_IMAGES_DOCUMENT_USE_INTERNAL_READER,
-									true);
-
-					if (isImageDocument && internalImg
-							|| !isImageDocument && internalNonImg) {
+					if (internalReader) {
 						openInternal(story);
 					} else {
 						openExternal(target, isImageDocument);
@@ -112,20 +75,14 @@ public class Actions {
 							"Cannot open the story", e);
 				}
 
-				synchronized (waitLock) {
-					if (waitScreen[0]) {
-						wait.setVisible(false);
-					}
-					waitScreen[0] = true;
-				}
+				// Dismiss the waiting screen if needed
+				wait.dismiss();
 
 				if (onDone != null) {
 					onDone.run();
 				}
 			}
-		};
-
-		worker.execute();
+		}.execute();
 	}
 
 	/**
