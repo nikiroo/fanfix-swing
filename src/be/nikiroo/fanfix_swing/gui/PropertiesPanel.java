@@ -15,6 +15,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 import be.nikiroo.fanfix.data.MetaData;
@@ -33,8 +34,8 @@ import be.nikiroo.utils.ui.UIUtils;
 public class PropertiesPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private final int space = 10; // empty space for visual correctness
-	private final int hscroll = 10; // we reserve space at the bottom for a
-									// potential HScroll
+	private final int hscroll; // we reserve space at the bottom for a
+								// potential HScroll
 	private List<Component> listenables;
 
 	/**
@@ -51,6 +52,7 @@ public class PropertiesPanel extends JPanel {
 			boolean includeTitle) {
 		listenables = new ArrayList<Component>();
 
+		hscroll = UIManager.getInt("ScrollBar.width");
 		Color trans = new Color(0, 0, 0, 1);
 
 		// Image
