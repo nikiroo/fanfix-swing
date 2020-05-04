@@ -366,13 +366,22 @@ public class ViewerImages extends JFrame {
 				new SwingWorker<ImageIcon, Void>() {
 					@Override
 					protected ImageIcon doInBackground() throws Exception {
+						Rotation rotation = ViewerImages.this.rotation;
+						boolean turn = (rotation == Rotation.LEFT
+								|| rotation == Rotation.RIGHT);
+
 						BufferedImage image = ImageUtilsAwt.fromImage(img,
 								rotation);
 						BufferedImage resizedImage = ImageUtilsAwt.scaleImage(
 								areaSize, image, zoom, zoomSnapWidth);
 
-						currentZoom = (1.0 * resizedImage.getWidth())
-								/ image.getWidth();
+						if (!turn) {
+							currentZoom = (1.0 * resizedImage.getWidth())
+									/ image.getWidth();
+						} else {
+							currentZoom = (1.0 * resizedImage.getHeight())
+									/ image.getWidth();
+						}
 
 						return new ImageIcon(resizedImage);
 					}
