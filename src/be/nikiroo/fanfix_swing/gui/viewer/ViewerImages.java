@@ -133,8 +133,8 @@ public class ViewerImages extends JFrame {
 	 *            the {@link Story} to display
 	 */
 	public ViewerImages(Story story) {
-		setTitle(Main.trans(StringIdGui.TITLE_STORY,
-				story.getMeta().getLuid(), story.getMeta().getTitle()));
+		setTitle(Main.trans(StringIdGui.TITLE_STORY, story.getMeta().getLuid(),
+				story.getMeta().getTitle()));
 
 		setSize(800, 600);
 
@@ -410,10 +410,10 @@ public class ViewerImages extends JFrame {
 								&& previousImageSize != null) {
 							Rectangle view = scroll.getViewport().getViewRect();
 
-							double ratioW = view.getCenterX()
-									/ previousImageSize.width;
-							double ratioH = view.getCenterY()
-									/ previousImageSize.height;
+							double centerX = view.getCenterX();
+							double centerY = view.getCenterY();
+							double ratioW = centerX / previousImageSize.width;
+							double ratioH = centerY / previousImageSize.height;
 
 							if (turn) {
 								double tmp = ratioW;
@@ -421,17 +421,18 @@ public class ViewerImages extends JFrame {
 								ratioH = tmp;
 							}
 
-							double centerX = ratioW * currentImageSize.width;
-							double centerY = ratioH * currentImageSize.height;
+							centerX = currentImageSize.width * ratioW;
+							centerY = currentImageSize.height * ratioH;
+							if (zoomCenterOffset != null) {
+								double dzoom = currentZoom - previousZoom;
+								centerX += zoomCenterOffset.x * dzoom * ratioW;
+								centerY += zoomCenterOffset.y * dzoom * ratioH;
+							}
+
 							int x = (int) Math
 									.round(centerX - (view.width / 2.0));
 							int y = (int) Math
 									.round(centerY - (view.height / 2.0));
-
-							if (zoomCenterOffset != null) {
-								x += zoomCenterOffset.x;
-								y += zoomCenterOffset.y;
-							}
 
 							scrollTo = new Rectangle(x, y, //
 									view.width, view.height);
