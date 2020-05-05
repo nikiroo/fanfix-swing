@@ -1,17 +1,17 @@
 # Fanfix-swing
 
-# Version WIP
+## Version WIP
 
 - new: the image viewer now zooms on mousewheel + control
 - fix: the image viewer now displayes turned images on rotation, instead of rotating the pixels but in the same height/width
 - fix: the image viewer scrolls correctly when we zoom
 
-# Version 1.1.1
+## Version 1.1.1
 
 - fix: now correctly retrieve stories without chapters
 - new: the internal viewer is now up to par
 
-# Version 1.1.0
+## Version 1.1.0
 
 - new: tooltips in books panel
 - new: books browsing (copied from fanfix, early beta)
@@ -21,7 +21,7 @@
 - e621: option to use a Login/API key to evade blacklists
 - e621: better metadata
 
-# Version 1.0.0
+## Version 1.0.0
 
 - new: if arguments are passed, they are forwarded to the CLI
 - new: redownload (but do not delete original)
@@ -30,7 +30,7 @@
 - fix: more stable, deadlock removed
 - fix: fix for Java 11 which hided the side panels by default
 
-# Version 0.0.2
+## Version 0.0.2
 
 - new: configuration panel
 - new: internal viewer (both images and non-images documents)
@@ -38,7 +38,7 @@
 - new: show/hide side panels
 - fix: graphical improvements
 
-# Version 0.0.1
+## Version 0.0.1
 
 - new: wrapper EXE pour Windows
 - new: first version
