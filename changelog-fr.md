@@ -1,6 +1,6 @@
 # Fanfix-swing
 
-## Version WIP
+## Version 1.2.0
 
 - new: le programme vérifie si une version plus récente est disponible (comme Fanfix)
 - new: l'afficheur d'images peut zoomer avec la molette de la souris et control

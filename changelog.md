@@ -1,6 +1,6 @@
 # Fanfix-swing
 
-## Version WIP
+## Version 1.2.0
 
 - new: the program checks if a new version is available (like Fanfix does)
 - new: the image viewer now zooms on mousewheel + control
