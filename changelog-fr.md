@@ -2,14 +2,15 @@
 
 ## Version WIP
 
+- new: le programme vérifie si une version plus récente est disponible (comme Fanfix)
 - new: l'afficheur d'images peut zoomer avec la molette de la souris et control
 - fix: l'afficheur d'images affiche maintenant l'image retournée quand on fait une rotation, au lieu de retourner les pixels mais dans la même hauteur / lageur
 - fix: l'afficheur d'images scroll correctement quand on zoom
 
 ## Version 1.1.1
 
-- fix: récupère maintenant correctement les hitsoires sans chaptitres
 - new: l'afficheur de livres interne est maintenant correctement refait
+- fix: récupère maintenant correctement les hitsoires sans chaptitres
 
 ## Version 1.1.0
 

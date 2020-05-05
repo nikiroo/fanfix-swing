@@ -12,14 +12,13 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingWorker;
 
-import be.nikiroo.fanfix.Instance;
 import be.nikiroo.fanfix.bundles.StringIdGui;
 import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix.library.BasicLibrary.Status;
 import be.nikiroo.fanfix.library.MetaResultList;
+import be.nikiroo.fanfix_swing.Main;
 import be.nikiroo.fanfix_swing.gui.BooksPanelActions;
 import be.nikiroo.fanfix_swing.gui.BooksPanelActions.ChangeAction;
-import be.nikiroo.fanfix_swing.gui.MainFrame;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
 
 public class BookPopup extends JPopupMenu {
@@ -112,7 +111,7 @@ public class BookPopup extends JPopupMenu {
 	 */
 	private JMenuItem createMenuItemExport() {
 		JMenuItem export = new JMenuItem(
-				MainFrame.trans(StringIdGui.MENU_FILE_EXPORT), KeyEvent.VK_S);
+				Main.trans(StringIdGui.MENU_FILE_EXPORT), KeyEvent.VK_S);
 		export.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -130,7 +129,7 @@ public class BookPopup extends JPopupMenu {
 	 */
 	private JMenuItem createMenuItemClearCache() {
 		JMenuItem refresh = new JMenuItem(
-				MainFrame.trans(StringIdGui.MENU_EDIT_CLEAR_CACHE),
+				Main.trans(StringIdGui.MENU_EDIT_CLEAR_CACHE),
 				KeyEvent.VK_C);
 		refresh.addActionListener(new ActionListener() {
 			@Override
@@ -154,11 +153,11 @@ public class BookPopup extends JPopupMenu {
 		}
 
 		JMenu changeTo = new JMenu(
-				MainFrame.trans(StringIdGui.MENU_FILE_MOVE_TO));
+				Main.trans(StringIdGui.MENU_FILE_MOVE_TO));
 		changeTo.setMnemonic(KeyEvent.VK_M);
 
 		JMenuItem item = new JMenuItem(
-				MainFrame.trans(StringIdGui.MENU_FILE_MOVE_TO_NEW_TYPE));
+				Main.trans(StringIdGui.MENU_FILE_MOVE_TO_NEW_TYPE));
 		item.addActionListener(createMoveAction(ChangeAction.SOURCE, null));
 		changeTo.add(item);
 		changeTo.addSeparator();
@@ -204,12 +203,12 @@ public class BookPopup extends JPopupMenu {
 		}
 
 		JMenu changeTo = new JMenu(
-				MainFrame.trans(StringIdGui.MENU_FILE_SET_AUTHOR));
+				Main.trans(StringIdGui.MENU_FILE_SET_AUTHOR));
 		changeTo.setMnemonic(KeyEvent.VK_A);
 
 		// New author
 		JMenuItem newItem = new JMenuItem(
-				MainFrame.trans(StringIdGui.MENU_FILE_MOVE_TO_NEW_AUTHOR));
+				Main.trans(StringIdGui.MENU_FILE_MOVE_TO_NEW_AUTHOR));
 		changeTo.add(newItem);
 		changeTo.addSeparator();
 		newItem.addActionListener(createMoveAction(ChangeAction.AUTHOR, null));
@@ -220,7 +219,7 @@ public class BookPopup extends JPopupMenu {
 				JMenu group = new JMenu(key);
 				for (String value : groupedAuthors.get(key)) {
 					JMenuItem item = new JMenuItem(value.isEmpty()
-							? MainFrame.trans(StringIdGui.MENU_AUTHORS_UNKNOWN)
+							? Main.trans(StringIdGui.MENU_AUTHORS_UNKNOWN)
 							: value);
 					item.addActionListener(
 							createMoveAction(ChangeAction.AUTHOR, value));
@@ -231,7 +230,7 @@ public class BookPopup extends JPopupMenu {
 		} else if (groupedAuthors.size() == 1) {
 			for (String value : groupedAuthors.values().iterator().next()) {
 				JMenuItem item = new JMenuItem(value.isEmpty()
-						? MainFrame.trans(StringIdGui.MENU_AUTHORS_UNKNOWN)
+						? Main.trans(StringIdGui.MENU_AUTHORS_UNKNOWN)
 						: value);
 				item.addActionListener(
 						createMoveAction(ChangeAction.AUTHOR, value));
@@ -249,7 +248,7 @@ public class BookPopup extends JPopupMenu {
 	 */
 	private JMenuItem createMenuItemRename() {
 		JMenuItem changeTo = new JMenuItem(
-				MainFrame.trans(StringIdGui.MENU_FILE_RENAME));
+				Main.trans(StringIdGui.MENU_FILE_RENAME));
 		changeTo.setMnemonic(KeyEvent.VK_R);
 		changeTo.addActionListener(createMoveAction(ChangeAction.TITLE, null));
 		return changeTo;
@@ -272,7 +271,7 @@ public class BookPopup extends JPopupMenu {
 	 */
 	private JMenuItem createMenuItemRedownload() {
 		JMenuItem refresh = new JMenuItem(
-				MainFrame.trans(StringIdGui.MENU_EDIT_REDOWNLOAD),
+				Main.trans(StringIdGui.MENU_EDIT_REDOWNLOAD),
 				KeyEvent.VK_R);
 		refresh.addActionListener(new ActionListener() {
 			@Override
@@ -291,7 +290,7 @@ public class BookPopup extends JPopupMenu {
 	 */
 	private JMenuItem createMenuItemDownloadToCache() {
 		JMenuItem refresh = new JMenuItem(
-				MainFrame.trans(StringIdGui.MENU_EDIT_DOWNLOAD_TO_CACHE),
+				Main.trans(StringIdGui.MENU_EDIT_DOWNLOAD_TO_CACHE),
 				KeyEvent.VK_T);
 		refresh.addActionListener(new ActionListener() {
 			@Override
@@ -310,7 +309,7 @@ public class BookPopup extends JPopupMenu {
 	 */
 	private JMenuItem createMenuItemDelete() {
 		JMenuItem delete = new JMenuItem(
-				MainFrame.trans(StringIdGui.MENU_EDIT_DELETE), KeyEvent.VK_D);
+				Main.trans(StringIdGui.MENU_EDIT_DELETE), KeyEvent.VK_D);
 		delete.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -328,7 +327,7 @@ public class BookPopup extends JPopupMenu {
 	 */
 	private JMenuItem createMenuItemProperties() {
 		JMenuItem delete = new JMenuItem(
-				MainFrame.trans(StringIdGui.MENU_FILE_PROPERTIES),
+				Main.trans(StringIdGui.MENU_FILE_PROPERTIES),
 				KeyEvent.VK_P);
 		delete.addActionListener(new ActionListener() {
 			@Override
@@ -347,7 +346,7 @@ public class BookPopup extends JPopupMenu {
 	 */
 	public JMenuItem createMenuItemOpenBook() {
 		JMenuItem open = new JMenuItem(
-				MainFrame.trans(StringIdGui.MENU_FILE_OPEN), KeyEvent.VK_O);
+				Main.trans(StringIdGui.MENU_FILE_OPEN), KeyEvent.VK_O);
 		open.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -366,7 +365,7 @@ public class BookPopup extends JPopupMenu {
 	 */
 	private JMenuItem createMenuItemSetCoverForSource() {
 		JMenuItem open = new JMenuItem(
-				MainFrame.trans(StringIdGui.MENU_EDIT_SET_COVER_FOR_SOURCE),
+				Main.trans(StringIdGui.MENU_EDIT_SET_COVER_FOR_SOURCE),
 				KeyEvent.VK_C);
 		open.addActionListener(new ActionListener() {
 			@Override
@@ -386,7 +385,7 @@ public class BookPopup extends JPopupMenu {
 	 */
 	private JMenuItem createMenuItemSetCoverForAuthor() {
 		JMenuItem open = new JMenuItem(
-				MainFrame.trans(StringIdGui.MENU_EDIT_SET_COVER_FOR_AUTHOR),
+				Main.trans(StringIdGui.MENU_EDIT_SET_COVER_FOR_AUTHOR),
 				KeyEvent.VK_A);
 		open.addActionListener(new ActionListener() {
 			@Override

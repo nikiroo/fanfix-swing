@@ -20,7 +20,7 @@ import javax.swing.JPanel;
 
 import be.nikiroo.fanfix.bundles.StringIdGui;
 import be.nikiroo.fanfix.library.BasicLibrary;
-import be.nikiroo.fanfix_swing.gui.MainFrame;
+import be.nikiroo.fanfix_swing.Main;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.search.GRBook.BookActionListener;
 import be.nikiroo.utils.ui.WrapLayout;
@@ -168,7 +168,7 @@ public class GRGroup extends JPanel {
 	public void setTitle(String title) {
 		if (title != null) {
 			if (title.isEmpty()) {
-				title = MainFrame.trans(StringIdGui.MENU_AUTHORS_UNKNOWN);
+				title = Main.trans(StringIdGui.MENU_AUTHORS_UNKNOWN);
 			}
 
 			titleLabel.setText(String.format("<html>"

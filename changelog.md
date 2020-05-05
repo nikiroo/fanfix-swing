@@ -2,14 +2,15 @@
 
 ## Version WIP
 
+- new: the program checks if a new version is available (like Fanfix does)
 - new: the image viewer now zooms on mousewheel + control
 - fix: the image viewer now displayes turned images on rotation, instead of rotating the pixels but in the same height/width
 - fix: the image viewer scrolls correctly when we zoom
 
 ## Version 1.1.1
 
-- fix: now correctly retrieve stories without chapters
 - new: the internal viewer is now up to par
+- fix: now correctly retrieve stories without chapters
 
 ## Version 1.1.0
 

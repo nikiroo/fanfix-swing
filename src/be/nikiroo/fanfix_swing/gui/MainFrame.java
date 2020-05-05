@@ -484,20 +484,4 @@ public class MainFrame extends JFrame {
 	static public ImporterFrame getImporter() {
 		return importer;
 	}
-
-	/**
-	 * Translate the given id into user text.
-	 * 
-	 * @param id
-	 *            the ID to translate
-	 * @param values
-	 *            the values to insert instead of the place holders in the
-	 *            translation
-	 * 
-	 * @return the translated text with the given value where required or NULL
-	 *         if not found (not present in the resource file)
-	 */
-	static public String trans(StringIdGui id, Object... values) {
-		return Instance.getInstance().getTransGui().getString(id, values);
-	}
 }

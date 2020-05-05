@@ -38,7 +38,7 @@ import be.nikiroo.fanfix.bundles.StringIdGui;
 import be.nikiroo.fanfix.data.Chapter;
 import be.nikiroo.fanfix.data.Paragraph;
 import be.nikiroo.fanfix.data.Story;
-import be.nikiroo.fanfix_swing.gui.MainFrame;
+import be.nikiroo.fanfix_swing.Main;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
 import be.nikiroo.fanfix_swing.images.IconGenerator;
 import be.nikiroo.fanfix_swing.images.IconGenerator.Icon;
@@ -133,7 +133,7 @@ public class ViewerImages extends JFrame {
 	 *            the {@link Story} to display
 	 */
 	public ViewerImages(Story story) {
-		setTitle(MainFrame.trans(StringIdGui.TITLE_STORY,
+		setTitle(Main.trans(StringIdGui.TITLE_STORY,
 				story.getMeta().getLuid(), story.getMeta().getTitle()));
 
 		setSize(800, 600);
