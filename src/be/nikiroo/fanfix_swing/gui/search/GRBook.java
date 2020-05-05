@@ -16,7 +16,6 @@ import javax.swing.JPanel;
 
 import be.nikiroo.fanfix.data.Story;
 import be.nikiroo.fanfix.library.BasicLibrary;
-import be.nikiroo.fanfix.reader.Reader;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
 
