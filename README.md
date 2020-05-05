@@ -2,7 +2,7 @@ English [Français](README-fr.md)
 
 # Fanfix-swing
 
-Fanfix-swing is a program that offer you a graphical nterface (in java Swing) around the comics/stories/mangas library [Fanfix](https://github.com/nikiroo/fanfix).
+Fanfix-swing is a program that offer you a graphical interface (in java Swing) around the comics/stories/mangas library [Fanfix](https://github.com/nikiroo/fanfix).
 
 ## Synopsis
 

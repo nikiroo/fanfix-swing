@@ -1,8 +1,8 @@
-# Fanfix
+# Fanfix-swing
 
 ## Screenshots
 
-Cette gallerie reprend des screenshots de plusieurs versions de Fanfix, mais les versions les plus récentes sont affichées en premier.
+Cette gallerie reprend des screenshots de plusieurs versions de Fanfix-swing, mais les versions les plus récentes sont affichées en premier.
 
 ### Version 1.1.1
 

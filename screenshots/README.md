@@ -1,12 +1,12 @@
-# Fanfix
+# Fanfix-swing
 
 ## Screenshots
 
-This screenshots gallery shows screenshots of different versions of Fanfix, but shows the more recent ones on top.
+This screenshots gallery shows screenshots of different versions of Fanfix-swing, but shows the more recent ones on top.
 
 ### Version 1.1.1
 
-La fenêtre principale du programme:
+The main window of the program:
 ![Fenêtre principale](fanfix-swing-1.1.0.png)
 
 ---
