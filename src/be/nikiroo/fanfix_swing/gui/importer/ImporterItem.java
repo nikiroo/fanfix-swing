@@ -3,6 +3,8 @@ package be.nikiroo.fanfix_swing.gui.importer;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -250,5 +252,18 @@ public class ImporterItem extends ListenerPanel implements Hoverable {
 				}
 			}
 		});
+	}
+
+	@Override
+	public void paint(Graphics g) {
+		// Overlay up to x% completed
+		Rectangle clip = g.getClipBounds();
+		if (!(clip == null || clip.getWidth() <= 0 || clip.getHeight() <= 0)) {
+			g.setColor(new Color(200, 200, 255, 128));
+			g.fillRect(clip.x, clip.y, (int) Math.round(clip.width * progress),
+					clip.height);
+		}
+
+		super.paint(g);
 	}
 }
