@@ -29,6 +29,8 @@ public class TouchFrame extends JFrame {
 	private BooksPanel books;
 
 	public TouchFrame() {
+		setLayout(new BorderLayout());
+		
 		active = new ArrayList<JComponent>();
 		
 		root = new JPanel(new BorderLayout());
@@ -75,7 +77,7 @@ public class TouchFrame extends JFrame {
 			}
 		});
 
-		this.add(root);
+		this.add(root, BorderLayout.CENTER);
 		showBooks();
 		setSize(355, 465);
 	}
@@ -103,25 +105,31 @@ public class TouchFrame extends JFrame {
 	}
 	
 	private void open(Story story) {
+		final JComponent[] comps = new JComponent[2];
+		
 		// Integrate it with showViewer or something
 		if (story.getMeta().isImageDocument()) {
 			ViewerImages viewer = new ViewerImages(story) {
 				@Override
 				protected JToolBar createToolBar() {
-					JToolBar toolbar = super.createToolBar();
-					active.add(toolbar);
-					TouchFrame.this.add(toolbar, BorderLayout.NORTH);
+					comps[0] = super.createToolBar();
 					return null;
 				}
 				
 				@Override
 				protected void initGui() {
 					super.initGui();
-					removeShows();
-					active.add(scroll);
-					root.add(scroll);
+					comps[1] = scroll;
 				}
 			};
+			
+			removeShows();
+
+			// TODO: toolbar not so nice + add EXIT button
+			active.add(comps[0]);
+			active.add(comps[1]);
+			TouchFrame.this.add(comps[0], BorderLayout.NORTH);
+			root.add(comps[1]);
 			
 			revalidate();
 			repaint();
