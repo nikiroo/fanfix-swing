@@ -25,8 +25,8 @@ class BookCoverImager {
 	static final Color SPINE_COLOR_RIGHT = new Color(100, 100, 100);
 	static final Color BORDER = Color.black;
 
-	public static final Color UNCACHED_ICON_COLOR = Color.green.darker();
-	// new Color(0, 80, 220);
+	public static final Color UNCACHED_ICON_COLOR = Color.gray;
+	public static final Color CACHED_ICON_COLOR = Color.green.darker();
 
 	public static final int TEXT_HEIGHT = 50;
 	public static final int TEXT_WIDTH = COVER_WIDTH + 40;
@@ -87,7 +87,8 @@ class BookCoverImager {
 		g.setColor(color);
 		g.fillRect(clip.x, clip.y, clip.width, clip.height);
 
-		UIUtils.drawEllipse3D(g, UNCACHED_ICON_COLOR,
+		UIUtils.drawEllipse3D(g,
+				cached ? CACHED_ICON_COLOR : UNCACHED_ICON_COLOR,
 				COVER_WIDTH + HOFFSET + 30, 10, 20, 20, cached);
 	}
 }

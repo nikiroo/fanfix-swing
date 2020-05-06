@@ -61,7 +61,7 @@ public class BookLine extends JPanel {
 		iconNotCached = new JLabel(" ○ ");
 
 		iconNotCached.setForeground(BookCoverImager.UNCACHED_ICON_COLOR);
-		iconCached.setForeground(BookCoverImager.UNCACHED_ICON_COLOR);
+		iconCached.setForeground(BookCoverImager.CACHED_ICON_COLOR);
 		iconCached.setPreferredSize(iconNotCached.getPreferredSize());
 
 		title = new JLabel();

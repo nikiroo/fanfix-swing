@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.SwingUtilities;
@@ -264,9 +266,20 @@ public class MainFrame extends JFrame {
 			}
 		});
 
+		JMenuItem mnuExit = new JMenuItem("Exit", KeyEvent.VK_X);
+		mnuExit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				MainFrame.this.dispatchEvent(new WindowEvent(MainFrame.this,
+						WindowEvent.WINDOW_CLOSING));
+			}
+		});
+
 		file.add(mnuDownload);
 		file.add(mnuImprtFile);
 		file.add(mnuSearch);
+		file.add(new JSeparator());
+		file.add(mnuExit);
 
 		// EDIT
 
@@ -367,6 +380,7 @@ public class MainFrame extends JFrame {
 		view.add(mnuSidePane);
 		view.add(mnuDetailsPane);
 		view.add(mnuThumbs);
+		view.add(new JSeparator());
 		view.add(mnuWord);
 
 		//

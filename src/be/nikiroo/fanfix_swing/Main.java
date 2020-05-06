@@ -3,6 +3,8 @@ package be.nikiroo.fanfix_swing;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import javax.swing.JEditorPane;
@@ -28,6 +30,7 @@ import be.nikiroo.utils.ui.UIUtils;
  */
 public class Main extends be.nikiroo.fanfix.Main {
 	private boolean busy;
+	private boolean kiosk;
 
 	/**
 	 * The main entry point of the application.
@@ -35,10 +38,25 @@ public class Main extends be.nikiroo.fanfix.Main {
 	 * It overrides some function of Fanfix's Main.
 	 * 
 	 * @param args
-	 *            the arguments (none, or will be passed to Fanfix)
+	 *            the arguments (none, "--kiosk" (fullceen, no decorations,
+	 *            Nimbus Look &amp; Feel) or will be passed to Fanfix)
 	 */
 	public static void main(String[] args) {
 		new Main().start(args);
+	}
+
+	@Override
+	public void start(String[] args) {
+		List<String> argsList = new ArrayList<String>();
+		for (String arg : args) {
+			if ("--kiosk".equals(arg)) {
+				kiosk = true;
+			} else {
+				argsList.add(arg);
+			}
+		}
+
+		super.start(argsList.toArray(new String[0]));
 	}
 
 	@Override
@@ -88,10 +106,21 @@ public class Main extends be.nikiroo.fanfix.Main {
 
 	@Override
 	protected void start() throws IOException {
-		UIUtils.setLookAndFeel();
+		if (kiosk) {
+			UIUtils.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+		} else {
+			UIUtils.setLookAndFeel();
+		}
+
 		Instance.init();
 
 		JFrame main = new MainFrame();
+
+		if (kiosk) {
+			main.setUndecorated(kiosk);
+			main.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		}
+
 		main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		main.setVisible(true);
 	}
