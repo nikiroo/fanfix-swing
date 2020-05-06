@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import javax.swing.JPopupMenu;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingWorker;
 
@@ -29,15 +30,14 @@ import be.nikiroo.fanfix_swing.gui.book.BookInfo.Type;
 import be.nikiroo.fanfix_swing.gui.book.BookLine;
 import be.nikiroo.fanfix_swing.gui.book.BookPopup;
 import be.nikiroo.fanfix_swing.gui.book.BookPopup.Informer;
-import be.nikiroo.fanfix_swing.gui.importer.ImporterFrame;
 import be.nikiroo.utils.ui.DelayWorker;
 import be.nikiroo.utils.ui.ListModel;
 import be.nikiroo.utils.ui.ListModel.Predicate;
-import be.nikiroo.utils.ui.compat.JList6;
-import be.nikiroo.utils.ui.compat.ListCellRenderer6;
 import be.nikiroo.utils.ui.ListSnapshot;
 import be.nikiroo.utils.ui.ListenerPanel;
 import be.nikiroo.utils.ui.UIUtils;
+import be.nikiroo.utils.ui.compat.JList6;
+import be.nikiroo.utils.ui.compat.ListCellRenderer6;
 
 public class BooksPanel extends ListenerPanel {
 	/**
@@ -92,10 +92,20 @@ public class BooksPanel extends ListenerPanel {
 
 	private Informer informer;
 	private BooksPanelActions actions;
-	private BookPopup popup;
 
 	private ReloadData lastLoad = new ReloadData();
 
+	/**
+	 * Create a new {@link BooksPanel}.
+	 * <p>
+	 * It will come by default with a popup and a tooltip.
+	 * 
+	 * @param showThumbnails
+	 *            show thumbnails instead of lsit items
+	 * @param seeWordCount
+	 *            show the number of words/images of the book instead of its
+	 *            author
+	 */
 	public BooksPanel(boolean showThumbnails, boolean seeWordCount) {
 		setLayout(new BorderLayout());
 		this.seeWordCount = seeWordCount;
@@ -185,7 +195,10 @@ public class BooksPanel extends ListenerPanel {
 		}
 
 		// Reset the popup menu items for for sources/author
-		popup.reloadData();
+		JPopupMenu popup = data.getPopup();
+		if (popup instanceof BookPopup) {
+			((BookPopup) popup).reloadData();
+		}
 
 		if (lastLoad.mode == ReloadMode.NONE) {
 			return; // nothing was loaded yet
@@ -207,6 +220,79 @@ public class BooksPanel extends ListenerPanel {
 		}
 
 		snapshot.apply();
+	}
+
+	/**
+	 * The informer we use for the popup or other actions.
+	 * 
+	 * @return the informer
+	 */
+	public Informer getInformer() {
+		return informer;
+	}
+
+	/**
+	 * The popup that we use to generate a {@link BookPopup} on right click.
+	 * <p>
+	 * Note that a {@link BookPopup} is set by default, with the informer from
+	 * this panel.
+	 * 
+	 * @return the current popup (can be NULL)
+	 */
+	public JPopupMenu hasPopup() {
+		return data.getPopup();
+	}
+
+	/**
+	 * The popup that we use to generate a {@link BookPopup} on right click.
+	 * <p>
+	 * Note that a {@link BookPopup} is set by default, with the informer from
+	 * this panel.
+	 * 
+	 * @param popup
+	 *            the new popup (can be NULL)
+	 */
+	public void setPopup(JPopupMenu popup) {
+		data.setPopup(popup);
+	}
+
+	/**
+	 * Generate a tooltip on mouse hover that shows the details of the book
+	 * under the mouse.
+	 * 
+	 * @return TRUE if we use it, FALSE if not
+	 */
+	public boolean hasTooltip() {
+		return data.getTooltipCreator() != null;
+	}
+
+	/**
+	 * Generate a tooltip on mouse hover that shows the details of the book
+	 * under the mouse.
+	 * 
+	 * @param tooltip
+	 *            TRUE to use it, FALSE not to
+	 */
+	public void setTooltip(boolean tooltip) {
+		if (tooltip) {
+			data.setTooltipCreator(new ListModel.TooltipCreator<BookInfo>() {
+				@Override
+				public Window generateTooltip(BookInfo book,
+						boolean undecorated) {
+					MetaData meta = book == null ? null : book.getMeta();
+					if (meta != null) {
+						PropertiesDialog tooltip = new PropertiesDialog(
+								Instance.getInstance().getLibrary(), meta,
+								undecorated);
+						return tooltip;
+					}
+
+					return null;
+				}
+			});
+		} else {
+			data.setTooltipCreator(null);
+		}
 	}
 
 	// is UI!
@@ -252,25 +338,11 @@ public class BooksPanel extends ListenerPanel {
 
 	private JList6<BookInfo> initList() {
 		informer = initInformer();
-		popup = new BookPopup(Instance.getInstance().getLibrary(), informer);
 		actions = new BooksPanelActions(this, informer);
 		final JList6<BookInfo> list = new JList6<BookInfo>();
-		data = new ListModel<BookInfo>(list, popup,
-				new ListModel.TooltipCreator<BookInfo>() {
-					@Override
-					public Window generateTooltip(BookInfo book,
-							boolean undecorated) {
-						MetaData meta = book == null ? null : book.getMeta();
-						if (meta != null) {
-							PropertiesDialog tooltip = new PropertiesDialog(
-									Instance.getInstance().getLibrary(), meta,
-									undecorated);
-							return tooltip;
-						}
-
-						return null;
-					}
-				});
+		data = new ListModel<BookInfo>(list);
+		setPopup(new BookPopup(Instance.getInstance().getLibrary(), informer));
+		setTooltip(true);
 
 		list.addMouseListener(new MouseAdapter() {
 			@Override

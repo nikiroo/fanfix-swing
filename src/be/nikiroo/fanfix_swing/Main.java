@@ -20,6 +20,7 @@ import be.nikiroo.fanfix.VersionCheck;
 import be.nikiroo.fanfix.bundles.StringIdGui;
 import be.nikiroo.fanfix.data.Story;
 import be.nikiroo.fanfix_swing.gui.MainFrame;
+import be.nikiroo.fanfix_swing.gui.TouchFrame;
 import be.nikiroo.utils.Version;
 import be.nikiroo.utils.ui.UIUtils;
 
@@ -31,6 +32,7 @@ import be.nikiroo.utils.ui.UIUtils;
 public class Main extends be.nikiroo.fanfix.Main {
 	private boolean busy;
 	private boolean kiosk;
+	private boolean touch;
 
 	/**
 	 * The main entry point of the application.
@@ -38,8 +40,16 @@ public class Main extends be.nikiroo.fanfix.Main {
 	 * It overrides some function of Fanfix's Main.
 	 * 
 	 * @param args
-	 *            the arguments (none, "--kiosk" (fullceen, no decorations,
-	 *            Nimbus Look &amp; Feel) or will be passed to Fanfix)
+	 *            in addition to the supported Fanfix arguments, we also
+	 *            support:
+	 *            <ul>
+	 *            <li>(no arguments): we start normally</li>
+	 *            <li><tt>--kisok</tt>: we start fullceen, without window
+	 *            decorations on the main frame and with the Nimbus Look &amp;
+	 *            Feel</li>
+	 *            <li><tt>--touch</tt>: a special mode dedicated to small touch
+	 *            devices</li>
+	 *            </ul>
 	 */
 	public static void main(String[] args) {
 		new Main().start(args);
@@ -51,6 +61,8 @@ public class Main extends be.nikiroo.fanfix.Main {
 		for (String arg : args) {
 			if ("--kiosk".equals(arg)) {
 				kiosk = true;
+			} else if ("--touch".equals(arg)) {
+				touch = true;
 			} else {
 				argsList.add(arg);
 			}
@@ -114,13 +126,11 @@ public class Main extends be.nikiroo.fanfix.Main {
 
 		Instance.init();
 
-		JFrame main = new MainFrame();
-
+		JFrame main = touch ? new TouchFrame() : new MainFrame();
 		if (kiosk) {
 			main.setUndecorated(kiosk);
 			main.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		}
-
 		main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		main.setVisible(true);
 	}

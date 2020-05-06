@@ -93,7 +93,7 @@ public class Actions {
 	 * @param story
 	 *            the story to open
 	 */
-	static private void openInternal(Story story) {
+	static public void openInternal(Story story) {
 		if (story.getMeta().isImageDocument()) {
 			ViewerImages viewer = new ViewerImages(story);
 			viewer.setVisible(true);
@@ -117,7 +117,7 @@ public class Actions {
 	 * @throws IOException
 	 *             in case of I/O error
 	 */
-	static private void openExternal(File target, boolean isImageDocument)
+	static public void openExternal(File target, boolean isImageDocument)
 			throws IOException {
 		String program = null;
 		if (isImageDocument) {
