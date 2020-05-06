@@ -119,7 +119,7 @@ public class ViewerImages extends JFrame {
 
 	private NavBar navbar;
 	private JLabel area;
-	private JScrollPane scroll;
+	protected JScrollPane scroll;
 
 	@SuppressWarnings("rawtypes") // JComboBox<?> not compatible java 1.6
 	private DefaultComboBoxModel zoomBoxModel;
@@ -166,12 +166,17 @@ public class ViewerImages extends JFrame {
 		});
 
 		UiHelper.setFrameIcon(this, images.isEmpty() ? null : images.get(0));
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
 
-	private void initGui() {
+	protected void initGui() {
 		this.setLayout(new BorderLayout());
-		this.add(createToolBar(), BorderLayout.NORTH);
-
+		
+		JToolBar toolbar = createToolBar();
+		if (toolbar != null) {
+			this.add(toolbar, BorderLayout.NORTH);
+		}
+		
 		area = new JLabel();
 		area.setHorizontalAlignment(JLabel.CENTER);
 		area.setOpaque(false);
@@ -187,7 +192,7 @@ public class ViewerImages extends JFrame {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" }) // JComboBox<?> not
 													// compatible java 1.6
-	private JToolBar createToolBar() {
+	protected JToolBar createToolBar() {
 		JToolBar toolBar = new JToolBar();
 
 		// Page navigation
@@ -601,7 +606,7 @@ public class ViewerImages extends JFrame {
 				}
 			}
 		});
-		this.addComponentListener(new ComponentAdapter() {
+		scroll.addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent e) {
 				display(index, rotation, false);

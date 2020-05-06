@@ -338,7 +338,7 @@ public class BooksPanel extends ListenerPanel {
 
 	private JList6<BookInfo> initList() {
 		informer = initInformer();
-		actions = new BooksPanelActions(this, informer);
+		actions = initActions(); // needs informer
 		final JList6<BookInfo> list = new JList6<BookInfo>();
 		data = new ListModel<BookInfo>(list);
 		setPopup(new BookPopup(Instance.getInstance().getLibrary(), informer));
@@ -418,6 +418,10 @@ public class BooksPanel extends ListenerPanel {
 				reloadData();
 			}
 		};
+	}
+	
+	protected BooksPanelActions initActions() {
+		return new BooksPanelActions(this, getInformer());
 	}
 
 	private ListCellRenderer6<BookInfo> generateRenderer() {

@@ -81,6 +81,7 @@ public class ViewerNonImages extends JFrame {
 		setChapter(0);
 
 		UiHelper.setFrameIcon(this, lib, story.getMeta());
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
 
 	/**
