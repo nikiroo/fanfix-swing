@@ -173,9 +173,8 @@ public class UiHelper {
 
 				List<java.awt.Image> resizedImages = new ArrayList<java.awt.Image>();
 				for (int size : new Integer[] { 16, 20, 64, 400 }) {
-					resizedImages.add(
-							ImageUtilsAwt.scaleImage(new Dimension(size, size),
-									image, -1, zoomSnapWidth));
+					resizedImages.add(ImageUtilsAwt.scaleImage(image,
+							new Dimension(size, size), -1, zoomSnapWidth));
 				}
 
 				return resizedImages;
