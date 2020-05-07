@@ -1,27 +1,19 @@
 package be.nikiroo.fanfix_swing;
 
-import java.awt.Desktop;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.JEditorPane;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
 
 import be.nikiroo.fanfix.Instance;
-import be.nikiroo.fanfix.VersionCheck;
 import be.nikiroo.fanfix.bundles.StringIdGui;
 import be.nikiroo.fanfix.data.Story;
 import be.nikiroo.fanfix_swing.gui.MainFrame;
 import be.nikiroo.fanfix_swing.gui.TouchFrame;
-import be.nikiroo.utils.Version;
+import be.nikiroo.utils.VersionCheck;
 import be.nikiroo.utils.ui.UIUtils;
 
 /**
@@ -73,10 +65,13 @@ public class Main extends be.nikiroo.fanfix.Main {
 
 	@Override
 	protected VersionCheck checkUpdates() {
+		// We use a SwingWorker instead of deferring to checkUpdates("...")
+		// So we can check in BG
 		new SwingWorker<VersionCheck, Void>() {
 			@Override
 			protected VersionCheck doInBackground() throws Exception {
-				return VersionCheck.check("nikiroo/fanfix-swing");
+				return VersionCheck.check("nikiroo/fanfix-swing",
+						Instance.getInstance().getTrans().getLocale());
 			}
 
 			@Override
@@ -88,6 +83,7 @@ public class Main extends be.nikiroo.fanfix.Main {
 					}
 				} catch (InterruptedException e) {
 				} catch (ExecutionException e) {
+					e.printStackTrace();
 				}
 			}
 		}.execute();
@@ -148,69 +144,13 @@ public class Main extends be.nikiroo.fanfix.Main {
 
 	@Override
 	protected void notifyUpdates(VersionCheck updates) {
-		StringBuilder builder = new StringBuilder();
-		final JEditorPane updateMessage = new JEditorPane("text/html", "");
-		builder.append(trans(StringIdGui.NEW_VERSION_AVAILABLE,
+		String title = trans(StringIdGui.NEW_VERSION_TITLE);
+		String introText = trans(StringIdGui.NEW_VERSION_AVAILABLE,
 				"<a href='https://github.com/nikiroo/fanfix-swing/releases'>"
 						+ "https://github.com/nikiroo/fanfix-swing/releases"
-						+ "</a>"));
-		builder.append("<br>");
-		builder.append("<br>");
-		for (Version v : updates.getNewer()) {
-			builder.append("\t<b>"
-					+ trans(StringIdGui.NEW_VERSION_VERSION, v.toString())
-					+ "</b>");
-			builder.append("<br>");
-			builder.append("<ul>");
-			for (String item : updates.getChanges().get(v)) {
-				builder.append("<li>" + item + "</li>");
-			}
-			builder.append("</ul>");
-		}
-
-		// html content
-		updateMessage.setText("<html><body>" //
-				+ builder//
-				+ "</body></html>");
-
-		// handle link events
-		updateMessage.addHyperlinkListener(new HyperlinkListener() {
-			@Override
-			public void hyperlinkUpdate(HyperlinkEvent e) {
-				if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED))
-					try {
-						Desktop.getDesktop().browse(e.getURL().toURI());
-					} catch (IOException ee) {
-						Instance.getInstance().getTraceHandler().error(ee);
-					} catch (URISyntaxException ee) {
-						Instance.getInstance().getTraceHandler().error(ee);
-					}
-			}
-		});
-		updateMessage.setEditable(false);
-		updateMessage.setBackground(new JLabel().getBackground());
-		updateMessage.addHyperlinkListener(new HyperlinkListener() {
-			@Override
-			public void hyperlinkUpdate(HyperlinkEvent evn) {
-				if (evn.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-					if (Desktop.isDesktopSupported()) {
-						try {
-							Desktop.getDesktop().browse(evn.getURL().toURI());
-						} catch (IOException e) {
-						} catch (URISyntaxException e) {
-						}
-					}
-				}
-			}
-		});
-
-		int rep = JOptionPane.showConfirmDialog(null, updateMessage,
-				trans(StringIdGui.NEW_VERSION_TITLE),
-				JOptionPane.OK_CANCEL_OPTION);
-		if (rep == JOptionPane.OK_OPTION) {
-			updates.ok();
-		} else {
-			updates.ignore();
+						+ "</a>");
+		if (UIUtils.showUpdatedDialog(null, updates, introText, title)) {
+			Instance.getInstance().setVersionChecked();
 		}
 	}
 
