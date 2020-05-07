@@ -27,6 +27,10 @@ public class IconGenerator {
 		search,
 		/** An interrogation point */
 		unknown,
+		/** A Go Back icon */
+		back,
+		/** A Go Forward icon */
+		forward,
 		/** A small, left-pointed arrow */
 		arrow_left,
 		/** A small, double left-pointed arrow */
@@ -37,8 +41,12 @@ public class IconGenerator {
 		arrow_double_right,
 		/** A small, up-pointed arrow */
 		arrow_up,
+		/** A small, double up-pointed arrow */
+		arrow_double_up,
 		/** A small, down-pointed arrow */
 		arrow_down,
+		/** A small, double down-pointed arrow */
+		arrow_double_down,
 		/** A "turn left" icon */
 		turn_left,
 		/** A "turn right" icon */
@@ -47,6 +55,12 @@ public class IconGenerator {
 		zoom_in,
 		/** A zoom out icon */
 		zoom_out,
+		/** A set to actual size 100% icon */
+		actual_size,
+		/** A fit to width icon */
+		fit_to_width,
+		/** A fit to height icon */
+		fit_to_height,
 		/** An empty (transparent) icon */
 		empty,
 		/** An icon for the program */

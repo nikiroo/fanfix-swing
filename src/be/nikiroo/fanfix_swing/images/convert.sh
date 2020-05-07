@@ -8,7 +8,9 @@ fi
 while [ "$1" != "" ]; do
 	name="`basename "$1" .png`"
 	for S in 8 16 24 32 64; do
-		convert -resize ${S}x${S} "$name".png "$name"-${S}x${S}.png
+		if [ ! -f "$name"-${S}x${S}.png ]; then
+		    convert -resize ${S}x${S} "$name".png "$name"-${S}x${S}.png
+		fi
 	done
 	shift
 done
