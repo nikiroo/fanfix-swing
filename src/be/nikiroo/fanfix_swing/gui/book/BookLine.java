@@ -87,8 +87,8 @@ public class BookLine extends JPanel {
 				int x = Math.max(0, (sz.width - sz.height) / 2);
 				int y = Math.max(0, (sz.height - sz.width) / 2);
 
-				UIUtils.drawEllipse3D(g, BookCoverImager.UNCACHED_ICON_COLOR, 2,
-						6, 10, 10, false);
+				UIUtils.drawEllipse3D(g, BookCoverImager.UNCACHED_ICON_COLOR, x,
+						y, s, s, false);
 			}
 		};
 
