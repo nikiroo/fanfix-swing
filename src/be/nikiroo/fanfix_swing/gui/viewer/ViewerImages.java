@@ -121,7 +121,7 @@ public class ViewerImages extends JFrame {
 	}
 
 	/**
-	 * Initialise the GUI (after this call, all the raphical elements are in
+	 * Initialise the GUI (after this call, all the graphical elements are in
 	 * place).
 	 */
 	protected void initGui() {
@@ -148,9 +148,8 @@ public class ViewerImages extends JFrame {
 	/**
 	 * Create the main toolbar used for this viewer.
 	 * 
-	 * @return the toolbar
+	 * @return the toolbar, can be NULL
 	 */
-
 	protected JToolBar createToolbar() {
 		final JToolBar toolbar = new JToolBar();
 

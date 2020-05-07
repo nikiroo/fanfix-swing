@@ -44,12 +44,17 @@ import be.nikiroo.utils.ui.UIUtils;
 public class ViewerNonImages extends JFrame {
 	private static final long serialVersionUID = 1L;
 
+	private BasicLibrary lib;
 	private Story story;
 	private ViewerTextOutput html;
 
-	private NavBar navbar;
-	private JLabel title;
-	private JScrollPane scroll;
+	/** The navigation bar. */
+	protected NavBar navbar;
+	/** The story title */
+	protected JLabel title;
+	/** The main element of this viewer: the scrolled text. */
+	protected JScrollPane scroll;
+
 	private JEditorPane area;
 	private JPanel descPane;
 
@@ -66,6 +71,7 @@ public class ViewerNonImages extends JFrame {
 	 * 
 	 */
 	public ViewerNonImages(BasicLibrary lib, Story story) {
+		this.lib = lib;
 		this.story = story;
 		this.setTitle(Instance.getInstance().getTransGui().getString(
 				StringIdGui.TITLE_STORY, story.getMeta().getLuid(),
@@ -77,7 +83,7 @@ public class ViewerNonImages extends JFrame {
 		worker = new DelayWorker(100);
 		worker.start();
 
-		initGui(lib);
+		initGui();
 		setChapter(0);
 
 		UiHelper.setFrameIcon(this, lib, story.getMeta());
@@ -85,13 +91,10 @@ public class ViewerNonImages extends JFrame {
 	}
 
 	/**
-	 * Initialise the base panel.
-	 * 
-	 * @param lib
-	 *            the {@link BasicLibrary} to use to retrieve the cover image in
-	 *            the description panel
+	 * Initialise the GUI (after this call, all the graphical elements are in
+	 * place).
 	 */
-	private void initGui(BasicLibrary lib) {
+	protected void initGui() {
 		this.setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
 
 		title = new JLabel();
@@ -101,8 +104,10 @@ public class ViewerNonImages extends JFrame {
 		title.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		title.setToolTipText(story.getMeta().getTitle());
 
-		JToolBar toolbarTitle = createToolBar();
-		toolbarTitle.add(title);
+		JToolBar toolbarTitle = createToolbar();
+		if (toolbarTitle != null) {
+			toolbarTitle.add(title);
+		}
 
 		area = new JEditorPane("text/html", "");
 		area.setEditable(false);
@@ -114,28 +119,16 @@ public class ViewerNonImages extends JFrame {
 
 		scroll = UIUtils.scroll(area, false);
 
-		JLabel descLabel = new JLabel("Description");
-		descLabel.setFont(new Font(Font.SERIF, Font.BOLD,
-				(int) Math.round(descLabel.getFont().getSize() * 1.5)));
-		descLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		descLabel.setHorizontalAlignment(JLabel.CENTER);
-		descLabel.setOpaque(true);
-		Color bg = descLabel.getBackground();
-		descLabel.setBackground(descLabel.getForeground());
-		descLabel.setForeground(bg);
-
-		descPane = new JPanel(new BorderLayout());
-		PropertiesPanel desc = new PropertiesPanel(lib, story.getMeta(), false);
-		desc.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-		descPane.add(desc, BorderLayout.CENTER);
-		descPane.add(descLabel, BorderLayout.SOUTH);
+		descPane = createDescPane();
 
 		area.setSize(scroll.getViewport().getSize());
 		area.setPreferredSize(this.getSize()); // make it as big as possible
 		area.requestFocus();
 
-		this.add(toolbarTitle);
-		this.add(descPane);
+		if (toolbarTitle != null)
+			this.add(toolbarTitle);
+		if (descPane != null)
+			this.add(descPane);
 		this.add(scroll);
 
 		listen();
@@ -150,7 +143,12 @@ public class ViewerNonImages extends JFrame {
 		});
 	}
 
-	private JToolBar createToolBar() {
+	/**
+	 * Create the main toolbar used for this viewer.
+	 * 
+	 * @return the toolbar, can be NULL
+	 */
+	protected JToolBar createToolbar() {
 		JToolBar toolbar = new JToolBar();
 		navbar = new NavBar(0, story.getChapters().size());
 		navbar.setIcons( //
@@ -161,6 +159,31 @@ public class ViewerNonImages extends JFrame {
 		);
 		toolbar.add(navbar);
 		return toolbar;
+	}
+
+	/**
+	 * Create the story description panel used for this viewer.
+	 * 
+	 * @return the panel, can be NULL
+	 */
+	protected JPanel createDescPane() {
+		JLabel descLabel = new JLabel("Description");
+		descLabel.setFont(new Font(Font.SERIF, Font.BOLD,
+				(int) Math.round(descLabel.getFont().getSize() * 1.5)));
+		descLabel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+		descLabel.setHorizontalAlignment(JLabel.CENTER);
+		descLabel.setOpaque(true);
+		Color bg = descLabel.getBackground();
+		descLabel.setBackground(descLabel.getForeground());
+		descLabel.setForeground(bg);
+
+		JPanel descPane = new JPanel(new BorderLayout());
+		PropertiesPanel desc = new PropertiesPanel(lib, story.getMeta(), false);
+		desc.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		descPane.add(desc, BorderLayout.CENTER);
+		descPane.add(descLabel, BorderLayout.SOUTH);
+
+		return descPane;
 	}
 
 	/**
@@ -186,10 +209,12 @@ public class ViewerNonImages extends JFrame {
 			protected void done() {
 				try {
 					String text = get();
-					if (chapter <= 0) {
-						descPane.setVisible(true);
-					} else {
-						descPane.setVisible(false);
+					if (descPane != null) {
+						if (chapter <= 0) {
+							descPane.setVisible(true);
+						} else {
+							descPane.setVisible(false);
+						}
 					}
 
 					area.setText(text);

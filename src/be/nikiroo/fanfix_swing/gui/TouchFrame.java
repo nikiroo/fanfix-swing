@@ -118,9 +118,11 @@ public class TouchFrame extends JFrame {
 	private void open(Story story) {
 		final JComponent[] comps = new JComponent[3];
 
-		// Integrate it with showViewer or something
+		final JFrame viewer;
 		if (story.getMeta().isImageDocument()) {
-			final ViewerImages viewer = new ViewerImages(story) {
+			viewer = new ViewerImages(story) {
+				private static final long serialVersionUID = 1L;
+
 				@Override
 				protected JToolBar createToolbar() {
 					// we need it to be created to steal its content
@@ -137,43 +139,67 @@ public class TouchFrame extends JFrame {
 					comps[2] = zoombox;
 				}
 			};
-
-			removeShows();
-
-			JComponent scroll = comps[0];
-
-			JPanel navbar = new JPanel();
-			navbar.add(comps[1]);
-
-			JPanel zoombox = new JPanel();
-			JButton exit = new JButton(IconGenerator.get(Icon.back, Size.x32));
-			exit.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					removeShows();
-					viewer.dispose();
-					showBooks();
-				}
-			});
-			zoombox.add(exit);
-			zoombox.add(Box.createRigidArea(new Dimension(10, 10)));
-			zoombox.add(comps[2]);
-
-			active.add(scroll);
-			active.add(navbar);
-			active.add(zoombox);
-
-			TouchFrame.this.add(navbar, BorderLayout.NORTH);
-			TouchFrame.this.add(zoombox, BorderLayout.SOUTH);
-			root.add(scroll);
-
-			revalidate();
-			repaint();
 		} else {
-			ViewerNonImages viewer = new ViewerNonImages(
-					Instance.getInstance().getLibrary(), story);
-			viewer.setVisible(true);
+			viewer = new ViewerNonImages(Instance.getInstance().getLibrary(),
+					story) {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				protected JToolBar createToolbar() {
+					// we need it to be created to steal its content
+					super.createToolbar();
+					return null;
+				}
+
+				@Override
+				protected JPanel createDescPane() {
+					return null;
+				}
+
+				@Override
+				protected void initGui() {
+					super.initGui();
+					title.setFont(title.getFont()
+							.deriveFont(title.getFont().getSize() * 0.75f));
+					comps[0] = scroll;
+					comps[1] = navbar;
+					comps[2] = title;
+				}
+			};
 		}
+
+		removeShows();
+
+		JComponent scroll = comps[0];
+
+		JPanel navbar = new JPanel();
+		navbar.add(comps[1]);
+
+		JButton exit = new JButton(IconGenerator.get(Icon.back, Size.x32));
+		exit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				removeShows();
+				viewer.dispose();
+				showBooks();
+			}
+		});
+
+		JPanel zoombox = new JPanel();
+		zoombox.add(exit);
+		zoombox.add(Box.createRigidArea(new Dimension(10, 10)));
+		zoombox.add(comps[2]);
+
+		active.add(scroll);
+		active.add(navbar);
+		active.add(zoombox);
+
+		TouchFrame.this.add(navbar, BorderLayout.NORTH);
+		TouchFrame.this.add(zoombox, BorderLayout.SOUTH);
+		root.add(scroll);
+
+		revalidate();
+		repaint();
 	}
 
 	private void removeShows() {
