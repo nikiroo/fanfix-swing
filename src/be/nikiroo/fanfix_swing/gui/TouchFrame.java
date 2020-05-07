@@ -30,9 +30,9 @@ public class TouchFrame extends JFrame {
 
 	public TouchFrame() {
 		setLayout(new BorderLayout());
-		
+
 		active = new ArrayList<JComponent>();
-		
+
 		root = new JPanel(new BorderLayout());
 
 		wait = new JPanel();
@@ -50,15 +50,17 @@ public class TouchFrame extends JFrame {
 							open(book);
 							return true;
 						}
-						
+
 						return false;
 					}
 				};
 			}
 		};
+
 		books.setTooltip(false);
 		books.loadData(null, null, null);
-		// We hijack the popup to generate an action on long-press.
+
+		// We hijack the popup to generate an action on right click/long-press.
 		books.setPopup(new JPopupMenu() {
 			private static final long serialVersionUID = 1L;
 
@@ -79,9 +81,11 @@ public class TouchFrame extends JFrame {
 
 		this.add(root, BorderLayout.CENTER);
 		showBooks();
+
+		UiHelper.setFrameIcon(this);
 		setSize(355, 465);
 	}
-	
+
 	private void open(final BookInfo book) {
 		new SwingWorker<Story, Void>() {
 			@Override
@@ -96,33 +100,32 @@ public class TouchFrame extends JFrame {
 					open(get());
 				} catch (Exception e) {
 					// TODO: i18n
-					UiHelper.error(TouchFrame.this,
-							e.getLocalizedMessage(),
+					UiHelper.error(TouchFrame.this, e.getLocalizedMessage(),
 							"Cannot open the story", e);
 				}
 			}
 		}.execute();
 	}
-	
+
 	private void open(Story story) {
 		final JComponent[] comps = new JComponent[2];
-		
+
 		// Integrate it with showViewer or something
 		if (story.getMeta().isImageDocument()) {
 			ViewerImages viewer = new ViewerImages(story) {
 				@Override
-				protected JToolBar createToolBar() {
-					comps[0] = super.createToolBar();
+				protected JToolBar createToolbar() {
+					comps[0] = super.createToolbar();
 					return null;
 				}
-				
+
 				@Override
 				protected void initGui() {
 					super.initGui();
 					comps[1] = scroll;
 				}
 			};
-			
+
 			removeShows();
 
 			// TODO: toolbar not so nice + add EXIT button
@@ -130,17 +133,16 @@ public class TouchFrame extends JFrame {
 			active.add(comps[1]);
 			TouchFrame.this.add(comps[0], BorderLayout.NORTH);
 			root.add(comps[1]);
-			
+
 			revalidate();
 			repaint();
-			
-			//TODO: dispose viewer when changed
+
+			// TODO: dispose viewer when changed
 		} else {
 			ViewerNonImages viewer = new ViewerNonImages(
-					Instance.getInstance().getLibrary(),
-					story);
+					Instance.getInstance().getLibrary(), story);
 			viewer.setVisible(true);
-		}		
+		}
 	}
 
 	private void removeShows() {
