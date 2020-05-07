@@ -2,9 +2,14 @@ package be.nikiroo.fanfix_swing.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Box;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -108,36 +113,59 @@ public class TouchFrame extends JFrame {
 	}
 
 	private void open(Story story) {
-		final JComponent[] comps = new JComponent[2];
+		final JComponent[] comps = new JComponent[3];
 
 		// Integrate it with showViewer or something
 		if (story.getMeta().isImageDocument()) {
-			ViewerImages viewer = new ViewerImages(story) {
+			final ViewerImages viewer = new ViewerImages(story) {
 				@Override
 				protected JToolBar createToolbar() {
-					comps[0] = super.createToolbar();
+					// we need it to be created to steal its content
+					super.createToolbar();
 					return null;
 				}
 
 				@Override
 				protected void initGui() {
 					super.initGui();
-					comps[1] = scroll;
+					zoombox.setSmall(true);
+					comps[0] = scroll;
+					comps[1] = navbar;
+					comps[2] = zoombox;
 				}
 			};
 
 			removeShows();
 
-			// TODO: toolbar not so nice + add EXIT button
-			active.add(comps[0]);
-			active.add(comps[1]);
-			TouchFrame.this.add(comps[0], BorderLayout.NORTH);
-			root.add(comps[1]);
+			JComponent scroll = comps[0];
+
+			JToolBar navbar = new JToolBar();
+			navbar.add(comps[1]);
+
+			JToolBar zoombox = new JToolBar();
+			JButton exit = new JButton("Ex"); // TODO: icon
+			exit.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					removeShows();
+					viewer.dispose();
+					showBooks();
+				}
+			});
+			zoombox.add(exit);
+			zoombox.add(Box.createRigidArea(new Dimension(10, 10)));
+			zoombox.add(comps[2]);
+
+			active.add(scroll);
+			active.add(navbar);
+			active.add(zoombox);
+
+			TouchFrame.this.add(navbar, BorderLayout.NORTH);
+			TouchFrame.this.add(zoombox, BorderLayout.SOUTH);
+			root.add(scroll);
 
 			revalidate();
 			repaint();
-
-			// TODO: dispose viewer when changed
 		} else {
 			ViewerNonImages viewer = new ViewerNonImages(
 					Instance.getInstance().getLibrary(), story);
