@@ -213,8 +213,8 @@ public class ViewerImages extends JFrame {
 		zoombox.setIcons(//
 				IconGenerator.get(Icon.zoom_in, Size.x32), //
 				IconGenerator.get(Icon.zoom_out, Size.x32), //
-				null, // TODO
-				null// TODO
+				IconGenerator.get(Icon.fit_to_width, Size.x32), //
+				IconGenerator.get(Icon.fit_to_height, Size.x32) //
 		);
 		zoombox.addActionListener(new ActionListener() {
 			@Override

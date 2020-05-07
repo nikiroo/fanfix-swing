@@ -25,6 +25,9 @@ import be.nikiroo.fanfix_swing.gui.book.BookInfo;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
 import be.nikiroo.fanfix_swing.gui.viewer.ViewerImages;
 import be.nikiroo.fanfix_swing.gui.viewer.ViewerNonImages;
+import be.nikiroo.fanfix_swing.images.IconGenerator;
+import be.nikiroo.fanfix_swing.images.IconGenerator.Icon;
+import be.nikiroo.fanfix_swing.images.IconGenerator.Size;
 
 public class TouchFrame extends JFrame {
 	private JPanel root;
@@ -139,11 +142,11 @@ public class TouchFrame extends JFrame {
 
 			JComponent scroll = comps[0];
 
-			JToolBar navbar = new JToolBar();
+			JPanel navbar = new JPanel();
 			navbar.add(comps[1]);
 
-			JToolBar zoombox = new JToolBar();
-			JButton exit = new JButton("Ex"); // TODO: icon
+			JPanel zoombox = new JPanel();
+			JButton exit = new JButton(IconGenerator.get(Icon.back, Size.x32));
 			exit.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
