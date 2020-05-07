@@ -65,6 +65,12 @@ public class Main extends be.nikiroo.fanfix.Main {
 
 	@Override
 	protected VersionCheck checkUpdates() {
+		// Kiosk mode should not want to know that
+		// Touch mode: TODO get an adapted update message (setInfo, setError?)
+		if (kiosk || touch) {
+			return null;
+		}
+
 		// We use a SwingWorker instead of deferring to checkUpdates("...")
 		// So we can check in BG
 		new SwingWorker<VersionCheck, Void>() {
