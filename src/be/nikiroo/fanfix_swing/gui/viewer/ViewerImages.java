@@ -19,19 +19,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultComboBoxModel;
+import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.UIManager;
 
 import be.nikiroo.fanfix.Instance;
 import be.nikiroo.fanfix.bundles.StringIdGui;
@@ -49,6 +46,7 @@ import be.nikiroo.utils.ui.ImageUtilsAwt;
 import be.nikiroo.utils.ui.ImageUtilsAwt.Rotation;
 import be.nikiroo.utils.ui.NavBar;
 import be.nikiroo.utils.ui.UIUtils;
+import be.nikiroo.utils.ui.ZoomBox;
 
 /**
  * An internal, Swing-based {@link Story} viewer.
@@ -58,73 +56,26 @@ import be.nikiroo.utils.ui.UIUtils;
  * @author niki
  */
 public class ViewerImages extends JFrame {
-	private enum ZoomLevel {
-		FIT_TO_WIDTH(-1, true), //
-		FIT_TO_HEIGHT(-1, false), //
-		ACTUAL_SIZE(1, true), //
-		HALF_SIZE(0.5, true), //
-		DOUBLE_SIZE(2, true),//
-		;
-
-		public final double zoom;
-		public final boolean zoomSnapWidth;
-
-		private ZoomLevel(double zoom, boolean zoomSnapWidth) {
-			this.zoom = zoom;
-			this.zoomSnapWidth = zoomSnapWidth;
-		}
-
-		@Override
-		public String toString() {
-			switch (this) {
-			case FIT_TO_WIDTH:
-				return "Fit to width";
-			case FIT_TO_HEIGHT:
-				return "Fit to height";
-			case ACTUAL_SIZE:
-				return "Actual size";
-			case HALF_SIZE:
-				return "Half size";
-			case DOUBLE_SIZE:
-				return "Double size";
-			}
-			return super.toString();
-		}
-
-		static ZoomLevel[] values(boolean orderedSelection) {
-			if (orderedSelection) {
-				return new ZoomLevel[] { //
-						FIT_TO_WIDTH, //
-						FIT_TO_HEIGHT, //
-						ACTUAL_SIZE, //
-						HALF_SIZE, //
-						DOUBLE_SIZE,//
-				};
-			}
-
-			return values();
-		}
-	}
-
 	private static final long serialVersionUID = 1L;
 
 	private List<Image> images;
 	private int index;
 
-	private double zoom = -1; // -1 = snap to width or height
-	private double currentZoom = 1; // used to go from snap to + or -
 	private Dimension currentImageSize;
-	private boolean zoomSnapWidth = true;
-	private Rotation rotation = Rotation.NONE;
 
-	private NavBar navbar;
+	private Rotation rotation = Rotation.NONE;
+	private Point zoomCenterOffset;
 	private JLabel area;
+
+	/** The navigation bar. */
+	protected NavBar navbar;
+	/** The zoom box. */
+	protected ZoomBox zoombox;
+	/** The main element of this viewer: the scrolled image. */
 	protected JScrollPane scroll;
 
-	@SuppressWarnings("rawtypes") // JComboBox<?> not compatible java 1.6
-	private DefaultComboBoxModel zoomBoxModel;
-
 	private DelayWorker worker;
+	private double previousZoom;
 
 	/**
 	 * Create a new {@link Story} viewer.
@@ -169,14 +120,18 @@ public class ViewerImages extends JFrame {
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
 
+	/**
+	 * Initialise the GUI (after this call, all the raphical elements are in
+	 * place).
+	 */
 	protected void initGui() {
 		this.setLayout(new BorderLayout());
-		
-		JToolBar toolbar = createToolBar();
+
+		JToolBar toolbar = createToolbar();
 		if (toolbar != null) {
 			this.add(toolbar, BorderLayout.NORTH);
 		}
-		
+
 		area = new JLabel();
 		area.setHorizontalAlignment(JLabel.CENTER);
 		area.setOpaque(false);
@@ -190,10 +145,14 @@ public class ViewerImages extends JFrame {
 		listen();
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" }) // JComboBox<?> not
-													// compatible java 1.6
-	protected JToolBar createToolBar() {
-		JToolBar toolBar = new JToolBar();
+	/**
+	 * Create the main toolbar used for this viewer.
+	 * 
+	 * @return the toolbar
+	 */
+
+	protected JToolBar createToolbar() {
+		final JToolBar toolbar = new JToolBar();
 
 		// Page navigation
 		navbar = new NavBar(1, images.size());
@@ -205,7 +164,8 @@ public class ViewerImages extends JFrame {
 		);
 
 		// Rotate
-		JButton left = new JButton(IconGenerator.get(Icon.turn_left, Size.x32));
+		final JButton left = new JButton(
+				IconGenerator.get(Icon.turn_left, Size.x32));
 		left.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -226,7 +186,7 @@ public class ViewerImages extends JFrame {
 			}
 		});
 
-		JButton right = new JButton(
+		final JButton right = new JButton(
 				IconGenerator.get(Icon.turn_right, Size.x32));
 		right.addActionListener(new ActionListener() {
 			@Override
@@ -249,114 +209,43 @@ public class ViewerImages extends JFrame {
 		});
 
 		// Zoom
-
-		JButton zoomIn = new JButton(IconGenerator.get(Icon.zoom_in, Size.x32));
-		zoomIn.addActionListener(new ActionListener() {
+		zoombox = new ZoomBox();
+		zoombox.setIcons(//
+				IconGenerator.get(Icon.zoom_in, Size.x32), //
+				IconGenerator.get(Icon.zoom_out, Size.x32), //
+				null, // TODO
+				null// TODO
+		);
+		zoombox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				double newZoom = currentZoom + (currentZoom < 0.1 ? 0.01 : 0.1);
-				if (newZoom > 0.1) {
-					newZoom = Math.round(newZoom * 10.0) / 10.0; // snap to 10%
-				} else {
-					newZoom = Math.round(newZoom * 100.0) / 100.0; // snap to 1%
-				}
-				setZoom(newZoom, zoomSnapWidth, null);
+				display(index, rotation, false, zoomCenterOffset);
+				zoomCenterOffset = null;
 			}
-		});
-
-		zoomBoxModel = new DefaultComboBoxModel(ZoomLevel.values(true));
-		JComboBox zoomBox = new JComboBox(zoomBoxModel);
-		zoomBox.setEditable(true);
-		zoomBox.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Object selected = zoomBoxModel.getSelectedItem();
-
-				if (selected == null) {
-					return;
-				}
-
-				if (selected instanceof ZoomLevel) {
-					ZoomLevel selectedZoomLevel = (ZoomLevel) selected;
-					setZoom(selectedZoomLevel.zoom,
-							selectedZoomLevel.zoomSnapWidth, null);
-					return;
-				}
-
-				String selectedString = selected.toString();
-				selectedString = selectedString.trim();
-				if (selectedString.endsWith("%")) {
-					selectedString = selectedString
-							.substring(0, selectedString.length() - 1).trim();
-				}
-
-				try {
-					boolean newZoomSnapWidth = zoomSnapWidth;
-					int pc = Integer.parseInt(selectedString);
-					if (pc <= 0) {
-						throw new NumberFormatException("invalid");
-					}
-
-					setZoom(pc / 100.0, newZoomSnapWidth, null);
-				} catch (NumberFormatException nfe) {
-				}
-			}
-		});
-
-		JButton zoomOut = new JButton(
-				IconGenerator.get(Icon.zoom_out, Size.x32));
-		zoomOut.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				double newZoom = currentZoom
-						- (currentZoom > 0.19 ? 0.1 : 0.01);
-				if (newZoom < 0.01)
-					newZoom = 0.01;
-				if (newZoom > 0.1) {
-					newZoom = Math.round(newZoom * 10.0) / 10.0; // snap to 10%
-				} else {
-					newZoom = Math.round(newZoom * 100.0) / 100.0; // snap to 1%
-				}
-				setZoom(newZoom, zoomSnapWidth, null);
-			}
-
 		});
 
 		// Add to toolbar
 
-		toolBar.add(navbar);
+		toolbar.add(navbar);
+		toolbar.add(Box.createRigidArea(new Dimension(10, 10)));
+		toolbar.add(left);
+		toolbar.add(right);
+		toolbar.add(Box.createRigidArea(new Dimension(10, 10)));
+		toolbar.add(zoombox);
 
-		toolBar.add(sep());
+		toolbar.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				boolean vertical = toolbar.getWidth() < toolbar.getHeight();
+				if (navbar.setOrientation(vertical)
+						|| zoombox.setOrientation(vertical)) {
+					toolbar.revalidate();
+					toolbar.repaint();
+				}
+			}
+		});
 
-		toolBar.add(left);
-		toolBar.add(right);
-
-		toolBar.add(sep());
-
-		toolBar.add(zoomIn);
-		toolBar.add(zoomBox);
-		toolBar.add(zoomOut);
-
-		return toolBar;
-	}
-
-	private JComponent sep() {
-		JComponent sep = new JPanel();
-		sep.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-		return sep;
-	}
-
-	private void setZoom(double newZoom, boolean newZoomSnapWidth,
-			Point zoomCenterOffset) {
-		if (newZoom > 0) {
-			zoomBoxModel.setSelectedItem(
-					Integer.toString((int) Math.round(newZoom * 100)) + " %");
-		}
-
-		zoom = newZoom;
-		zoomSnapWidth = newZoomSnapWidth;
-		display(index, rotation, false, zoomCenterOffset);
+		return toolbar;
 	}
 
 	private synchronized void display(int index, Rotation rotation,
@@ -376,14 +265,16 @@ public class ViewerImages extends JFrame {
 		this.rotation = rotation;
 
 		final Image img = images.get(index);
+		// TODO why 0?
+		final int sz = UIManager.getInt("ScrollBar.width") == 0 ? 16
+				: UIManager.getInt("ScrollBar.width");
 		final Dimension areaSize = new Dimension( //
 				scroll.getViewport().getWidth(), //
-				scroll.getViewport().getHeight()//
+				scroll.getViewport().getHeight() //
 		);
 
 		worker.delay("display:" + resetScroll,
 				new SwingWorker<ImageIcon, Void>() {
-					private double previousZoom;
 					private Rectangle scrollTo;
 
 					@Override
@@ -394,24 +285,36 @@ public class ViewerImages extends JFrame {
 
 						BufferedImage image = ImageUtilsAwt.fromImage(img,
 								rotation);
+
+						// If scrollbar needed, reserve space for it
+						Dimension resizedArea = ImageUtilsAwt.scaleSize(
+								new Dimension(image.getWidth(),
+										image.getHeight()),
+								areaSize, zoombox.getZoom(),
+								zoombox.getSnapMode());
+						// TODO: why +3 seems to work?
+						if (resizedArea.width > areaSize.width) {
+							areaSize.height -= sz + 3;
+						}
+						if (resizedArea.height > areaSize.height) {
+							areaSize.width -= sz + 3;
+							// Not needed locally, but needed remote..
+						}
+						//
+
 						BufferedImage resizedImage = ImageUtilsAwt.scaleImage(
-								areaSize, image, zoom, zoomSnapWidth);
+								image, areaSize, zoombox.getZoom(),
+								zoombox.getSnapMode());
 
 						Dimension previousImageSize = currentImageSize;
 						currentImageSize = new Dimension(
 								resizedImage.getWidth(),
 								resizedImage.getHeight());
 
-						previousZoom = currentZoom;
-						if (!turn) {
-							currentZoom = (1.0 * resizedImage.getWidth())
-									/ image.getWidth();
-						} else {
-							currentZoom = (1.0 * resizedImage.getHeight())
-									/ image.getWidth();
-						}
+						zoombox.setZoom((1.0 * (turn ? resizedImage.getHeight()
+								: resizedImage.getWidth())) / image.getWidth());
 
-						if (previousZoom != currentZoom
+						if (previousZoom != zoombox.getZoom()
 								&& previousImageSize != null) {
 							Rectangle view = scroll.getViewport().getViewRect();
 
@@ -429,7 +332,7 @@ public class ViewerImages extends JFrame {
 							centerX = currentImageSize.width * ratioW;
 							centerY = currentImageSize.height * ratioH;
 							if (zoomCenterOffset != null) {
-								double dzoom = currentZoom - previousZoom;
+								double dzoom = zoombox.getZoom() - previousZoom;
 								centerX += zoomCenterOffset.x * dzoom * ratioW;
 								centerY += zoomCenterOffset.y * dzoom * ratioH;
 							}
@@ -443,6 +346,7 @@ public class ViewerImages extends JFrame {
 									view.width, view.height);
 						}
 
+						previousZoom = zoombox.getZoom();
 						return new ImageIcon(resizedImage);
 					}
 
@@ -451,12 +355,12 @@ public class ViewerImages extends JFrame {
 						try {
 							ImageIcon img = get();
 
-							if (zoom > 0) {
+							if (zoombox.getSnapMode() == null) {
 								scroll.setHorizontalScrollBarPolicy(
 										JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 								scroll.setVerticalScrollBarPolicy(
 										JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-							} else if (zoomSnapWidth) {
+							} else if (zoombox.getSnapMode()) {
 								scroll.setHorizontalScrollBarPolicy(
 										JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 								scroll.setVerticalScrollBarPolicy(
@@ -560,8 +464,8 @@ public class ViewerImages extends JFrame {
 					int x = e.getLocationOnScreen().x - (int) view.getCenterX();
 					int y = e.getLocationOnScreen().y - (int) view.getCenterY();
 
-					double diff = -0.1 * e.getWheelRotation();
-					setZoom(currentZoom + diff, zoomSnapWidth, new Point(x, y));
+					zoomCenterOffset = new Point(x, y);
+					zoombox.zoomOut(e.getWheelRotation());
 					e.consume();
 				} else {
 					wheeling.mouseWheelMoved(e);
