@@ -154,7 +154,7 @@ public class BooksPanel extends ListenerPanel {
 			@Override
 			protected void done() {
 				try {
-					loadData(get());
+					doLoadData(get());
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				} catch (ExecutionException e) {
@@ -165,22 +165,61 @@ public class BooksPanel extends ListenerPanel {
 		}.execute();
 	}
 
-	// TODO loadData by Book.Type + value
-	private void loadData(final Type type, final String value) {
+	// loadData by Book.Type + value
+	public void loadData(final Type type, final String value) {
 		synchronized (lastLoad) {
 			lastLoad = new ReloadData(type, value);
 		}
 
-		// TODO loadData todo todo
+		final List<String> sources = new ArrayList<String>();
+		final List<String> authors = new ArrayList<String>();
+		final List<String> tags = new ArrayList<String>();
+
+		if (type != null && value != null) {
+			switch (type) {
+			case SOURCE:
+				sources.add(value);
+				break;
+			case AUTHOR:
+				authors.add(value);
+				break;
+			case TAG:
+				tags.add(value);
+				break;
+
+			default:
+				break;
+			}
+		}
+
+		new SwingWorker<List<BookInfo>, Void>() {
+			@Override
+			protected List<BookInfo> doInBackground() throws Exception {
+				List<BookInfo> bookInfos = new ArrayList<BookInfo>();
+				BasicLibrary lib = Instance.getInstance().getLibrary();
+				for (MetaData meta : lib.getList().filter(sources, authors,
+						tags)) {
+					bookInfos.add(BookInfo.fromMeta(lib, meta));
+				}
+
+				return bookInfos;
+			}
+
+			@Override
+			protected void done() {
+				try {
+					doLoadData(get());
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
+				// TODO: error
+			}
+		}.execute();
 	}
 
-	// TODO loadData by Book.Type + value
-	private void loadData(List<BookInfo> bookInfos) {
-		// synchronized (lastLoad) {
-		// lastLoad[0] = "bookInfos";
-		// lastLoad[1] = bookInfos;
-		// }
-
+	private void doLoadData(List<BookInfo> bookInfos) {
 		data.clearItems();
 		data.addAllItems(bookInfos);
 		bookCoverUpdater.clear();
@@ -419,7 +458,7 @@ public class BooksPanel extends ListenerPanel {
 			}
 		};
 	}
-	
+
 	protected BooksPanelActions initActions() {
 		return new BooksPanelActions(this, getInformer());
 	}

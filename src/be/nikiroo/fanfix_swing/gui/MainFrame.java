@@ -101,28 +101,9 @@ public class MainFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				BookInfo book = goBack.getHighlight();
-				List<String> sources = new ArrayList<String>();
-				List<String> authors = new ArrayList<String>();
-				List<String> tags = new ArrayList<String>();
 
-				if (book != null && book.getMainInfo() != null) {
-					switch (book.getType()) {
-					case SOURCE:
-						sources.add(book.getMainInfo());
-						break;
-					case AUTHOR:
-						authors.add(book.getMainInfo());
-						break;
-					case TAG:
-						tags.add(book.getMainInfo());
-						break;
-
-					default:
-						break;
-					}
-				}
-
-				books.loadData(sources, authors, tags);
+				books.loadData(book == null ? null : book.getType(),
+						book == null ? null : book.getMainInfo());
 				details.setBook(book);
 
 				if (onCrumbsbreadChange != null) {

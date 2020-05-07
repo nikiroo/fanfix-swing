@@ -2,6 +2,7 @@ package be.nikiroo.fanfix_swing.gui.book;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 
 import javax.swing.JLabel;
@@ -11,6 +12,7 @@ import javax.swing.SwingConstants;
 import be.nikiroo.fanfix.data.Story;
 import be.nikiroo.fanfix_swing.gui.BooksPanel;
 import be.nikiroo.fanfix_swing.gui.utils.CoverImager;
+import be.nikiroo.utils.ui.UIUtils;
 
 /**
  * A book item presented in a {@link BooksPanel}.
@@ -57,8 +59,38 @@ public class BookLine extends JPanel {
 	 * Initialise this {@link BookLine}.
 	 */
 	protected void init() {
-		iconCached = new JLabel(" ◉ ");
-		iconNotCached = new JLabel(" ○ ");
+		iconCached = new JLabel("   ") {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void paint(Graphics g) {
+				super.paint(g);
+
+				Dimension sz = iconCached.getSize();
+				int s = Math.min(sz.width, sz.height);
+				int x = Math.max(0, (sz.width - sz.height) / 2);
+				int y = Math.max(0, (sz.height - sz.width) / 2);
+
+				UIUtils.drawEllipse3D(g, BookCoverImager.CACHED_ICON_COLOR, x,
+						y, s, s, true);
+			}
+		};
+		iconNotCached = new JLabel("   ") {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void paint(Graphics g) {
+				super.paint(g);
+
+				Dimension sz = iconNotCached.getSize();
+				int s = Math.min(sz.width, sz.height);
+				int x = Math.max(0, (sz.width - sz.height) / 2);
+				int y = Math.max(0, (sz.height - sz.width) / 2);
+
+				UIUtils.drawEllipse3D(g, BookCoverImager.UNCACHED_ICON_COLOR, 2,
+						6, 10, 10, false);
+			}
+		};
 
 		iconNotCached.setForeground(BookCoverImager.UNCACHED_ICON_COLOR);
 		iconCached.setForeground(BookCoverImager.CACHED_ICON_COLOR);

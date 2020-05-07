@@ -34,7 +34,7 @@ public class TouchFrame extends JFrame {
 
 	private List<JComponent> active;
 	private JPanel wait;
-	private BooksPanel books;
+	private JPanel booksPane;
 
 	public TouchFrame() {
 		setLayout(new BorderLayout());
@@ -46,10 +46,20 @@ public class TouchFrame extends JFrame {
 		wait = new JPanel();
 		wait.add(new JLabel("Waiting..."));
 
-		books = new BooksPanel(false, true) {
+		booksPane = createBooksPane();
+
+		this.add(root, BorderLayout.CENTER);
+		showBooks();
+
+		UiHelper.setFrameIcon(this);
+		setSize(355, 465);
+	}
+
+	private JPanel createBooksPane() {
+		final BooksPanel books = new BooksPanel(false, true) {
 			@Override
 			protected BooksPanelActions initActions() {
-				return new BooksPanelActions(books, getInformer()) {
+				return new BooksPanelActions(null, getInformer()) {
 					@Override
 					public boolean openBook() {
 						BookInfo book = getInformer().getUniqueSelected();
@@ -87,11 +97,21 @@ public class TouchFrame extends JFrame {
 			}
 		});
 
-		this.add(root, BorderLayout.CENTER);
-		showBooks();
+		final BreadCrumbsPanel breadcrumbs = new BreadCrumbsPanel();
+		breadcrumbs.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				BookInfo book = breadcrumbs.getHighlight();
+				books.loadData(book == null ? null : book.getType(),
+						book == null ? null : book.getMainInfo());
+			}
+		});
 
-		UiHelper.setFrameIcon(this);
-		setSize(355, 465);
+		JPanel booksPane = new JPanel(new BorderLayout());
+		booksPane.add(breadcrumbs, BorderLayout.NORTH);
+		booksPane.add(books, BorderLayout.CENTER);
+
+		return booksPane;
 	}
 
 	private void open(final BookInfo book) {
@@ -187,7 +207,6 @@ public class TouchFrame extends JFrame {
 
 		JPanel zoombox = new JPanel();
 		zoombox.add(exit);
-		zoombox.add(Box.createRigidArea(new Dimension(10, 10)));
 		zoombox.add(comps[2]);
 
 		active.add(scroll);
@@ -212,8 +231,8 @@ public class TouchFrame extends JFrame {
 
 	private void showBooks() {
 		removeShows();
-		active.add(books);
-		root.add(books);
+		active.add(booksPane);
+		root.add(booksPane);
 		revalidate();
 		repaint();
 	}

@@ -58,7 +58,7 @@ public class BookBlock extends BookLine {
 
 	/**
 	 * the cover image to use a base (see
-	 * {@link BookCoverImager#generateCoverImage(BasicLibrary, BookInfo)})
+	 * {@link BookBlock#generateCoverImage(BasicLibrary, BookInfo)})
 	 * 
 	 * @param coverImage
 	 *            the image
