@@ -2,13 +2,11 @@ package be.nikiroo.fanfix_swing.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -22,6 +20,7 @@ import be.nikiroo.fanfix.Instance;
 import be.nikiroo.fanfix.data.Story;
 import be.nikiroo.fanfix.library.BasicLibrary;
 import be.nikiroo.fanfix_swing.gui.book.BookInfo;
+import be.nikiroo.fanfix_swing.gui.book.BookPopup.Informer;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
 import be.nikiroo.fanfix_swing.gui.viewer.ViewerImages;
 import be.nikiroo.fanfix_swing.gui.viewer.ViewerNonImages;
@@ -57,6 +56,8 @@ public class TouchFrame extends JFrame {
 
 	private JPanel createBooksPane() {
 		final BooksPanel books = new BooksPanel(false, true) {
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected BooksPanelActions initActions() {
 				return new BooksPanelActions(null, getInformer()) {
@@ -65,7 +66,7 @@ public class TouchFrame extends JFrame {
 						BookInfo book = getInformer().getUniqueSelected();
 						if (book != null) {
 							showWait(); // TODO: some details
-							open(book);
+							open(book, getInformer());
 							return true;
 						}
 
@@ -92,7 +93,7 @@ public class TouchFrame extends JFrame {
 				final BookInfo book = books.getInformer().getUniqueSelected();
 				if (book != null && book.getMeta() != null) {
 					showWait(); // TODO: some details
-					open(book);
+					open(book, books.getInformer());
 				}
 			}
 		});
@@ -114,7 +115,7 @@ public class TouchFrame extends JFrame {
 		return booksPane;
 	}
 
-	private void open(final BookInfo book) {
+	private void open(final BookInfo book, final Informer informer) {
 		new SwingWorker<Story, Void>() {
 			@Override
 			protected Story doInBackground() throws Exception {
@@ -125,7 +126,9 @@ public class TouchFrame extends JFrame {
 			@Override
 			protected void done() {
 				try {
-					open(get());
+					showStory(get());
+					informer.setCached(book, true);
+					informer.fireElementChanged(book);
 				} catch (Exception e) {
 					// TODO: i18n
 					UiHelper.error(TouchFrame.this, e.getLocalizedMessage(),
@@ -135,7 +138,7 @@ public class TouchFrame extends JFrame {
 		}.execute();
 	}
 
-	private void open(Story story) {
+	private void showStory(Story story) {
 		final JComponent[] comps = new JComponent[3];
 
 		final JFrame viewer;

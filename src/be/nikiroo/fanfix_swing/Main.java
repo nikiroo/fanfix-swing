@@ -120,7 +120,7 @@ public class Main extends be.nikiroo.fanfix.Main {
 
 	@Override
 	protected void start() throws IOException {
-		if (kiosk) {
+		if (kiosk || touch) {
 			UIUtils.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		} else {
 			UIUtils.setLookAndFeel();
