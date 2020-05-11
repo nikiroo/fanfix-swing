@@ -24,6 +24,7 @@ import be.nikiroo.fanfix.bundles.StringIdGui;
 import be.nikiroo.fanfix.data.MetaData;
 import be.nikiroo.fanfix.data.Story;
 import be.nikiroo.fanfix.library.BasicLibrary;
+import be.nikiroo.fanfix.reader.TextOutput;
 import be.nikiroo.fanfix_swing.gui.PropertiesPanel;
 import be.nikiroo.fanfix_swing.gui.utils.UiHelper;
 import be.nikiroo.fanfix_swing.images.IconGenerator;
@@ -46,7 +47,7 @@ public class ViewerNonImages extends JFrame {
 
 	private BasicLibrary lib;
 	private Story story;
-	private ViewerTextOutput html;
+	private TextOutput html;
 
 	/** The navigation bar. */
 	protected NavBar navbar;
@@ -79,7 +80,7 @@ public class ViewerNonImages extends JFrame {
 
 		this.setSize(800, 600);
 
-		html = new ViewerTextOutput();
+		html = new TextOutput(true);
 		worker = new DelayWorker(100);
 		worker.start();
 
