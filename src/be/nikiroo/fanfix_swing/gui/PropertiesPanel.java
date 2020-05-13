@@ -99,7 +99,7 @@ public class PropertiesPanel extends JPanel {
 		mainPanel.add(UIUtils.scroll(mainPanelValues, true, false),
 				BorderLayout.CENTER);
 
-		Map<String, String> desc = Actions.getMetaDesc(meta);
+		Map<String, String> desc = BasicLibrary.getMetaDesc(meta);
 		for (String key : desc.keySet()) {
 			JTextArea jKey = new JTextArea(key);
 			jKey.setFont(new Font(jKey.getFont().getFontName(), Font.BOLD,

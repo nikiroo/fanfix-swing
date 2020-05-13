@@ -278,49 +278,4 @@ public class Actions {
 
 		return source;
 	}
-
-	/**
-	 * Describe a {@link Story} from its {@link MetaData} and return a list of
-	 * title/value that represent this {@link Story}.
-	 * 
-	 * @param meta
-	 *            the {@link MetaData} to represent
-	 * 
-	 * @return the information
-	 */
-	static public Map<String, String> getMetaDesc(MetaData meta) {
-		Map<String, String> metaDesc = new LinkedHashMap<String, String>();
-
-		// TODO: i18n
-
-		StringBuilder tags = new StringBuilder();
-		for (String tag : meta.getTags()) {
-			if (tags.length() > 0) {
-				tags.append(", ");
-			}
-			tags.append(tag);
-		}
-
-		// TODO: i18n
-		metaDesc.put("Author", meta.getAuthor());
-		metaDesc.put("Published on", meta.getPublisher());
-		metaDesc.put("Publication date", meta.getDate());
-		metaDesc.put("Creation date", meta.getCreationDate());
-		String count = "";
-		if (meta.getWords() > 0) {
-			count = StringUtils.formatNumber(meta.getWords());
-		}
-		if (meta.isImageDocument()) {
-			metaDesc.put("Number of images", count);
-		} else {
-			metaDesc.put("Number of words", count);
-		}
-		metaDesc.put("Source", meta.getSource());
-		metaDesc.put("Subject", meta.getSubject());
-		metaDesc.put("Language", meta.getLang());
-		metaDesc.put("Tags", tags.toString());
-		metaDesc.put("URL", meta.getUrl());
-
-		return metaDesc;
-	}
 }
