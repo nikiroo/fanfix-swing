@@ -254,7 +254,13 @@ public class LocalLibrary extends BasicLibrary {
 					in = new FileInputStream(cover);
 					try {
 						synchronized (lock) {
-							sourceCovers.put(source, new Image(in));
+							Image img = new Image(in);
+							if (img.getSize() == 0) {
+								img.close();
+								throw new IOException(
+										"Empty image not accepted");
+							}
+							sourceCovers.put(source, img);
 						}
 					} finally {
 						in.close();
@@ -298,7 +304,13 @@ public class LocalLibrary extends BasicLibrary {
 				in = new FileInputStream(cover);
 				try {
 					synchronized (lock) {
-						authorCovers.put(author, new Image(in));
+						Image img = new Image(in);
+						if (img.getSize() == 0) {
+							img.close();
+							throw new IOException(
+									"Empty image not accepted");
+						}
+						authorCovers.put(author, img);
 					}
 				} finally {
 					in.close();
@@ -611,6 +623,18 @@ public class LocalLibrary extends BasicLibrary {
 
 		if (coverFile.exists()) {
 			files.add(coverFile);
+		}
+
+		String summaryExt = ".summary";
+		File summaryFile = new File(path + summaryExt);
+		if (!summaryFile.exists()) {
+			summaryFile = new File(
+					path.substring(0, path.length() - fileExt.length())
+							+ summaryExt);
+		}
+
+		if (summaryFile.exists()) {
+			files.add(summaryFile);
 		}
 
 		return files;
