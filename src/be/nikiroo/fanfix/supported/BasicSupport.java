@@ -272,7 +272,14 @@ public abstract class BasicSupport {
 		pg.setProgress(30);
 
 		Story story = new Story();
+		
 		MetaData meta = getMeta();
+		meta.setType(getType().toString());
+		meta.setSource(getType().getSourceName());
+		if (meta.getPublisher() == null) {
+			meta.setPublisher(getType().getSourceName());
+		}
+
 		if (meta.getCreationDate() == null
 				|| meta.getCreationDate().trim().isEmpty()) {
 			meta.setCreationDate(bsHelper
