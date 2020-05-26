@@ -181,7 +181,6 @@ public class Image implements Closeable, Serializable {
 	@Override
 	public void close() throws IOException {
 		synchronized (instanceLock) {
-			new Exception().printStackTrace();
 			if (size >= 0) {
 				size = -1;
 				data.delete();
