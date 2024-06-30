@@ -90,8 +90,6 @@ You can also import the java sources into, say, [Eclipse](https://eclipse.org/),
 
 Required:
 
-- ```src/be/nikiroo/utils```: some shared utility functions, included as a subtree
-- ```src/be/nikiroo/fanfix```: the fanfix library upon which all the program is based, included as a subtree
 - [```libs/unbescape-sources.jar```](https://github.com/unbescape/unbescape): a nice library to escape/unescape a lot of text formats; used here for HTML
 - [```libs/jsoup-sources.jar```](https://jsoup.org/): a library to parse HTML
 - [```libs/JSON-java-20190722-sources.jar```](https://github.com/stleary/JSON-java): a library to parse JSON
@@ -99,6 +97,11 @@ Required:
 Optional:
 
 - [```pandoc```](http://pandoc.org/): to generate the man pages from the README files (to use it, ```pandoc``` must be available as program in the PATH)
+
+Submodules:
+
+- ```src/be/nikiroo/utils```: some shared utility functions from [https://github.com/nikiroo/nikiroo-utils.git](https://github.com/nikiroo/nikiroo-utils.git) -- branch ```subtree```
+- ```src/be/nikiroo/fanfix```: the fanfix library upon which all the program is based from [https://github.com/nikiroo/fanfix.git](https://github.com/nikiroo/fanfix.git) -- branch ```subtree```
 
 Nothing else but Java 1.6+.
 
