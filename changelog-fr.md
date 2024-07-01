@@ -1,5 +1,9 @@
 # Fanfix-swing
 
+## Version WIP
+
+- new: utilisation de submodules git
+
 ## Version 1.2.0
 
 - new: le programme vérifie si une version plus récente est disponible (comme Fanfix)
