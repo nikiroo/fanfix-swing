@@ -1,9 +1,9 @@
 # Doxyfile 1.8.13
 
 # Minimum required fields:
-PROJECT_NAME           = "Program name"
-PROJECT_BRIEF          = "Small description"
-INPUT                  = src/xxx 
+PROJECT_NAME           = "Fanfix Swing"
+PROJECT_BRIEF          = "A GUI interface (Swing) for Fanfix"
+INPUT                  = src/be/nikiroo
 STRIP_FROM_PATH        = src
 OPTIMIZE_OUTPUT_FOR_C  = NO
 OPTIMIZE_OUTPUT_JAVA   = YES

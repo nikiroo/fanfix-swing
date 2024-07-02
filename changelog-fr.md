@@ -3,6 +3,7 @@
 ## Version WIP
 
 - new: utilisation de submodules git
+- new: remove configure.sh, use simple Makefile
 
 ## Version 1.2.0
 
